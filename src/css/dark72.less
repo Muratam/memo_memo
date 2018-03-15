@@ -1,0 +1,44 @@
+@background-color: #eee;
+@accent-color : hsl(208, 40%, 50%);
+@font-color: hsl(208, 15%, 77%);
+@font-dark-color: #111;
+@font-light-color: @font-color;
+@bar-color: hsl(208, 50%, 70%);
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+a:hover {
+    transition: color 0.15s ease;
+}
+
+body {
+    font-weight: normal;
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    background-color: @background-color;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    h1,
+    h2 {
+        margin: 7px;
+    }
+}
+
+.center-item {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+hr {
+    border-top: 1px solid @bar-color;
+}
+
+.dark {
+    color: @font-dark-color;
+}
