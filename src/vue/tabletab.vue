@@ -1,38 +1,46 @@
 <template lang="pug">
   .root
     .sidebar
-      .header hoge
-      .side.active hoge
-      .side hogehgoeghoaheoahfpi
-      .side hoge
-    .content-wrapper
+      .header むらためもめも
+      .side(v-for="(side,i) in sides" onclick="event") {{side.name}}
+      .side.appender [+]
+    .leftsidebar
       .tabbar
-        .tab fuga
-        .tab fuga
-        .tab fuga
+        .tab.header All
+        .tab.link(v-for="(tab,i) in tabs" onclick="event") {{tab.name}}
       .content
         p ghi0reHAFUWOgjhwer
         p ghi0reHAFUWOgjhwer
         p ghi0reHAFUWOgjhwer
         p ghi0reHAFUWOgjhwer
-    //- .wrapper
-    //-   #sidebar
-    //-     .sidebar-header
-    //-     .list-unstyled.components
-    //-       li.active
-    //- .sidebar
-      //- h5.side Menu
       //- button.side(v-for="(side,i) in sides" onclick="open(event)") {{side.name}}
-    //- .tabbar
       //- button.tab.link(v-for="(tab,i) in tabs" onclick="open(event)") {{tab.name}}
-    //- .content
 </template>
 <script>
+import contents from "../tempdata";
 module.exports = {
   data() {
+    console.log(contents);
     return {
-      tabs: [{ name: "name1" }, { name: "name2" }, { name: "name3" }],
-      sides: [{ name: "name1" }, { name: "name2" }, { name: "name3" }]
+      sides: [
+        // 主ジャンル
+        { name: "WorkSpace", id: 0 },
+        { name: "Nim", id: 1 },
+        { name: "フォント", id: 2 },
+        { name: "CTF", id: 3 },
+        { name: "Deep Learning", id: 4 },
+        { name: "シェーダー", id: 5 },
+        { name: "Tool", id: 6 },
+        { name: "Trash", id: 7 }
+      ],
+      tabs: [
+        { name: "Todo", id: 1 }, // 近い内に「やらないといけない」予定を保存
+        { name: "Later", id: 2 }, // 「そのうち遊ぶ・実装したいかもしれない」アイデアを保存
+        { name: "URL", id: 3 }, // 「必要に応じて参照する」と便利かもしれないURLを保存
+        { name: "Study", id: 4 }, // 「時間をとって体系的に学習する」かもしれないものを保存
+        { name: "Data", id: 5 } // 暇な時に適当に漁って楽しめるデータ集やコーパス集を保存
+      ],
+      contents: contents.contents
     };
   },
   mounted() {},
@@ -46,7 +54,7 @@ module.exports = {
 };
 </script>
 <style scoped lang="less">
-@dark-color: #111;
+@dark-color: #222;
 @accent-color : hsl(208, 40%, 50%);
 @accent-color2: hsl(208, 15%, 77%);
 @accent-color3: hsl(208, 50%, 70%);
@@ -59,7 +67,6 @@ module.exports = {
   transition: all 0.3s;
   background: @dark-color;
   color: @accent-color2;
-  // align-items: stretch;
   padding: 0em 1em 0em 1em;
   min-height: 100vh;
   align-items: stretch;
@@ -75,16 +82,42 @@ module.exports = {
   .side {
     padding: 0.5em 0 0.5em 0;
     border-bottom: 1px solid #111 * 4;
+    &.appender {
+      color: @accent-color3;
+      text-align: center;
+      border-bottom: 0px;
+    }
+    &:hover {
+      opacity: 0.75;
+      cursor: pointer;
+    }
   }
 }
-.content-wrapper {
+.leftsidebar {
+  flex: 1;
 }
 .tabbar {
-  margin: auto;
   display: flex;
   flex-direction: row;
   transition: all 0.3s;
   border-bottom: 1px solid @accent-color3;
+  background: @dark-color * 2;
+  color: @accent-color2 * 1.2;
+  .header {
+    border-right: 1px solid @accent-color3;
+    padding: 0.5em 1.5em 0.5em 1.5em;
+    color: @accent-color3;
+  }
+  .tab {
+    padding: 0.5em 1em 0.5em 1em;
+    max-width: @sidebar-size;
+    overflow: hidden;
+    border-right: 1px solid #111 * 6;
+    &:hover {
+      opacity: 0.75;
+      cursor: pointer;
+    }
+  }
 }
 /*
 .sidebar {
@@ -108,19 +141,8 @@ module.exports = {
   font-weight: bold;
   border-bottom: 0.2em solid @accent-color;
   line-height: 3em;
-  &:hover {
-    opacity: 0.75;
-  }
 }
-
-.content {
-  // display: none;
-  // padding: 40px 40px 0;
-  color: @accent-color2;
-  clear: both;
-  // overflow: hidden;
-  font-weight: normal;
-}*/
+*/
 /*
 .item {
   width: calc(90%/3);
@@ -144,17 +166,6 @@ module.exports = {
     -webkit-justify-content: center;
     justify-content: center;
   }
-}
-// ラジオボタンを全て消す
-input[name="tab_item"] {
-  display: none;
-}
-//タブ切り替えの中身のスタイル
-.content {
-  display: none;
-  padding: 40px 40px 0;
-  clear: both;
-  overflow: hidden;
 }
 //選択されているタブのスタイルを変える
 .tabs input:checked + .tab_item {
