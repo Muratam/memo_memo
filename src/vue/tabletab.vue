@@ -2,30 +2,42 @@
   .root
     .sidebar
       .header むらためもめも
-      .side(v-for="(side,i) in sides" onclick="event") {{side.name}}
+      .side All
+      .side(v-for="(side,i) in sides" @click="event") {{ side.name }}
       .side.appender [+]
     .leftsidebar
       .tabbar
         .tab.header All
-        .tab.link(v-for="(tab,i) in tabs" onclick="event") {{tab.name}}
+        .tab(v-for="(tab,i) in tabs" @click="event") {{ tab.name }}
       .content
-        p ghi0reHAFUWOgjhwer
-        p ghi0reHAFUWOgjhwer
-        p ghi0reHAFUWOgjhwer
-        p ghi0reHAFUWOgjhwer
+        .memo(v-for="(memo,i) in contents" @click="event")
+          a(:href="getURL(memo)") {{ getTitle(memo) }}
+          div(v-if="getBody(memo)") {{ getBody(memo) }}
       //- button.side(v-for="(side,i) in sides" onclick="open(event)") {{side.name}}
       //- button.tab.link(v-for="(tab,i) in tabs" onclick="open(event)") {{tab.name}}
 </template>
 <script>
 import contents from "../tempdata";
 module.exports = {
+  methods: {
+    getTitle(memo) {
+      if (!("title" in memo)) return "???";
+      return memo.title;
+    },
+    getBody(memo) {
+      if (!("body" in memo)) return "";
+      return memo.body;
+    },
+    getURL(memo) {
+      if (!("url" in memo)) return "";
+      return memo.url;
+    }
+  },
   data() {
-    console.log(contents);
     return {
       sides: [
         // 主ジャンル
-        { name: "WorkSpace", id: 0 },
-        { name: "Nim", id: 1 },
+        { name: "WorkSpace", id: 1 },
         { name: "フォント", id: 2 },
         { name: "CTF", id: 3 },
         { name: "Deep Learning", id: 4 },
@@ -34,13 +46,33 @@ module.exports = {
         { name: "Trash", id: 7 }
       ],
       tabs: [
+        // 時間軸
         { name: "Todo", id: 1 }, // 近い内に「やらないといけない」予定を保存
         { name: "Later", id: 2 }, // 「そのうち遊ぶ・実装したいかもしれない」アイデアを保存
         { name: "URL", id: 3 }, // 「必要に応じて参照する」と便利かもしれないURLを保存
         { name: "Study", id: 4 }, // 「時間をとって体系的に学習する」かもしれないものを保存
-        { name: "Data", id: 5 } // 暇な時に適当に漁って楽しめるデータ集やコーパス集を保存
+        { name: "Data", id: 5 } // 「暇な時に漁れる」データ集やコーパス集を保存
       ],
-      contents: contents.contents
+      contents: [
+        {
+          title: "フレームワーク: deeplearn.js",
+          body: "WebGL + GPU でブラウザ上で高速に処理"
+        },
+        { title: "理論: CAN", url: "http://createwith.ai/paper/20170629/839" },
+        {
+          title: "理論: StacksGAN",
+          url: "http://catindog.hatenablog.com/entry/2017/02/05/160156"
+        },
+        {
+          title: "学習済みモデル: illustlation2vec",
+          url: "https://github.com/rezoo/illustration2vec"
+        },
+        {
+          title: "学習済みモデル: word2vec",
+          url:
+            "https://aial.shiroyagi.co.jp/2017/02/japanese-word2vec-model-builder/"
+        }
+      ] //contents.contents
     };
   },
   mounted() {},
@@ -119,65 +151,11 @@ module.exports = {
     }
   }
 }
-/*
-.sidebar {
-  min-height: 100vh;
-}
-*/
-/*
-.tabs {
-  margin: 1em auto;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-.item {
-  background-color: @dark-color;
-  float: left;
+.memo {
+  background: #f8f8f8;
+  padding: 0.5em 1em 0.5em 1em;
+  border-bottom: 1px solid @accent-color3;
+  // box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
-.tag {
-  color: @accent-color3;
-  display: block;
-  text-align: center;
-  font-weight: bold;
-  border-bottom: 0.2em solid @accent-color;
-  line-height: 3em;
-}
-*/
-/*
-.item {
-  width: calc(90%/3);
-  height: 50px;
-  border-bottom: 3px solid #5ab4bd;
-  background-color: #d9d9d9;
-  line-height: 50px;
-  font-size: 16px;
-  text-align: center;
-  color: #565656;
-  display: block;
-  float: left;
-  text-align: center;
-  font-weight: bold;
-  transition: all 0.2s ease;
-  .center {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: center;
-    align-items: center;
-    -webkit-justify-content: center;
-    justify-content: center;
-  }
-}
-//選択されているタブのスタイルを変える
-.tabs input:checked + .tab_item {
-  background-color: #5ab4bd;
-  color: #fff;
-}
-
-//選択されているタブのコンテンツのみを表示
-#tab1:checked ~ #tab1_content,
-#tab2:checked ~ #tab2_content,
-#tab3:checked ~ #tab3_content {
-  display: block;
-}
-*/
 </style>
