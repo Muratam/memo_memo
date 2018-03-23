@@ -15,21 +15,28 @@
   .under-fixed-top
     .row
       .sidebar.col-sm-3
-        ul.nav.nav-pills.nav-stacked
+        ul.nav.nav-pills.nav-justified
           li.nav-item
             a.nav-link むらためもめも
           li.nav-item
             a.nav-link All
           li.nav-item(v-for="(side,i) in sides")
             a.nav-link(@click="event") {{ side.name }}
+          li.nav-item
+            a.nav-link
+              span.glyphicon.glyphicon-plus
           //- li.nav-item(v-for="i in 100")
           //-   a.nav-link [{{i}}]
     .content
-      .memo(v-for="(memo,i) in contents" @click="event")
-        a(:href="getURL(memo)") {{ getTitle(memo) }}
-        div(v-if="getBody(memo)") {{ getBody(memo) }}
-      input.form-control(type="text")
-
+      ul.list-group(v-for="i in 10")
+        li.list-group-item(v-for="(memo,i) in contents" @click="event")
+          a(:href="getURL(memo)") {{ getTitle(memo) }}
+          div(v-if="getBody(memo)") {{ getBody(memo) }}
+      nav.navbar.navbar-fixed-bottom.content
+        .panel.panel-default
+          input.form-control(type="text")
+          input.form-control(type="text")
+          input.form-control(type="text")
 </template>
 <script>
 // import contents from "../tempdata";
@@ -113,7 +120,7 @@ module.exports = {
 .sidebar {
   transition: all 0.3s;
   padding: 0em;
-  border-right: 0.1em solid @accent-color;
+  // border-right: 0.1em solid @accent-color;
   width: @sidebar-size;
   height: 100%;
   position: fixed;
@@ -121,22 +128,26 @@ module.exports = {
   overflow-y: auto;
   text-align: center;
   overflow-wrap: break-word;
+  z-index: 10;
+  // background: #ffffff;
   // align-items: stretch;
-  // background: @dark-color;
+  background: @accent-color2 + #333;
   // color: @accent-color2;
-  border-bottom: 1px solid @accent-color3;
+  // border-bottom: 1px solid @accent-color3;
   // &.active {margin-left: -@sidebar-size;}
   // opacity: 0.75;
   // cursor: pointer;
 }
 .content {
-  padding-left: @sidebar-size - 1em;
+  padding-top: 1em;
+  padding-right: 1em;
+  padding-left: @sidebar-size;
 }
 
 .memo {
-  background: #f8f8f8;
-  padding: 0.5em 1em 0.5em 0em;
-  border-bottom: 1px solid @accent-color3;
+  // background: #f8f8f8;
+  // padding: 0.5em 1em 0.5em 0em;
+  // border-bottom: 1px solid @accent-color3;
   // box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
