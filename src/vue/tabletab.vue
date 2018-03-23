@@ -13,11 +13,15 @@
         .memo(v-for="(memo,i) in contents" @click="event")
           a(:href="getURL(memo)") {{ getTitle(memo) }}
           div(v-if="getBody(memo)") {{ getBody(memo) }}
+        <div class="panel panel-default">
+          <div class="panel-body">A Basic Panel</div>
+        </div>
+        <input type="text" class="form-control" >
       //- button.side(v-for="(side,i) in sides" onclick="open(event)") {{side.name}}
       //- button.tab.link(v-for="(tab,i) in tabs" onclick="open(event)") {{tab.name}}
 </template>
 <script>
-import contents from "../tempdata";
+// import contents from "../tempdata";
 module.exports = {
   methods: {
     getTitle(memo) {
