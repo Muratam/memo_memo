@@ -1,24 +1,35 @@
 <template lang="pug">
-  .root
-    .sidebar
-      .header むらためもめも
-      .side All
-      .side(v-for="(side,i) in sides" @click="event") {{ side.name }}
-      .side.appender [+]
-    .leftsidebar
-      .tabbar
-        .tab.header All
-        .tab(v-for="(tab,i) in tabs" @click="event") {{ tab.name }}
-      .content
-        .memo(v-for="(memo,i) in contents" @click="event")
-          a(:href="getURL(memo)") {{ getTitle(memo) }}
-          div(v-if="getBody(memo)") {{ getBody(memo) }}
-        <div class="panel panel-default">
-          <div class="panel-body">A Basic Panel</div>
-        </div>
-        <input type="text" class="form-control" >
-      //- button.side(v-for="(side,i) in sides" onclick="open(event)") {{side.name}}
-      //- button.tab.link(v-for="(tab,i) in tabs" onclick="open(event)") {{tab.name}}
+//- https://www.w3schools.com/bootstrap/
+  //- well 記法 thumbnail alert
+  //- button buttongroup nest-button
+  //- glyphicon badge label
+  //- progress-bar pagination pager
+  //- list-group panel dropdown
+  //- collapsible accordion
+  //- tab(with dropdown) pill v-pill
+  //- input media-object
+.root
+  nav.navbar.navbar-inverse.navbar-fixed-top
+    .navbar-brand.tab.header All
+    .navbar-brand.tab(v-for="(tab,i) in tabs" @click="event") {{ tab.name }}
+  .under-fixed-top
+    .row
+      .sidebar.col-sm-3
+        ul.nav.nav-pills.nav-stacked
+          li.nav-item
+            a.nav-link むらためもめも
+          li.nav-item
+            a.nav-link All
+          li.nav-item(v-for="(side,i) in sides")
+            a.nav-link(@click="event") {{ side.name }}
+          //- li.nav-item(v-for="i in 100")
+          //-   a.nav-link [{{i}}]
+    .content
+      .memo(v-for="(memo,i) in contents" @click="event")
+        a(:href="getURL(memo)") {{ getTitle(memo) }}
+        div(v-if="getBody(memo)") {{ getBody(memo) }}
+      input.form-control(type="text")
+
 </template>
 <script>
 // import contents from "../tempdata";
@@ -90,74 +101,41 @@ module.exports = {
 };
 </script>
 <style scoped lang="less">
+.under-fixed-top {
+  padding-top: 50px;
+}
 @dark-color: #222;
 @accent-color : hsl(208, 40%, 50%);
 @accent-color2: hsl(208, 15%, 77%);
 @accent-color3: hsl(208, 50%, 70%);
 @sidebar-size: 10em;
-.root {
-  display: flex;
-  flex-direction: row;
-}
+
 .sidebar {
   transition: all 0.3s;
-  background: @dark-color;
-  color: @accent-color2;
-  padding: 0em 1em 0em 1em;
-  min-height: 100vh;
-  align-items: stretch;
-  border-right: 0.3em solid @accent-color;
-  max-width: @sidebar-size;
+  padding: 0em;
+  border-right: 0.1em solid @accent-color;
+  width: @sidebar-size;
+  height: 100%;
+  position: fixed;
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-align: center;
   overflow-wrap: break-word;
-  // &.active {margin-left: -@sidebar-size;}
-  .header {
-    padding: 1em 0 1em 0;
-    color: @accent-color3;
-    border-bottom: 1px solid @accent-color3;
-  }
-  .side {
-    padding: 0.5em 0 0.5em 0;
-    border-bottom: 1px solid #111 * 4;
-    &.appender {
-      color: @accent-color3;
-      text-align: center;
-      border-bottom: 0px;
-    }
-    &:hover {
-      opacity: 0.75;
-      cursor: pointer;
-    }
-  }
-}
-.leftsidebar {
-  flex: 1;
-}
-.tabbar {
-  display: flex;
-  flex-direction: row;
-  transition: all 0.3s;
+  // align-items: stretch;
+  // background: @dark-color;
+  // color: @accent-color2;
   border-bottom: 1px solid @accent-color3;
-  background: @dark-color * 2;
-  color: @accent-color2 * 1.2;
-  .header {
-    border-right: 1px solid @accent-color3;
-    padding: 0.5em 1.5em 0.5em 1.5em;
-    color: @accent-color3;
-  }
-  .tab {
-    padding: 0.5em 1em 0.5em 1em;
-    max-width: @sidebar-size;
-    overflow: hidden;
-    border-right: 1px solid #111 * 6;
-    &:hover {
-      opacity: 0.75;
-      cursor: pointer;
-    }
-  }
+  // &.active {margin-left: -@sidebar-size;}
+  // opacity: 0.75;
+  // cursor: pointer;
 }
+.content {
+  padding-left: @sidebar-size - 1em;
+}
+
 .memo {
   background: #f8f8f8;
-  padding: 0.5em 1em 0.5em 1em;
+  padding: 0.5em 1em 0.5em 0em;
   border-bottom: 1px solid @accent-color3;
   // box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
