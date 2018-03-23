@@ -15,7 +15,7 @@
   .under-fixed-top
     .row
       .sidebar.col-sm-3
-        ul.nav.nav-pills.nav-justified
+        ul.nav.nav-pills.nav-stacked
           li.nav-item
             a.nav-link むらためもめも
           li.nav-item
@@ -31,7 +31,7 @@
       ul.list-group(v-for="i in 10")
         li.list-group-item(v-for="(memo,i) in contents" @click="event")
           a(:href="getURL(memo)") {{ getTitle(memo) }}
-          div(v-if="getBody(memo)") {{ getBody(memo) }}
+          div(v-if="getBody(memo)") {{ getBody(memo) }}3
       nav.navbar.navbar-fixed-bottom.content
         .panel.panel-default
           input.form-control(type="text")
