@@ -3,8 +3,9 @@
   .clearfix(v-if="!isediting")
     button.btn.btn-default.pull-right(@click="startEditing")
       div: i.fas.fa-edit
-    a(:href="url") {{ title }}
-    pre(v-if="body") {{ body }}
+    a(:href="url" v-if="url") {{ title }}
+    div(v-if="!url") {{ title }}
+    div(v-if="body") {{ body }}
   .clearfix(v-if="isediting")
     button.btn.btn-default.pull-right(@click="finishEditing")
       div: i.fas.fa-chevron-right
