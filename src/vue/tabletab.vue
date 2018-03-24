@@ -2,7 +2,7 @@
 .root
   nav.navbar.navbar-inverse.navbar-fixed-top
     .navbar-brand.tab.header All
-    .navbar-brand.tab(v-for="(tab,i) in tabs" @click="event") {{ tab.name }}
+    .navbar-brand.tab(v-for="(tab,i) in tabs") {{ tab.name }}
   .under-fixed-top
     .row
       .sidebar.col-sm-3
@@ -12,26 +12,14 @@
           li.nav-item
             a.nav-link All
           li.nav-item(v-for="(side,i) in sides")
-            a.nav-link(@click="event") {{ side.name }}
+            a.nav-link {{ side.name }}
           li.nav-item
-            a.nav-link
-              span.glyphicon.glyphicon-plus
-          //- li.nav-item(v-for="i in 100")
-          //-   a.nav-link [{{i}}]
+            a.nav-link: i.fas.fa-sync
     .content
-      ul.list-group(v-for="i in 10")
-        li.list-group-item(v-for="(memo,i) in contents" @click="event")
-          a(:href="getURL(memo)") {{ getTitle(memo) }}
-          div(v-if="getBody(memo)") {{ getBody(memo) }}3
-        li.list-group-item
-          .input-group.input-group-sm.col-xs-11
-            span.input-group-addon URL
-            input.form-control.col-xs-5(type="text" placeholder="https://...")
-          .input-group.input-group-sm.col-xs-11
-            span.input-group-addon Title
-            input.form-control(type="text" )
-          .input-group.input-group-sm.col-xs-11
-            textarea.form-control
+      ul.list-group
+        li.list-group-item(v-for="(memo,i) in contents")
+          memo(:title="memo.title" :url="memo.url"
+               :body="memo.body" :isediting="false")
       //- nav.navbar.navbar-fixed-bottom.content
         .panel.panel-default
 
@@ -39,23 +27,12 @@
 </template>
 <script>
 // import contents from "../tempdata";
+import Memo from "./memo.vue";
+
 module.exports = {
-  methods: {
-    getTitle(memo) {
-      if (!("title" in memo)) return "???";
-      return memo.title;
-    },
-    getBody(memo) {
-      if (!("body" in memo)) return "";
-      return memo.body;
-    },
-    getURL(memo) {
-      if (!("url" in memo)) return "";
-      return memo.url;
-    }
-  },
+  methods: {},
   data() {
-    return {
+    let res = {
       sides: [
         // 主ジャンル
         { name: "WorkSpace", id: 1 },
@@ -95,14 +72,10 @@ module.exports = {
         }
       ] //contents.contents
     };
+    return res;
   },
-  mounted() {},
   components: {
-    container: {
-      props: ["index", "abc"],
-      template: `<div></div>`,
-      watch: { abc(val, oldVal) {} }
-    }
+    memo: Memo
   }
 };
 </script>
@@ -142,11 +115,5 @@ module.exports = {
   padding-top: 1em;
   padding-right: 1em;
   margin-left: @sidebar-size;
-}
-
-.memo {
-  // background: #f8f8f8;
-  // box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
-  // transition: all 0.2s ease;
 }
 </style>
