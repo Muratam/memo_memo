@@ -13,14 +13,15 @@
           li.nav-item(v-for="(side,i) in sides")
             a.nav-link {{ side.name }}
           li.nav-item
-            a.nav-link: i.fas.fa-sync
+            a.nav-link: i.fas.fa-plus
     .content
       ul.list-group
         li.list-group-item(v-for="(memo,i) in contents")
-          memo(:title="memo.title" :url="memo.url"
-               :body="memo.body" :isediting="false")
-      //- nav.navbar.navbar-fixed-bottom.content
-        .panel.panel-default
+          memo(:attrs="memo")
+      nav.navbar.navbar-fixed-bottom.content
+        ul.list-group
+          li.list-group-item
+            memo(:attrs="{isediting:true}")
 
 </div>
 </template>

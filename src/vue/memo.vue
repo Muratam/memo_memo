@@ -1,27 +1,42 @@
 <template lang="pug">
 .memo
   .clearfix(v-if="!isediting")
-    button.btn.btn-default.pull-right(@click="isediting = !isediting")
-      i.fas.fa-sync
+    button.btn.btn-default.pull-right(@click="startEditing")
+      div: i.fas.fa-edit
     a(:href="url") {{ title }}
-    div(v-if="body") {{ body }}
+    pre(v-if="body") {{ body }}
   .clearfix(v-if="isediting")
-    button.btn.btn-default.pull-right(@click="isediting = !isediting")
-      i.fas.fa-sync
+    button.btn.btn-default.pull-right(@click="finishEditing")
+      div: i.fas.fa-chevron-right
     .input-group.input-group-sm.col-xs-10
       span.input-group-addon URL
-      input.form-control.col-xs-5(type="text" placeholder="https://..." :value="url")
+      input.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url")
     .input-group.input-group-sm.col-xs-10
       span.input-group-addon Title
-      input.form-control(type="text" :value="title")
+      input.form-control(type="text" v-model="title")
     .input-group.input-group-sm.col-xs-10
-      textarea.form-control(:value="body")
+      textarea.form-control(v-model="body")
 
 </template>
 <script>
 module.exports = {
-  methods: {},
-  props: ["title", "url", "body", "isediting"]
+  methods: {
+    startEditing() {
+      this.isediting = true;
+    },
+    finishEditing() {
+      this.isediting = false;
+    }
+  },
+  data() {
+    return {
+      title: this.attrs.title || "",
+      url: this.attrs.url || "",
+      body: this.attrs.body || "",
+      isediting: this.attrs.isediting || false
+    };
+  },
+  props: ["attrs"]
   //   mounted() {},
   //   watch: { abc(val, oldVal) {} }
 };
