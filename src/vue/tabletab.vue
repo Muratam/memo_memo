@@ -1,6 +1,6 @@
 <template lang="pug">
 .root
-  nav.navbar.navbar-inverse.navbar-fixed-top
+  nav.navbar.navbar-inverse.navbar-fixed-top.top-var
     .navbar-brand.tab.header むらためも
     .navbar-brand.tab.header All
     .navbar-brand.tab(v-for="(tab,i) in tabs") {{ tab.name }}
@@ -92,7 +92,6 @@ module.exports = {
 .sidebar {
   transition: all 0.3s;
   padding: 0em;
-  // border-right: 1px solid @accent-color3;
   width: @sidebar-size;
   height: 100%;
   padding-left: 1em;
@@ -102,18 +101,21 @@ module.exports = {
   text-align: center;
   overflow-wrap: break-word;
   z-index: 10;
-  // background: #ffffff;
-  // align-items: stretch;
   background: @accent-color2 + #333;
+  // border-right: 1px solid @accent-color3;
   // color: @accent-color2;
-  // border-bottom: 1px solid @accent-color3;
   // &.active {margin-left: -@sidebar-size;}
   // opacity: 0.75;
-  // cursor: pointer;
+  li {
+    cursor: pointer;
+  }
 }
 .content {
   padding-top: 1em;
   padding-right: 1em;
   margin-left: @sidebar-size;
+}
+.tab {
+  cursor: pointer;
 }
 </style>

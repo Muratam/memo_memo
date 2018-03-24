@@ -3,7 +3,7 @@
   .clearfix(v-if="!isediting")
     button.btn.btn-default.pull-right(@click="startEditing")
       div: i.fas.fa-edit
-    a(:href="url" v-if="url") {{ title }}
+    a(:href="url" v-if="url" target="_blank") {{ title }}
     div(v-if="!url") {{ title }}
     div(v-if="body") {{ body }}
   .clearfix(v-if="isediting")
@@ -27,6 +27,10 @@ module.exports = {
     },
     finishEditing() {
       this.isediting = false;
+      $.post("/save", this.attrs, null, "json");
+      $.getJSON("/load", "", data => {
+        console.log(data);
+      });
     }
   },
   data() {
@@ -46,6 +50,7 @@ module.exports = {
 .memo {
   // background: #f8f8f8;
   // box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+  max-height: 100vh;
+  transition: all 1s ease;
 }
 </style>

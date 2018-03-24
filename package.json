@@ -8,7 +8,10 @@
     "watch": "mkdir dist; ln -s ../src/lib dist/ ; parcel watch --public-url ./ --no-cache src/index.{pug,html} ",
     "build": "cross-env NODE_ENV=production parcel build --public-url ./ --no-cache src/index.{pug,html}"
   },
-  "dependencies": {},
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3"
+  },
   "devDependencies": {
     "babel-core": "^6.0.0",
     "babel-plugin-transform-runtime": "^6.23.0",
