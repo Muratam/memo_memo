@@ -1,13 +1,4 @@
 <template lang="pug">
-//- https://www.w3schools.com/bootstrap/
-  //- well 記法 thumbnail alert
-  //- button buttongroup nest-button
-  //- glyphicon badge label
-  //- progress-bar pagination pager
-  //- list-group panel dropdown
-  //- collapsible accordion
-  //- tab(with dropdown) pill v-pill
-  //- input media-object
 .root
   nav.navbar.navbar-inverse.navbar-fixed-top
     .navbar-brand.tab.header All
@@ -32,11 +23,19 @@
         li.list-group-item(v-for="(memo,i) in contents" @click="event")
           a(:href="getURL(memo)") {{ getTitle(memo) }}
           div(v-if="getBody(memo)") {{ getBody(memo) }}3
-      nav.navbar.navbar-fixed-bottom.content
+        li.list-group-item
+          .input-group.input-group-sm.col-xs-11
+            span.input-group-addon URL
+            input.form-control.col-xs-5(type="text" placeholder="https://...")
+          .input-group.input-group-sm.col-xs-11
+            span.input-group-addon Title
+            input.form-control(type="text" )
+          .input-group.input-group-sm.col-xs-11
+            textarea.form-control
+      //- nav.navbar.navbar-fixed-bottom.content
         .panel.panel-default
-          input.form-control(type="text")
-          input.form-control(type="text")
-          input.form-control(type="text")
+
+</div>
 </template>
 <script>
 // import contents from "../tempdata";
@@ -120,9 +119,10 @@ module.exports = {
 .sidebar {
   transition: all 0.3s;
   padding: 0em;
-  // border-right: 0.1em solid @accent-color;
+  // border-right: 1px solid @accent-color3;
   width: @sidebar-size;
   height: 100%;
+  padding-left: 1em;
   position: fixed;
   overflow-x: hidden;
   overflow-y: auto;
@@ -141,14 +141,12 @@ module.exports = {
 .content {
   padding-top: 1em;
   padding-right: 1em;
-  padding-left: @sidebar-size;
+  margin-left: @sidebar-size;
 }
 
 .memo {
   // background: #f8f8f8;
-  // padding: 0.5em 1em 0.5em 0em;
-  // border-bottom: 1px solid @accent-color3;
   // box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+  // transition: all 0.2s ease;
 }
 </style>
