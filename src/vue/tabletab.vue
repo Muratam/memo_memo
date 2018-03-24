@@ -1,14 +1,13 @@
 <template lang="pug">
 .root
   nav.navbar.navbar-inverse.navbar-fixed-top
+    .navbar-brand.tab.header むらためも
     .navbar-brand.tab.header All
     .navbar-brand.tab(v-for="(tab,i) in tabs") {{ tab.name }}
   .under-fixed-top
     .row
       .sidebar.col-sm-3
         ul.nav.nav-pills.nav-stacked
-          li.nav-item
-            a.nav-link むらためもめも
           li.nav-item
             a.nav-link All
           li.nav-item(v-for="(side,i) in sides")
