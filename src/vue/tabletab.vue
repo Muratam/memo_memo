@@ -3,14 +3,14 @@
   nav.navbar.navbar-inverse.navbar-fixed-top.top-var
     .navbar-brand.tab.header むらためも
     .navbar-brand.tab.header All
-    .navbar-brand.tab(v-for="(tab,i) in tabs") {{ tab.name }}
+    .navbar-brand.tab(v-for="(tab,i) in hows") {{ tab.name }}
   .under-fixed-top
     .row
       .sidebar.col-sm-3
         ul.nav.nav-pills.nav-stacked
           li.nav-item
             a.nav-link All
-          li.nav-item(v-for="(side,i) in sides")
+          li.nav-item(v-for="(side,i) in genres")
             a.nav-link {{ side.name }}
           li.nav-item
             a.nav-link: i.fas.fa-plus
@@ -32,35 +32,56 @@ import io from "socket.io-client";
 
 module.exports = {
   methods: {
+    getRandomHash(length = 32) {
+      let res = "";
+      while (res.length < length) {
+        res += Math.random()
+          .toString(36)
+          .slice(-8);
+      }
+      return res.slice(-length);
+    },
+    updateContent(data) {
+      this.socket.emit("update-content", {
+        genre: this.currentGenre,
+        how: this.currentHow,
+        content: data
+      });
+    },
+    initFromServer(data) {
+      // サーバーデータから全てを強制的に上書き
+      this.genres = data.genres;
+      this.hows = data.hows;
+      let contents = data.contents[this.currentGenre][this.currentHow]; // genre-how-array
+      let contentsArray = [];
+      for (let id in contents) {
+        let content = contents[id];
+        content.updateContent = this.updateContent;
+        content.id = id || this.getRandomHash();
+        contentsArray.push(content);
+      }
+      this.contents = contentsArray;
+    },
     getSocket() {
-      const socket = io(location.origin);
-      socket.on("connect", () => console.log("connect"));
-      socket.on("disconnect", () => console.log("disconnect"));
-      socket.on("chat", data => console.log("chat:", data));
+      const socket = io(location.origin, { autoConnect: false });
+      // socket.on("connect", () => console.log("connect"));
+      // socket.on("disconnect", () => console.log("disconnect"));
+      socket.on("init", this.initFromServer);
       return socket;
     }
   },
   data() {
     return {
-      sides: [],
-      tabs: [],
+      genres: [],
+      hows: [],
       contents: [],
-      currentSide: 4,
-      currentTab: 4,
+      currentGenre: 4,
+      currentHow: 4,
       socket: this.getSocket()
     };
   },
   mounted() {
-    // $.post("/save", this.attrs, null, "json");
-    $.getJSON("/load", "", data => {
-      this.sides = data.genre;
-      this.tabs = data.how;
-      this.contents = data.contents[this.currentSide][this.currentTab]; // genre-how-array
-      console.log(data);
-      this.socket.emit("chat", { ping: "pong" }, data => {
-        console.log("io callback:", data);
-      });
-    });
+    this.socket.connect();
   },
   components: {
     memo: Memo

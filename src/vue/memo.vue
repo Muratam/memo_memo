@@ -27,6 +27,12 @@ module.exports = {
     },
     finishEditing() {
       this.isediting = false;
+      this.updateContent({
+        title: this.title,
+        url: this.url,
+        body: this.body,
+        id: this.id
+      });
     }
   },
   data() {
@@ -34,7 +40,9 @@ module.exports = {
       title: this.attrs.title || "",
       url: this.attrs.url || "",
       body: this.attrs.body || "",
-      isediting: this.attrs.isediting || false
+      isediting: this.attrs.isediting || false,
+      id: this.attrs.id || "",
+      updateContent: this.attrs.updateContent || function(data) {}
     };
   },
   props: ["attrs"]
