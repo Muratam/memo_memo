@@ -36,12 +36,11 @@ import io from "socket.io-client";
 module.exports = {
   methods: {
     // 上手く行く（強引に…）
-    deleteContentByIndex(index) {
-      this.contents.splice(index, 1);
+    adjustContents() {
       setTimeout(() => {
         let tmp = this.contents;
         this.contents = [];
-        setTimeout(() => (this.contents = tmp));
+        setTimeout(() => (this.contents = tmp), 0);
       }, 0);
     },
     trushMemo(data) {
@@ -78,7 +77,8 @@ module.exports = {
         this.contents.push(content);
       } else if (content == null) {
         // 要素を削除
-        this.deleteContentByIndex(index);
+        this.contents.splice(index, 1);
+        this.adjustContents();
       } else {
         // 普通に更新
         this.contents.splice(index, 1, content);
