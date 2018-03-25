@@ -37,30 +37,20 @@ module.exports = {
   methods: {
     // 上手く行く（強引に…）
     deleteContentByIndex(index) {
-      let tmp = this.contents;
-      tmp.splice(index, 1);
+      this.contents.splice(index, 1);
       setTimeout(() => {
-        this.contents = tmp;
+        let tmp = this.contents;
+        this.contents = [];
+        setTimeout(() => (this.contents = tmp));
       }, 0);
-      this.contents = [];
-      return tmp;
-    },
-    // こうしたいが末尾から消えてしまう…
-    deleteContentByIndexSimple(index) {
-      // どちらの方法もダメ
-      // this.contents.splice(index, 1);
-      this.$delete(this.contents, index);
-      return this.contents;
     },
     trushMemo(data) {
       this.updateContent(data.id, null);
     },
     updateMemo(data) {
-      console.log("update", data);
       this.updateContent(data.id, data);
     },
     addMemo(data) {
-      console.log("add", data);
       this.updateContent(data.id, data);
     },
     getRandomHash(length = 32) {
@@ -88,12 +78,7 @@ module.exports = {
         this.contents.push(content);
       } else if (content == null) {
         // 要素を削除
-        let contents = this.deleteContentByIndex(index);
-        return this.socket.emit("update-contents", {
-          genre: this.currentGenre,
-          how: this.currentHow,
-          contents: contents
-        });
+        this.deleteContentByIndex(index);
       } else {
         // 普通に更新
         this.contents.splice(index, 1, content);
