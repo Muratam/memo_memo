@@ -5,6 +5,8 @@
   "author": "murata",
   "private": true,
   "scripts": {
+    "start": "npm run build && npm run server",
+    "server": "node server/server.js",
     "watch": "mkdir dist; ln -s ../src/lib dist/ ; parcel watch --public-url ./ --no-cache src/index.{pug,html} ",
     "build": "cross-env NODE_ENV=production parcel build --public-url ./ --no-cache src/index.{pug,html}"
   },
