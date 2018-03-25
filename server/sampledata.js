@@ -11,11 +11,11 @@ let data = {
   ],
   hows: [
     {name: 'Todo', id: 1}, {name: 'Later', id: 2}, {name: 'URL', id: 3},
-    {name: 'Study', id: 4}, {name: 'Data', id: 5}
+    {name: 'Study', id: 4}
   ],
   contents: {
     4: {
-      4: [
+      3: [
         {
           id: 'r6h8zabef5f1xmqnxfyikx3930cczsnl',
           title: 'フレームワーク: deeplearn.js',

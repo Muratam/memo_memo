@@ -1,26 +1,35 @@
 <template lang="pug">
 .root
   nav.navbar.navbar-inverse.navbar-fixed-top.top-var
-    .navbar-brand.header むらためも
-    .navbar-brand.header All
-    .navbar-brand(v-for="(tab,i) in hows"
-                      :class="{ active: currentHow-1 === i}") {{ tab.name }}
+    .navbar-brand.header.clickable(
+        @click="getContents(0,0)") むらためも
+    .navbar-brand.header.clickable(
+        :class="{ active: currentHow === 0}"
+        @click="getContents(null,0)") All
+    .navbar-brand.clickable(
+        v-for="(tab,i) in hows"
+        :class="{ active: currentHow-1 === i}"
+        @click="getContents(null,i+1)") {{ tab.name }}
   .under-fixed-top
     .row
       .sidebar.col-sm-3
         ul.nav.nav-pills.nav-stacked
-          li.nav-item
+          li.nav-item.clickable(
+              :class="{ active: currentGenre=== 0}"
+              @click="getContents(0,null)")
             a.nav-link All
-          li.nav-item(v-for="(side,i) in genres"
-                      :class="{ active: currentGenre-1 === i}")
+          li.nav-item.clickable(
+              v-for="(side,i) in genres"
+              :class="{ active: currentGenre-1 === i}"
+              @click="getContents(i+1,null)")
             a.nav-link {{ side.name }}
-          li.nav-item
+          li.nav-item.clickable
             a.nav-link: i.fas.fa-plus
     .content
       ul.list-group
         li.list-group-item(v-for="memo in contents")
           memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
-      ul.list-group
+      ul.list-group(v-if="currentHow !== 0 && curentGenre !== 0")
         li.list-group-item
           memo(:attrs="{isediting: true,alwaysEditState: true}"
                @update="addMemo")
@@ -42,6 +51,14 @@ module.exports = {
         this.contents = [];
         setTimeout(() => (this.contents = tmp), 0);
       }, 0);
+    },
+    getContents(genre = null, how = null) {
+      if (genre !== null) this.currentGenre = genre;
+      if (how !== null) this.currentHow = how;
+      this.socket.emit("get-contents", {
+        genre: this.currentGenre,
+        how: this.currentHow
+      });
     },
     trushMemo(data) {
       this.updateContent(data.id, null);
@@ -75,7 +92,7 @@ module.exports = {
         // 無ければ末尾に追加
         if (id === "") content.id = this.getRandomHash();
         this.contents.push(content);
-      } else if (content == null) {
+      } else if (content === null) {
         // 要素を削除
         this.contents.splice(index, 1);
         this.adjustContents();
@@ -83,24 +100,28 @@ module.exports = {
         // 普通に更新
         this.contents.splice(index, 1, content);
       }
-      return this.socket.emit("update-contents", {
+      this.socket.emit("update-contents", {
         genre: this.currentGenre,
         how: this.currentHow,
         contents: this.contents
       });
     },
-    initFromServer(data) {
-      // サーバーデータから全てを強制的に上書き
-      this.genres = data.genres;
-      this.hows = data.hows;
-      this.contents = data.contents[this.currentGenre][this.currentHow]; // genre-how-array
-    },
     getSocket() {
       const socket = io(location.origin, { autoConnect: false });
       // socket.on("connect", () => console.log("connect"));
       // socket.on("disconnect", () => console.log("disconnect"));
+      // サーバーデータから全てを強制的に上書き
       socket.on("init", data => {
-        this.initFromServer(data);
+        this.genres = data.genres;
+        this.hows = data.hows;
+        this.getContents(this.currentGenre, this.currentHow);
+      });
+      // genre・howを指定して更新
+      socket.on("set-contents", data => {
+        let { genre, how, contents } = data;
+        if (genre !== this.currentGenre || how !== this.currentHow) return;
+        this.contents = contents;
+        this.adjustContents();
       });
       return socket;
     }
@@ -110,8 +131,8 @@ module.exports = {
       genres: [],
       hows: [],
       contents: [],
-      currentGenre: 4,
-      currentHow: 4,
+      currentGenre: 0,
+      currentHow: 0,
       socket: this.getSocket()
     };
   },
@@ -150,16 +171,16 @@ module.exports = {
   // color: @accent-color2;
   // &.active {margin-left: -@sidebar-size;}
   // opacity: 0.75;
-  li {
-    cursor: pointer;
-  }
 }
 .content {
   margin-top: 1em;
   margin-right: 1em;
   margin-left: @sidebar-size;
 }
-.tab {
+.navbar-brand.active {
+  background-color: #558;
+}
+.clickable {
   cursor: pointer;
 }
 </style>
