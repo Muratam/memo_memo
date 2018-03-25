@@ -3,7 +3,7 @@
   .clearfix(v-if="!isediting && !alwaysEditState")
     button.btn.btn-default.pull-right.btn-sm(@click="startEditing")
       div: i.fas.fa-edit
-    button.btn.btn-default.pull-right.btn-sm(@click="trash")
+    button.btn.btn-default.pull-right.btn-sm(@click="trush")
       div: i.fas.fa-trash-alt
     a(:href="url" v-if="url" target="_blank") {{ title }}
     div(v-if="!url") {{ title }}
@@ -24,17 +24,23 @@
 <script>
 module.exports = {
   methods: {
+    trush() {
+      this.$emit("trush", this.serialized());
+    },
     startEditing() {
       this.isediting = true;
     },
     finishEditing() {
       this.isediting = false;
-      this.update({
-        title: this.title,
+      this.$emit("update", this.serialized());
+    },
+    serialized() {
+      return {
         url: this.url,
         body: this.body,
-        id: this.id
-      });
+        id: this.id,
+        title: this.title
+      };
     }
   },
   data() {
@@ -44,8 +50,6 @@ module.exports = {
       body: this.attrs.body || "",
       isediting: this.attrs.isediting || false,
       id: this.attrs.id || "",
-      update: this.attrs.update || function(data) {},
-      trash: this.attrs.trash || function() {},
       alwaysEditState: this.attrs.alwaysEditState || false
     };
   },

@@ -18,15 +18,13 @@
             a.nav-link: i.fas.fa-plus
     .content
       ul.list-group
-        li.list-group-item(v-for="(memo,i) in contents")
-          memo(:attrs="memo")
+        li.list-group-item(v-for="memo in contents")
+          memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
       ul.list-group
         li.list-group-item
-          memo(:attrs="getPushingMemo()")
+          memo(:attrs="{isediting: true,alwaysEditState: true}"
+               @update="addMemo")
       //- nav.navbar.navbar-fixed-bottom.content
-        ul.list-group
-          li.list-group-item
-            memo(:attrs="getPushingMemo()")
 
 </div>
 </template>
@@ -37,6 +35,34 @@ import io from "socket.io-client";
 
 module.exports = {
   methods: {
+    // 上手く行く（強引に…）
+    deleteContentByIndex(index) {
+      let tmp = this.contents;
+      tmp.splice(index, 1);
+      setTimeout(() => {
+        this.contents = tmp;
+      }, 0);
+      this.contents = [];
+      return tmp;
+    },
+    // こうしたいが末尾から消えてしまう…
+    deleteContentByIndexSimple(index) {
+      // どちらの方法もダメ
+      // this.contents.splice(index, 1);
+      this.$delete(this.contents, index);
+      return this.contents;
+    },
+    trushMemo(data) {
+      this.updateContent(data.id, null);
+    },
+    updateMemo(data) {
+      console.log("update", data);
+      this.updateContent(data.id, data);
+    },
+    addMemo(data) {
+      console.log("add", data);
+      this.updateContent(data.id, data);
+    },
     getRandomHash(length = 32) {
       let res = "";
       while (res.length < length) {
@@ -55,57 +81,42 @@ module.exports = {
     },
     updateContent(id, content) {
       let index = this.findIndexById(id);
-      console.log(this.contents.map(c => c.title));
       if (index === null) {
         if (content === null) return;
-        this.contents.push(content); // 無ければ末尾に追加
+        // 無ければ末尾に追加
+        if (id === "") content.id = this.getRandomHash();
+        this.contents.push(content);
       } else if (content == null) {
-        console.log(index, this.contents.map(c => c.title));
-        // console.log(id, this.contents.length);
+        // 要素を削除
+        let contents = this.deleteContentByIndex(index);
+        return this.socket.emit("update-contents", {
+          genre: this.currentGenre,
+          how: this.currentHow,
+          contents: contents
+        });
       } else {
-        this.contents.splice(index, 1, content); // 普通に更新
+        // 普通に更新
+        this.contents.splice(index, 1, content);
       }
-      return;
-      this.socket.emit("update-contents", {
+      return this.socket.emit("update-contents", {
         genre: this.currentGenre,
         how: this.currentHow,
         contents: this.contents
       });
     },
-    getPushingMemo() {
-      let parent = this;
-      return {
-        update(data) {
-          if (data.title === "") return;
-          let id = parent.getRandomHash();
-          data.id = id;
-          parent.addFunctionsForContent(data);
-          parent.updateContent(id, data);
-          this.url = this.title = this.body = "";
-        },
-        isediting: true,
-        alwaysEditState: true
-      };
-    },
-    addFunctionsForContent(content) {
-      content.update = data => {
-        this.updateContent(content.id, data);
-      };
-      content.trash = () => this.updateContent(content.id, null);
-    },
     initFromServer(data) {
       // サーバーデータから全てを強制的に上書き
       this.genres = data.genres;
       this.hows = data.hows;
-      let contents = data.contents[this.currentGenre][this.currentHow]; // genre-how-array
-      for (let content of contents) this.addFunctionsForContent(content);
-      this.contents = contents;
+      this.contents = data.contents[this.currentGenre][this.currentHow]; // genre-how-array
     },
     getSocket() {
       const socket = io(location.origin, { autoConnect: false });
       // socket.on("connect", () => console.log("connect"));
       // socket.on("disconnect", () => console.log("disconnect"));
-      socket.on("init", this.initFromServer);
+      socket.on("init", data => {
+        this.initFromServer(data);
+      });
       return socket;
     }
   },
