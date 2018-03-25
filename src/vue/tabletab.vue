@@ -32,47 +32,22 @@ import Memo from "./memo.vue";
 module.exports = {
   methods: {},
   data() {
-    let res = {
-      sides: [
-        // 主ジャンル
-        { name: "WorkSpace", id: 1 },
-        { name: "フォント", id: 2 },
-        { name: "CTF", id: 3 },
-        { name: "Deep Learning", id: 4 },
-        { name: "シェーダー", id: 5 },
-        { name: "Tool", id: 6 },
-        { name: "Trash", id: 7 }
-      ],
-      tabs: [
-        // 時間軸
-        { name: "Todo", id: 1 }, // 近い内に「やらないといけない」予定を保存
-        { name: "Later", id: 2 }, // 「そのうち遊ぶ・実装したいかもしれない」アイデアを保存
-        { name: "URL", id: 3 }, // 「必要に応じて参照する」と便利かもしれないURLを保存
-        { name: "Study", id: 4 }, // 「時間をとって体系的に学習する」かもしれないものを保存
-        { name: "Data", id: 5 } // 「暇な時に漁れる」データ集やコーパス集を保存
-      ],
-      contents: [
-        {
-          title: "フレームワーク: deeplearn.js",
-          body: "WebGL + GPU でブラウザ上で高速に処理"
-        },
-        { title: "理論: CAN", url: "http://createwith.ai/paper/20170629/839" },
-        {
-          title: "理論: StacksGAN",
-          url: "http://catindog.hatenablog.com/entry/2017/02/05/160156"
-        },
-        {
-          title: "学習済みモデル: illustlation2vec",
-          url: "https://github.com/rezoo/illustration2vec"
-        },
-        {
-          title: "学習済みモデル: word2vec",
-          url:
-            "https://aial.shiroyagi.co.jp/2017/02/japanese-word2vec-model-builder/"
-        }
-      ] //contents.contents
+    return {
+      sides: [],
+      tabs: [],
+      contents: [],
+      currentSide: 4,
+      currentTab: 4
     };
-    return res;
+  },
+  mounted() {
+    // $.post("/save", this.attrs, null, "json");
+    $.getJSON("/load", "", data => {
+      this.sides = data.genre;
+      this.tabs = data.how;
+      this.contents = data.contents[currentSide][currentTab]; // genre-how-array
+      console.log(data);
+    });
   },
   components: {
     memo: Memo

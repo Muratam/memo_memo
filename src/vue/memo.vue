@@ -27,10 +27,6 @@ module.exports = {
     },
     finishEditing() {
       this.isediting = false;
-      $.post("/save", this.attrs, null, "json");
-      $.getJSON("/load", "", data => {
-        console.log(data);
-      });
     }
   },
   data() {
@@ -42,7 +38,6 @@ module.exports = {
     };
   },
   props: ["attrs"]
-  //   mounted() {},
   //   watch: { abc(val, oldVal) {} }
 };
 </script>

@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 // 一旦 生jsonで実装 → sqlite/mysqlなど機能追加はあとで
 
 const saveFileName = `${__dirname}/tempdata.json`;
-const sampleFileName = `${__dirname}/sampledata.json`;
+const sampleData = require('./sampledata');
 app.post('/save', (req, res) => {
   let data = req.body;
   data.count = (data.count || 0) + 1;
@@ -18,9 +18,8 @@ app.post('/save', (req, res) => {
   res.send('');
 });
 app.get('/load', (req, res) => {
-  fs.readFile(sampleFileName, (err, text) => {
-    res.send(JSON.parse(text));
-  });
+  res.send(sampleData);
+  // fs.readFile(sampleFileName, (err, text) => {  });
 });
 
 
