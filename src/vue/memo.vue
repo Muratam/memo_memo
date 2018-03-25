@@ -3,7 +3,7 @@
   .clearfix(v-if="!isediting && !alwaysEditState")
     button.btn.btn-default.pull-right.btn-sm(@click="startEditing")
       div: i.fas.fa-edit
-    button.btn.btn-default.pull-right.btn-sm(@click="deleteThis")
+    button.btn.btn-default.pull-right.btn-sm(@click="trash")
       div: i.fas.fa-trash-alt
     a(:href="url" v-if="url" target="_blank") {{ title }}
     div(v-if="!url") {{ title }}
@@ -29,7 +29,7 @@ module.exports = {
     },
     finishEditing() {
       this.isediting = false;
-      this.updateContent({
+      this.update({
         title: this.title,
         url: this.url,
         body: this.body,
@@ -44,8 +44,8 @@ module.exports = {
       body: this.attrs.body || "",
       isediting: this.attrs.isediting || false,
       id: this.attrs.id || "",
-      updateContent: this.attrs.updateContent || function(data) {},
-      deleteThis: this.attrs.deleteThis || function() {},
+      update: this.attrs.update || function(data) {},
+      trash: this.attrs.trash || function() {},
       alwaysEditState: this.attrs.alwaysEditState || false
     };
   },

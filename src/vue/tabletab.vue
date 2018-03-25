@@ -20,7 +20,10 @@
       ul.list-group
         li.list-group-item(v-for="(memo,i) in contents")
           memo(:attrs="memo")
-      nav.navbar.navbar-fixed-bottom.content
+      ul.list-group
+        li.list-group-item
+          memo(:attrs="getPushingMemo()")
+      //- nav.navbar.navbar-fixed-bottom.content
         ul.list-group
           li.list-group-item
             memo(:attrs="getPushingMemo()")
@@ -43,52 +46,60 @@ module.exports = {
       }
       return res.slice(-length);
     },
-    updateContent(id, data) {
-      this.socket.emit("update-content", {
-        genre: this.currentGenre,
-        how: this.currentHow,
-        id: id,
-        content: data
-      });
+    findIndexById(id) {
+      for (let i = 0; i < this.contents.length; i++) {
+        const content = this.contents[i];
+        if (content.id === id) return i;
+      }
+      return null;
     },
-    deleteContent(index, id) {
-      this.contents.splice(index, 1);
-      this.socket.emit("update-content", {
+    updateContent(id, content) {
+      let index = this.findIndexById(id);
+      console.log(this.contents.map(c => c.title));
+      if (index === null) {
+        if (content === null) return;
+        this.contents.push(content); // 無ければ末尾に追加
+      } else if (content == null) {
+        console.log(index, this.contents.map(c => c.title));
+        // console.log(id, this.contents.length);
+      } else {
+        this.contents.splice(index, 1, content); // 普通に更新
+      }
+      return;
+      this.socket.emit("update-contents", {
         genre: this.currentGenre,
         how: this.currentHow,
-        id: id,
-        content: null
+        contents: this.contents
       });
     },
     getPushingMemo() {
+      let parent = this;
       return {
-        updateContent: data => {
-          let id = this.getRandomHash();
-          this.updateContent(id, data);
-          this.contents.push(data);
+        update(data) {
+          if (data.title === "") return;
+          let id = parent.getRandomHash();
+          data.id = id;
+          parent.addFunctionsForContent(data);
+          parent.updateContent(id, data);
+          this.url = this.title = this.body = "";
         },
         isediting: true,
         alwaysEditState: true
       };
+    },
+    addFunctionsForContent(content) {
+      content.update = data => {
+        this.updateContent(content.id, data);
+      };
+      content.trash = () => this.updateContent(content.id, null);
     },
     initFromServer(data) {
       // サーバーデータから全てを強制的に上書き
       this.genres = data.genres;
       this.hows = data.hows;
       let contents = data.contents[this.currentGenre][this.currentHow]; // genre-how-array
-      let contentsArray = [];
-      for (let id in contents) {
-        let content = contents[id];
-        let index = contentsArray.length;
-        content.updateContent = data => {
-          this.updateContent(id, data);
-        };
-        content.deleteThis = () => {
-          this.deleteContent(index, id);
-        };
-        contentsArray.push(content);
-      }
-      this.contents = contentsArray;
+      for (let content of contents) this.addFunctionsForContent(content);
+      this.contents = contents;
     },
     getSocket() {
       const socket = io(location.origin, { autoConnect: false });
@@ -133,11 +144,11 @@ module.exports = {
   height: 100%;
   padding-left: 1em;
   position: fixed;
-  overflow-x: hidden;
-  overflow-y: auto;
   text-align: center;
-  overflow-wrap: break-word;
-  z-index: 10;
+  // overflow-wrap: break-word;
+  // overflow-x: hidden;
+  // overflow-y: auto;
+  // z-index: 10;
   background: @accent-color2 + #333;
   // border-right: 1px solid @accent-color3;
   // color: @accent-color2;
@@ -148,8 +159,8 @@ module.exports = {
   }
 }
 .content {
-  padding-top: 1em;
-  padding-right: 1em;
+  margin-top: 1em;
+  margin-right: 1em;
   margin-left: @sidebar-size;
 }
 .tab {

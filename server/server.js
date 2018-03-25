@@ -5,12 +5,11 @@ const server = new ServerBase(8080, `${__dirname}/../dist`);
 const saveFileName = `${__dirname}/tempdata.json`;
 
 
-function updateContent(preData, data) {
-  let {genre, how, id, content} = data;
+function updateContents(preData, data) {
+  let {genre, how, contents} = data;
   if (!(genre in preData.contents)) preData.contents[genre] = {};
-  if (!(how in preData.contents[genre])) preData.contents[genre][how] = {};
-  preData.contents[genre][how][id] = content;
-  if (content === null) delete preData.contents[genre][how][id];
+  if (!(how in preData.contents[genre])) preData.contents[genre][how] = [];
+  preData.contents[genre][how] = contents;
   fs.writeFile(saveFileName, JSON.stringify(preData));
 }
 function loadDataSync() {
@@ -25,11 +24,11 @@ function loadDataSync() {
 
 server.io.on('connection', (socket) => {
   console.log('new connection');
-  // .{genres[{name,id}],hows[{name,id}],contents{{{id:{body,url,title}}}}}
+  // .{genres[{name,id}],hows[{name,id}],contents{{[{id,body,url,title}]}}}
   socket.emit('init', loadDataSync());
-  // data{genre,how,id,content{body,url,title}}
-  socket.on('update-content', data => {
-    updateContent(loadDataSync(), data);
+  // data{genre,how,contents{id,body,url,title}}
+  socket.on('update-contents', data => {
+    updateContents(loadDataSync(), data);
   });
   // 接続全員と共有は後で
   // server.io.sockets.emit('hello', 'hello!!');
