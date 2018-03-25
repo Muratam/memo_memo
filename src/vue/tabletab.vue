@@ -27,7 +27,7 @@
             a.nav-link: i.fas.fa-plus
     .content.over-fixed-buttom
       ul.list-group
-        li.list-group-item(v-for="memo in contents")
+        li.list-group-item(v-for="memo in contents" :key="memo.id")
           memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
       nav.navbar.navbar-fixed-bottom.content(v-if="currentHow * currentGenre !== 0")
         memo(:attrs="{isediting: true,isAddButton: true}"
@@ -42,14 +42,6 @@ import io from "socket.io-client";
 
 module.exports = {
   methods: {
-    // 上手く行く（強引に…）
-    adjustContents() {
-      setTimeout(() => {
-        let tmp = this.contents;
-        this.contents = [];
-        setTimeout(() => (this.contents = tmp), 0);
-      }, 0);
-    },
     getContents(genre = null, how = null) {
       if (genre !== null) this.currentGenre = genre;
       if (how !== null) this.currentHow = how;
@@ -93,7 +85,6 @@ module.exports = {
       } else if (content === null) {
         // 要素を削除
         this.contents.splice(index, 1);
-        this.adjustContents();
       } else {
         // 普通に更新
         this.contents.splice(index, 1, content);
@@ -119,7 +110,6 @@ module.exports = {
         let { genre, how, contents } = data;
         if (genre !== this.currentGenre || how !== this.currentHow) return;
         this.contents = contents;
-        this.adjustContents();
       });
       return socket;
     }
