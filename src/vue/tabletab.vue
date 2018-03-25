@@ -1,6 +1,6 @@
 <template lang="pug">
 .root
-  nav.navbar.navbar-inverse.navbar-fixed-top.top-var
+  nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
     .navbar-brand.header.clickable(
         @click="getContents(0,0)") むらためも
     .navbar-brand.header.clickable(
@@ -25,15 +25,13 @@
             a.nav-link {{ side.name }}
           li.nav-item.clickable
             a.nav-link: i.fas.fa-plus
-    .content
+    .content.over-fixed-buttom
       ul.list-group
         li.list-group-item(v-for="memo in contents")
           memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
-      ul.list-group(v-if="currentHow !== 0 && curentGenre !== 0")
-        li.list-group-item
-          memo(:attrs="{isediting: true,alwaysEditState: true}"
-               @update="addMemo")
-      //- nav.navbar.navbar-fixed-bottom.content
+      nav.navbar.navbar-fixed-bottom.content(v-if="currentHow * currentGenre !== 0")
+        memo(:attrs="{isediting: true,isAddButton: true}"
+              @update="addMemo")
 
 </div>
 </template>
@@ -171,13 +169,24 @@ module.exports = {
   // color: @accent-color2;
   // &.active {margin-left: -@sidebar-size;}
   // opacity: 0.75;
+  box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
+}
+.top-bar {
+  box-shadow: 0.4em 0.4em 0.4em rgba(0, 0, 0, 0.2);
 }
 .content {
   margin-top: 1em;
   margin-right: 1em;
   margin-left: @sidebar-size;
+  .list-group {
+    box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
+  }
+  .list-group-item {
+    padding: 0.3em;
+  }
 }
 .navbar-brand.active {
+  box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
   background-color: #558;
 }
 .clickable {

@@ -4,7 +4,7 @@ const fs = require('fs');
 const server = new ServerBase(8080, `${__dirname}/../dist`);
 const saveFileName = `${__dirname}/tempdata.json`;
 
-
+// 一部のデータを書き換える
 function updateContents(preData, data) {
   let {genre, how, contents} = data;
   if (!(genre in preData.contents)) preData.contents[genre] = {};
@@ -12,6 +12,7 @@ function updateContents(preData, data) {
   preData.contents[genre][how] = contents;
   fs.writeFile(saveFileName, JSON.stringify(preData));
 }
+
 function loadDataSync() {
   try {
     let data = fs.readFileSync(saveFileName, 'utf8');
@@ -21,7 +22,9 @@ function loadDataSync() {
   }
 }
 
-function getContents(genre, how, savedData) {
+// genre | how を指定して取得
+function getContents(genre, how) {
+  let savedData = loadDataSync().contents;
   let res = [];
   if (genre === 0) {
     if (how === 0) {
@@ -57,8 +60,7 @@ server.io.on('connection', (socket) => {
   });
   socket.on('get-contents', data => {
     let {genre, how} = data;
-    let savedData = loadDataSync().contents;
-    let contents = getContents(genre, how, savedData);
+    let contents = getContents(genre, how);
     socket.emit('set-contents', {genre: genre, how: how, contents: contents});
   });
   // 接続全員と共有は後で
