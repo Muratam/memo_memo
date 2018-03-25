@@ -1,9 +1,9 @@
 # memo-memo
+左のジャンルタブと上のHowタブからフィルターを書けて,
+TODOやネット上のURLなどをメモにメモするツール
 
 ![](https://pbs.twimg.com/media/DZJ5Y7JU8AA0mOK.jpg)
 
-左のジャンルタブと上のHowタブからフィルターを書けて,
-TODOやネット上のURLなどをメモにメモするツール
 
 ## Howタブ
 - TODO : 近い内に「やらないといけない」予定を保存
