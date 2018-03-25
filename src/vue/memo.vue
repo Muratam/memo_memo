@@ -5,7 +5,7 @@
       span.right-icon.clickable(@click="startEditing")
         i.fas.fa-edit
       span.right-icon.clickable(@click="trush")
-        i.fas.fa-trash-alt
+        i.fas.fa-times
     a(:href="url" v-if="url" target="_blank") {{ title }}
     div(v-if="!url") {{ title }}
     div(v-if="body") {{ body }}

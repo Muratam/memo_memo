@@ -6,10 +6,13 @@
     .navbar-brand.header.clickable(
         :class="{ active: currentHow === 0}"
         @click="getContents(null,0)") All
+      .num-label.pull-right 20
     .navbar-brand.clickable(
         v-for="(tab,i) in hows"
         :class="{ active: currentHow-1 === i}"
         @click="getContents(null,i+1)") {{ tab.name }}
+      .num-label.pull-right 5
+
   .under-fixed-top
     .row
       .sidebar.col-sm-3
@@ -18,20 +21,31 @@
               :class="{ active: currentGenre=== 0}"
               @click="getContents(0,null)")
             a.nav-link All
+              .num-label.pull-right 20
           li.nav-item.clickable(
               v-for="(side,i) in genres"
               :class="{ active: currentGenre-1 === i}"
               @click="getContents(i+1,null)")
             a.nav-link {{ side.name }}
+              .num-label.pull-right 20
           li.nav-item.clickable
-            a.nav-link: i.fas.fa-plus
+            a.nav-link
+              i.fas.fa-plus
+              .num-label.pull-right 20
     .content.over-fixed-buttom
       ul.list-group
+        .ul-title(v-if="contents.length > 0")
+          | {{ currentGenre === 0 ? "" : genres[currentGenre-1].name }}
+          | {{ currentHow === 0 ? "" : hows[currentHow-1].name }}
+          | {{ currentHow + currentGenre === 0 ? "All": ""}}
+        .ul-title(v-if="contents.length === 0") Nothing
         li.list-group-item(v-for="memo in contents" :key="memo.id")
           memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
       nav.navbar.navbar-fixed-bottom.content(v-if="currentHow * currentGenre !== 0")
-        memo(:attrs="{isediting: true,isAddButton: true}"
-              @update="addMemo")
+        ul.list-group
+          li.list-group-item
+            memo(:attrs="{isediting: true,isAddButton: true}"
+                  @update="addMemo")
 
 </div>
 </template>
@@ -159,25 +173,56 @@ module.exports = {
   // color: @accent-color2;
   // &.active {margin-left: -@sidebar-size;}
   // opacity: 0.75;
-  box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
+  box-shadow: 0.1em 0 0.2em rgba(0, 0, 0, 0.2);
+  .num-label {
+    font-size: 0.8em;
+    color: #ccc;
+    display: none;
+  }
 }
 .top-bar {
   box-shadow: 0.4em 0.4em 0.4em rgba(0, 0, 0, 0.2);
+  .num-label {
+    font-size: 0.7em;
+    padding-top: 0em;
+    margin-top: 0em;
+    padding-left: 0.8em;
+    color: #777;
+    display: none;
+  }
 }
 .content {
   margin-top: 1em;
   margin-right: 1em;
   margin-left: @sidebar-size;
+  .ul-title {
+    font-size: 1.2em;
+    padding: 0.4em 0.4em 0.4em 0.8em;
+    background: @accent-color3;
+    color: #fff;
+  }
   .list-group {
     box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
   }
   .list-group-item {
+    color: #333;
     padding: 0.3em;
   }
 }
-.navbar-brand.active {
+.navbar-brand {
   box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
-  background-color: #558;
+  border-left: 1px solid #444;
+  &.active {
+    background-color: #558;
+  }
+}
+.navbar-fixed-bottom {
+  margin-bottom: 0em;
+  padding-bottom: 0em;
+  ul {
+    margin-bottom: 0em;
+    padding-bottom: 0em;
+  }
 }
 .clickable {
   cursor: pointer;
