@@ -1,13 +1,15 @@
 <template lang="pug">
 .memo
-  .clearfix(v-if="!isediting")
-    button.btn.btn-default.pull-right(@click="startEditing")
+  .clearfix(v-if="!isediting && !alwaysEditState")
+    button.btn.btn-default.pull-right.btn-sm(@click="startEditing")
       div: i.fas.fa-edit
+    button.btn.btn-default.pull-right.btn-sm(@click="deleteThis")
+      div: i.fas.fa-trash-alt
     a(:href="url" v-if="url" target="_blank") {{ title }}
     div(v-if="!url") {{ title }}
     div(v-if="body") {{ body }}
-  .clearfix(v-if="isediting")
-    button.btn.btn-default.pull-right(@click="finishEditing")
+  .clearfix(v-if="isediting || alwaysEditState")
+    button.btn.btn-default.pull-right.btn-sm(@click="finishEditing")
       div: i.fas.fa-chevron-right
     .input-group.input-group-sm.col-xs-11
       span.input-group-addon URL
@@ -42,7 +44,9 @@ module.exports = {
       body: this.attrs.body || "",
       isediting: this.attrs.isediting || false,
       id: this.attrs.id || "",
-      updateContent: this.attrs.updateContent || function(data) {}
+      updateContent: this.attrs.updateContent || function(data) {},
+      deleteThis: this.attrs.deleteThis || function() {},
+      alwaysEditState: this.attrs.alwaysEditState || false
     };
   },
   props: ["attrs"]

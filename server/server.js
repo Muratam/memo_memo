@@ -10,6 +10,7 @@ function updateContent(preData, data) {
   if (!(genre in preData.contents)) preData.contents[genre] = {};
   if (!(how in preData.contents[genre])) preData.contents[genre][how] = {};
   preData.contents[genre][how][id] = content;
+  if (content === null) delete preData.contents[genre][how][id];
   fs.writeFile(saveFileName, JSON.stringify(preData));
 }
 function loadDataSync() {

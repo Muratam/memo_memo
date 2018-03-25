@@ -1,16 +1,18 @@
 <template lang="pug">
 .root
   nav.navbar.navbar-inverse.navbar-fixed-top.top-var
-    .navbar-brand.tab.header むらためも
-    .navbar-brand.tab.header All
-    .navbar-brand.tab(v-for="(tab,i) in hows") {{ tab.name }}
+    .navbar-brand.header むらためも
+    .navbar-brand.header All
+    .navbar-brand(v-for="(tab,i) in hows"
+                      :class="{ active: currentHow-1 === i}") {{ tab.name }}
   .under-fixed-top
     .row
       .sidebar.col-sm-3
         ul.nav.nav-pills.nav-stacked
           li.nav-item
             a.nav-link All
-          li.nav-item(v-for="(side,i) in genres")
+          li.nav-item(v-for="(side,i) in genres"
+                      :class="{ active: currentGenre-1 === i}")
             a.nav-link {{ side.name }}
           li.nav-item
             a.nav-link: i.fas.fa-plus
@@ -21,7 +23,7 @@
       nav.navbar.navbar-fixed-bottom.content
         ul.list-group
           li.list-group-item
-            memo(:attrs="{isediting:true}")
+            memo(:attrs="getPushingMemo()")
 
 </div>
 </template>
@@ -49,6 +51,26 @@ module.exports = {
         content: data
       });
     },
+    deleteContent(index, id) {
+      this.contents.splice(index, 1);
+      this.socket.emit("update-content", {
+        genre: this.currentGenre,
+        how: this.currentHow,
+        id: id,
+        content: null
+      });
+    },
+    getPushingMemo() {
+      return {
+        updateContent: data => {
+          let id = this.getRandomHash();
+          this.updateContent(id, data);
+          this.contents.push(data);
+        },
+        isediting: true,
+        alwaysEditState: true
+      };
+    },
     initFromServer(data) {
       // サーバーデータから全てを強制的に上書き
       this.genres = data.genres;
@@ -57,8 +79,12 @@ module.exports = {
       let contentsArray = [];
       for (let id in contents) {
         let content = contents[id];
+        let index = contentsArray.length;
         content.updateContent = data => {
           this.updateContent(id, data);
+        };
+        content.deleteThis = () => {
+          this.deleteContent(index, id);
         };
         contentsArray.push(content);
       }
