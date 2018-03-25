@@ -1,5 +1,7 @@
 # memo-memo
 
+![](https://pbs.twimg.com/media/DZJ5Y7JU8AA0mOK.jpg)
+
 左のジャンルタブと上のHowタブからフィルターを書けて,
 TODOやネット上のURLなどをメモにメモするツール
 
@@ -8,7 +10,6 @@ TODOやネット上のURLなどをメモにメモするツール
 - LATER:「そのうち遊ぶ・実装したいかもしれない」アイデアを保存
 - URL  :「必要に応じて参照する」と便利かもしれないURLを保存
 - STUDY:「時間をとって体系的に学習する」かもしれないものを保存
-- DATA :「暇な時に漁れる」データ集やコーパス集を保存
 
 # how to build and start
 
