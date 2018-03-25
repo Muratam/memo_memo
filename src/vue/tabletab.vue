@@ -41,10 +41,11 @@ module.exports = {
       }
       return res.slice(-length);
     },
-    updateContent(data) {
+    updateContent(id, data) {
       this.socket.emit("update-content", {
         genre: this.currentGenre,
         how: this.currentHow,
+        id: id,
         content: data
       });
     },
@@ -56,8 +57,9 @@ module.exports = {
       let contentsArray = [];
       for (let id in contents) {
         let content = contents[id];
-        content.updateContent = this.updateContent;
-        content.id = id || this.getRandomHash();
+        content.updateContent = data => {
+          this.updateContent(id, data);
+        };
         contentsArray.push(content);
       }
       this.contents = contentsArray;

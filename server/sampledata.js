@@ -1,7 +1,7 @@
 
 // genre,how : nameは表示のため, idで管理
 //           : 0はallのために開けておく(1からスタート)
-// contents  : [genre][how]の下に(ひとまずは)リストで管理(必要に応じてid付与)
+// contents  : [genre][how]の下に管理
 
 let data = {
   genres: [
