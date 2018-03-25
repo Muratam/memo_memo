@@ -28,16 +28,26 @@
 <script>
 // import contents from "../tempdata";
 import Memo from "./memo.vue";
+import io from "socket.io-client";
 
 module.exports = {
-  methods: {},
+  methods: {
+    getSocket() {
+      const socket = io(location.origin);
+      socket.on("connect", () => console.log("connect"));
+      socket.on("disconnect", () => console.log("disconnect"));
+      socket.on("chat", data => console.log("chat:", data));
+      return socket;
+    }
+  },
   data() {
     return {
       sides: [],
       tabs: [],
       contents: [],
       currentSide: 4,
-      currentTab: 4
+      currentTab: 4,
+      socket: this.getSocket()
     };
   },
   mounted() {
@@ -45,8 +55,11 @@ module.exports = {
     $.getJSON("/load", "", data => {
       this.sides = data.genre;
       this.tabs = data.how;
-      this.contents = data.contents[currentSide][currentTab]; // genre-how-array
+      this.contents = data.contents[this.currentSide][this.currentTab]; // genre-how-array
       console.log(data);
+      this.socket.emit("chat", { ping: "pong" }, data => {
+        console.log("io callback:", data);
+      });
     });
   },
   components: {
