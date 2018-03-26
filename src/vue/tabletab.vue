@@ -24,7 +24,8 @@
           li.nav-item.clickable(
               v-for="(side,i) in genres"
               :class="{ active: currentGenre-1 === i}"
-              @click="getContents(i+1,null)")
+              @click="getContents(i+1,null)"
+              draggable="true")
             a.nav-link {{ side.name }}
           li.nav-item.clickable
             a.nav-link
@@ -45,7 +46,9 @@
               span.right-icon.clickable(@click="getContents(memoGroup.linkGenre,memoGroup.linkHow)")
                 i.fas.fa-arrow-alt-circle-right
         .collapse.in(:id="memoGroup.id")
-          li.list-group-item(v-for="memo in memoGroup.memos" :key="memo.id")
+          li.list-group-item(
+              v-for="memo in memoGroup.memos"
+              :key="memo.id")
             memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
       //- 下の投稿ボタン
       nav.navbar.navbar-fixed-bottom.content(v-if="currentHow * currentGenre !== 0")

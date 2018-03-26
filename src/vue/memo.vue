@@ -4,23 +4,26 @@
     .pull-right
       span.right-icon.clickable(@click="startEditing")
         i.fas.fa-edit
-      span.right-icon.clickable(@click="trush")
-        i.fas.fa-times
     a(:href="url" v-if="url" target="_blank") {{ title }}
     div(v-if="!url") {{ title }}
-    div(v-if="body") {{ body }}
+    .bodytext(v-if="body") {{ body }}
   .clearfix( v-if="isediting || isAddButton")
-    button.btn.btn-default.pull-right.btn-sm(@click="finishEditing")
-      div(v-if="!isAddButton"): i.fas.fa-chevron-right
-      div(v-if="isAddButton"): i.fas.fa-plus
-    .input-group.input-group-sm.col-xs-11(v-if="!isAddButton")
+    span.right-icon.clickable.pull-right(@click="finishEditing")
+      i.fas.fa-chevron-right(v-if="!isAddButton")
+      //- i.fas.fa-plus(v-if="!isAddButton")
+    span.right-icon.clickable.pull-left(@click="trush" v-if="!isAddButton")
+      i.fas.fa-times
+    .input-group.input-group-sm.col-xs-12(v-if="!isAddButton")
       span.input-group-addon URL
-      input.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url" @keydown="submit")
-    .input-group.input-group-sm.col-xs-11
+      input.urltext.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url" @keydown="submit")
+    .input-group.input-group-sm.col-xs-12
       span.input-group-addon(v-if="!isAddButton") Title
       input.form-control(type="text" v-model="title" @keydown="submit")
-    .input-group.input-group-sm.col-xs-11(v-if="!isAddButton")
-      textarea.form-control(v-model="body")
+    .input-group.input-group-sm.col-xs-12(v-if="!isAddButton")
+      textarea(
+          v-model="body" rows="3"
+          v-on:click="autoGrow($event.target)"
+          v-on:keyup="autoGrow($event.target)")
 
 </template>
 <script>
@@ -29,6 +32,10 @@ module.exports = {
     submit() {
       if (window.event.keyCode !== 13) return;
       this.finishEditing();
+    },
+    autoGrow(element) {
+      element.style.height = "1em";
+      element.style.height = element.scrollHeight + "px";
     },
     trush() {
       this.$emit("trush", this.serialized());
@@ -83,5 +90,18 @@ module.exports = {
   &:hover {
     color: #888;
   }
+}
+.bodytext {
+  padding-left: 0.5em;
+  white-space: pre !important;
+  font-size: 0.9em;
+  font-family: "Courier New", Consolas, monospace;
+}
+textarea {
+  font-family: "Courier New", Consolas, monospace;
+  width: 100%;
+}
+.urltext {
+  color: #48f;
 }
 </style>
