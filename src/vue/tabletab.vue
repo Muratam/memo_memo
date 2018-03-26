@@ -3,7 +3,7 @@
   nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
     //- 上のトップバー
     .navbar-brand.header.clickable(
-        @click="getContents(0,0)") むらためも
+        @click="getContents(0,0)") memo-memo
     .navbar-brand.header.clickable(
         :class="{ active: currentHow === 0}"
         @click="getContents(null,0)") All
@@ -54,15 +54,37 @@
       nav.navbar.navbar-fixed-bottom.content(v-if="currentHow * currentGenre !== 0")
         ul.list-group
           li.list-group-item
-            memo(:attrs="{isediting: true,isAddButton: true}"
-                  @update="addMemo")
+            .input-group.input-group-sm.col-xs-12
+              input.form-control(type="text" v-model="commandPallet" @keydown="addMemo")
 
 </div>
 </template>
 <script>
+/*
+TODO: 下が出来れば完成してTODO管理をこいつに任せられる！
+タブバー:実装を買える必要がある(idベース)
+  追加: 一番下のボタン → 薄暗い中に追加ボタンとその説明 →
+  削除: 要素が全てなくなると自動で消える
+  検索: 一番下のaddButtonが 「+」と「🔎」選べるように(「「+」・「🔎」」を押すと切り替え(モードは分かりやすいように！))
+  (入替: 頑張って実装)
+  (変更: jsonいじってくれ)
+
+リスト削除をやりやすくする:
+  一番上から出来るようにして → 薄暗いなかに確認ボタン(エンターで決定|Escで戻る)
+
+AddButton拡張:
+  All状態でも投稿できるようにしたい:
+    Genre: All → Temporary
+    How  : All → Later
+  AddButton が URL なら URLだけにしたい
+    How  : All → URL  (そのときだけ)
+
+(herokuにあげる？)
+(undo はサーバー側で自動で git add commit するようにする or スタックを実装)
+*/
+
 import Memo from "./memo.vue";
 import io from "socket.io-client";
-
 Array.prototype.groupBy = function(keyFunc) {
   let res = {};
   this.forEach(c => {
@@ -93,7 +115,16 @@ module.exports = {
       this.updateContent(data.id, data);
     },
     addMemo(data) {
+      if (window.event.keyCode !== 13) return;
+      if ($.trim(this.commandPallet) === "") return;
+      data = {
+        url: "",
+        body: "",
+        id: this.getRandomHash(),
+        title: this.commandPallet
+      };
       this.updateContent(data.id, data);
+      this.commandPallet = "";
     },
     getRandomHash(length = 32) {
       let res = "";
@@ -157,6 +188,7 @@ module.exports = {
       contents: [],
       currentGenre: 0,
       currentHow: 0,
+      commandPallet: "",
       socket: this.getSocket()
     };
   },
@@ -250,6 +282,7 @@ module.exports = {
   text-align: center;
   // overflow-wrap: break-word;
   // overflow-x: hidden;
+  overflow-y: auto;
   // z-index: 10;
   // opacity: 0.75;
   background: @accent-color2 + #333;

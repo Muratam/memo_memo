@@ -1,25 +1,24 @@
 <template lang="pug">
-.memo(:class="{ isadd: isAddButton}")
-  .clearfix(v-if="!isediting && !isAddButton")
+.memo
+  .clearfix(v-if="!isediting")
     .pull-right
       span.right-icon.clickable(@click="startEditing")
         i.fas.fa-edit
     a(:href="url" v-if="url" target="_blank") {{ title }}
     div(v-if="!url") {{ title }}
     .bodytext(v-if="body") {{ body }}
-  .clearfix( v-if="isediting || isAddButton")
+  .clearfix( v-if="isediting")
     span.right-icon.clickable.pull-right(@click="finishEditing")
-      i.fas.fa-chevron-right(v-if="!isAddButton")
-      //- i.fas.fa-plus(v-if="!isAddButton")
-    span.right-icon.clickable.pull-left(@click="trush" v-if="!isAddButton")
+      i.fas.fa-chevron-right()
+    span.right-icon.clickable.pull-left(@click="trush")
       i.fas.fa-times
-    .input-group.input-group-sm.col-xs-12(v-if="!isAddButton")
+    .input-group.input-group-sm.col-xs-12
       span.input-group-addon URL
       input.urltext.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url" @keydown="submit")
     .input-group.input-group-sm.col-xs-12
-      span.input-group-addon(v-if="!isAddButton") Title
+      span.input-group-addon Title
       input.form-control(type="text" v-model="title" @keydown="submit")
-    .input-group.input-group-sm.col-xs-12(v-if="!isAddButton")
+    .input-group.input-group-sm.col-xs-12
       textarea(
           v-model="body" rows="3"
           v-on:click="autoGrow($event.target)"
@@ -47,9 +46,6 @@ module.exports = {
       if ($.trim(this.title) === "") return;
       this.isediting = false;
       this.$emit("update", this.serialized());
-      if (this.isAddButton) {
-        this.url = this.title = this.body = "";
-      }
     },
     serialized() {
       return {
@@ -66,8 +62,7 @@ module.exports = {
       url: this.attrs.url || "",
       body: this.attrs.body || "",
       isediting: this.attrs.isediting || false,
-      id: this.attrs.id || "",
-      isAddButton: this.attrs.isAddButton || false
+      id: this.attrs.id || ""
     };
   },
   props: ["attrs"]
