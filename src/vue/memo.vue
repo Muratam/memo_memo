@@ -15,10 +15,10 @@
       div(v-if="isAddButton"): i.fas.fa-plus
     .input-group.input-group-sm.col-xs-11(v-if="!isAddButton")
       span.input-group-addon URL
-      input.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url")
+      input.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url" @keydown="submit")
     .input-group.input-group-sm.col-xs-11
       span.input-group-addon(v-if="!isAddButton") Title
-      input.form-control(type="text" v-model="title")
+      input.form-control(type="text" v-model="title" @keydown="submit")
     .input-group.input-group-sm.col-xs-11(v-if="!isAddButton")
       textarea.form-control(v-model="body")
 
@@ -26,6 +26,10 @@
 <script>
 module.exports = {
   methods: {
+    submit() {
+      if (window.event.keyCode !== 13) return;
+      this.finishEditing();
+    },
     trush() {
       this.$emit("trush", this.serialized());
     },

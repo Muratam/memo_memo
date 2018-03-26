@@ -33,16 +33,20 @@
       //- メインコンテンツ
       ul.list-group(v-if="visibleMemoCount === 0")
         .ul-title No memos...
-      ul.list-group(v-for="memoGroup in visibleContents" :key="memoGroup.name")
+      ul.list-group(v-for="memoGroup in visibleContents" :key="memoGroup.id")
         //- 統合情報
-        memogroup(
-            :name="memoGroup.name"
-            :length="memoGroup.memos.length"
-            :linkGenre="memoGroup.linkGenre"
-            :linkHow="memoGroup.linkHow"
-            @link="getContents")
-        li.list-group-item(v-for="memo in memoGroup.memos" :key="memo.id")
-          memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
+        .ul-title(v-if="memoGroup.memos.length > 0")
+          .clearfix
+            span.clickable.name(
+                data-toggle="collapse" :data-target="'#'+memoGroup.id"
+                ) {{ memoGroup.name }}
+            span.num-label.label {{ memoGroup.memos.length }}
+            .pull-right
+              span.right-icon.clickable(@click="getContents(memoGroup.linkGenre,memoGroup.linkHow)")
+                i.fas.fa-arrow-alt-circle-right
+        .collapse.in(:id="memoGroup.id")
+          li.list-group-item(v-for="memo in memoGroup.memos" :key="memo.id")
+            memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
       //- 下の投稿ボタン
       nav.navbar.navbar-fixed-bottom.content(v-if="currentHow * currentGenre !== 0")
         ul.list-group
@@ -55,7 +59,6 @@
 <script>
 import Memo from "./memo.vue";
 import io from "socket.io-client";
-import memoGroup from "./memogroup";
 
 Array.prototype.groupBy = function(keyFunc) {
   let res = {};
@@ -154,19 +157,19 @@ module.exports = {
   },
   computed: {
     visibleContents() {
+      let memos = [];
       if (this.currentHow === 0) {
         if (this.currentGenre === 0) {
           // 指定なし
-          let memos = this.contents.groupBy(x => x.how).map(x => ({
+          memos = this.contents.groupBy(x => x.how).map(x => ({
             name: this.getHowName(x.key),
             memos: x.value,
             linkGenre: 0,
             linkHow: Number(x.key)
           }));
-          return memos;
         } else {
           // How指定無し
-          let memos = this.contents
+          memos = this.contents
             .filter(x => x.genre === this.currentGenre)
             .groupBy(x => x.how)
             .map(x => ({
@@ -175,12 +178,11 @@ module.exports = {
               linkGenre: this.currentGenre,
               linkHow: Number(x.key)
             }));
-          return memos;
         }
       } else {
         if (this.currentGenre === 0) {
           // Genre指定なし
-          let memos = this.contents
+          memos = this.contents
             .filter(x => x.how === this.currentHow)
             .groupBy(x => x.genre)
             .map(x => ({
@@ -189,15 +191,14 @@ module.exports = {
               linkGenre: Number(x.key),
               linkHow: this.currentHow
             }));
-          return memos;
         } else {
-          let memos = this.contents
+          memos = this.contents
             .filter(x => x.how === this.currentHow)
             .filter(x => x.genre === this.currentGenre);
           let genreName = this.getGenreName(this.currentGenre);
           let howName = this.getHowName(this.currentHow);
           let name = `${genreName} ${howName}`;
-          return [
+          memos = [
             {
               name: name,
               memos: memos,
@@ -207,6 +208,8 @@ module.exports = {
           ];
         }
       }
+      for (let memo of memos) memo.id = this.getRandomHash();
+      return memos;
     },
     visibleMemoCount() {
       return this.visibleContents
@@ -218,8 +221,7 @@ module.exports = {
     this.socket.connect();
   },
   components: {
-    memo: Memo,
-    memogroup: memoGroup
+    memo: Memo
   }
 };
 </script>
@@ -268,6 +270,27 @@ module.exports = {
     padding: 0.35em 0.4em 0.4em 0.8em;
     background: @accent-color3;
     color: #fff;
+    .num-label {
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+      font-size: 0.8em;
+      margin-top: 1em;
+      padding-top: 0em;
+      padding-bottom: 0em;
+      background-color: @accent-color3 + #111;
+      color: @accent-color3 + #444;
+    }
+    .right-icon {
+      margin: 0em 0.3em 0em 0.3em;
+      color: #ddf;
+      &:hover {
+        color: #eef;
+      }
+    }
+    .name {
+      padding: 0.3em 0.5em 0.4em 0em;
+      // background: #fff;
+    }
   }
   .list-group {
     box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
