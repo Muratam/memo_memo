@@ -37,13 +37,13 @@
     .content.over-fixed-buttom
       //- メインコンテンツ
       //- WARN: use key
-      ul.list-group(v-for="(memoGroup,i) in visibleContents" )
-        .ul-title(v-if="memoGroup.length > 0") Hoge
+      ul.list-group(v-for="memoGroup in visibleContents" )
+        .ul-title(v-if="memoGroup.memos.length > 0") {{ memoGroup.name }}
           //- | {{ currentGenre === 0 ? "" : genres[currentGenre-1].name }}
           //- | {{ currentHow === 0 ? "" : hows[currentHow-1].name }}
           //- | {{ currentHow + currentGenre === 0 ? "All": ""}}
         //- .ul-title(v-if="content.length > 0") Nothing
-        li.list-group-item(v-for="memo in memoGroup" :key="memo.id")
+        li.list-group-item(v-for="memo in memoGroup.memos" :key="memo.id")
           memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
       //- 下の投稿ボタン
       nav.navbar.navbar-fixed-bottom.content(v-if="currentHow * currentGenre !== 0")
@@ -58,9 +58,24 @@
 // import contents from "../tempdata";
 import Memo from "./memo.vue";
 import io from "socket.io-client";
+Array.prototype.groupBy = function(keyFunc) {
+  let res = {};
+  this.forEach(c => {
+    let key = keyFunc(c);
+    if (key in res) res[key].push(c);
+    else res[key] = [c];
+  });
+  return Object.keys(res).map(k => ({ key: k, value: res[k] }));
+};
 
 module.exports = {
   methods: {
+    getGenreName(genreId) {
+      return this.genres[genreId - 1].name;
+    },
+    getHowName(howId) {
+      return this.hows[howId - 1].name;
+    },
     getContents(genre = null, how = null) {
       if (genre !== null) this.currentGenre = genre;
       if (how !== null) this.currentHow = how;
@@ -145,44 +160,32 @@ module.exports = {
     visibleContents() {
       if (this.currentHow === 0) {
         if (this.currentGenre === 0) {
-          let resdict = {};
-          for (let content of this.contents) {
-            if (!(content.how in resdict)) resdict[content.how] = [];
-            resdict[content.how].push(content);
-          }
-          let res = [];
-          for (let k in resdict) res.push(resdict[k]);
-          return res;
+          let memos = this.contents
+            .groupBy(x => x.how)
+            .map(x => ({ name: this.getHowName(x.key), memos: x.value }));
+          return memos;
         } else {
-          let resdict = {};
-          for (let content of this.contents) {
-            if (content.genre !== this.currentGenre) continue;
-            if (!(content.how in resdict)) resdict[content.how] = [];
-            resdict[content.how].push(content);
-          }
-          let res = [];
-          for (let k in resdict) res.push(resdict[k]);
-          return res;
+          let memos = this.contents
+            .filter(x => x.genre === this.currentGenre)
+            .groupBy(x => x.how)
+            .map(x => ({ name: this.getHowName(x.key), memos: x.value }));
+          return memos;
         }
       } else {
         if (this.currentGenre === 0) {
-          let resdict = {};
-          for (let content of this.contents) {
-            if (content.how !== this.currentHow) continue;
-            if (!(content.genre in resdict)) resdict[content.genre] = [];
-            resdict[content.genre].push(content);
-          }
-          let res = [];
-          for (let k in resdict) res.push(resdict[k]);
-          return res;
+          let memos = this.contents
+            .filter(x => x.how === this.currentHow)
+            .groupBy(x => x.genre)
+            .map(x => ({ name: this.getGenreName(x.key), memos: x.value }));
+          return memos;
         } else {
-          let res = [];
-          for (let content of this.contents) {
-            if (content.how !== this.currentHow) continue;
-            if (content.genre !== this.currentGenre) continue;
-            res.push(content);
-          }
-          return [res];
+          let memos = this.contents
+            .filter(x => x.how === this.currentHow)
+            .filter(x => x.genre === this.currentGenre);
+          let genreName = this.getGenreName(this.currentGenre);
+          let howName = this.getHowName(this.currentHow);
+          let name = `${genreName} ${howName}`;
+          return [{ name: name, memos: memos }];
         }
       }
     }
