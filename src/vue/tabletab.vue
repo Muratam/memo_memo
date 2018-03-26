@@ -51,11 +51,11 @@
               :key="memo.id")
             memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
       //- 下の投稿ボタン
-      nav.navbar.navbar-fixed-bottom.content(v-if="currentHow * currentGenre !== 0")
-        ul.list-group
-          li.list-group-item
-            .input-group.input-group-sm.col-xs-12
-              input.form-control(type="text" v-model="commandPallet" @keydown="addMemo")
+    nav.navbar.navbar-fixed-bottom.content
+      ul.list-group
+        li.list-group-item
+          .input-group.input-group-sm.col-xs-12
+            input.form-control(type="text" v-model="commandPallet" @keydown="addMemo")
 
 </div>
 </template>
@@ -72,14 +72,6 @@ TODO: 下が出来れば完成してTODO管理をこいつに任せられる！
 リスト削除をやりやすくする:
   一番上から出来るようにして → 薄暗いなかに確認ボタン(エンターで決定|Escで戻る)
 
-AddButton拡張:
-  All状態でも投稿できるようにしたい:
-    Genre: All → Temporary
-    How  : All → Later
-  AddButton が URL なら URLだけにしたい
-    How  : All → URL  (そのときだけ)
-
-(herokuにあげる？)
 (undo はサーバー側で自動で git add commit するようにする or スタックを実装)
 */
 
@@ -116,13 +108,19 @@ module.exports = {
     },
     addMemo(data) {
       if (window.event.keyCode !== 13) return;
-      if ($.trim(this.commandPallet) === "") return;
+      let title = $.trim(this.commandPallet);
+      if (title === "") return;
       data = {
         url: "",
         body: "",
         id: this.getRandomHash(),
-        title: this.commandPallet
+        title: ""
       };
+      if (/^https?:\/\//.test(title)) {
+        data.url = data.title = title;
+        if (this.currentHow === 0) data.how = 3;
+      } else data.title = title;
+
       this.updateContent(data.id, data);
       this.commandPallet = "";
     },
@@ -147,11 +145,12 @@ module.exports = {
       if (index === null) {
         // 無ければ末尾に追加
         if (content === null) return;
-        if (this.currentGenre === 0) return;
-        if (this.currentHow === 0) return;
         if ($.trim(id) === "") content.id = this.getRandomHash();
-        content.genre = this.currentGenre;
-        content.how = this.currentHow;
+        // WARN: 強引にAllを変換
+        if (!("genre" in content))
+          content.genre = this.currentGenre === 0 ? 1 : this.currentGenre;
+        if (!("how" in content))
+          content.how = this.currentHow === 0 ? 2 : this.currentHow;
         this.contents.push(content);
       } else if (content === null) {
         // 要素を削除
@@ -355,5 +354,9 @@ module.exports = {
 }
 .clickable {
   cursor: pointer;
+}
+.over-fixed-buttom {
+  margin-bottom: 4em;
+  // padding-bottom: 3em;
 }
 </style>
