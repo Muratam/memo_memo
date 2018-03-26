@@ -124,6 +124,8 @@ module.exports = {
         this.contents.splice(index, 1);
       } else {
         // 普通に更新
+        content.genre = this.contents[index].genre;
+        content.how = this.contents[index].how;
         this.contents.splice(index, 1, content);
       }
       this.socket.emit("update-contents", this.contents);
