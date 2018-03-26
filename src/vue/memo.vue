@@ -67,6 +67,7 @@ module.exports = {
 .memo {
   max-height: 100vh;
   transition: all 1s ease;
+  overflow: auto;
 }
 .clickable {
   cursor: pointer;

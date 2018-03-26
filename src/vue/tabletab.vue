@@ -1,6 +1,7 @@
 <template lang="pug">
 .root
   nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
+    //- 上のトップバー
     .navbar-brand.header.clickable(
         @click="getContents(0,0)") むらためも
     .navbar-brand.header.clickable(
@@ -15,6 +16,7 @@
 
   .under-fixed-top
     .row
+      //- 左サイドバー
       .sidebar.col-sm-3
         ul.nav.nav-pills.nav-stacked
           li.nav-item.clickable(
@@ -33,14 +35,17 @@
               i.fas.fa-plus
               .num-label.pull-right 20
     .content.over-fixed-buttom
-      ul.list-group
-        .ul-title(v-if="contents.length > 0")
-          | {{ currentGenre === 0 ? "" : genres[currentGenre-1].name }}
-          | {{ currentHow === 0 ? "" : hows[currentHow-1].name }}
-          | {{ currentHow + currentGenre === 0 ? "All": ""}}
-        .ul-title(v-if="contents.length === 0") Nothing
-        li.list-group-item(v-for="memo in contents" :key="memo.id")
+      //- メインコンテンツ
+      //- WARN: use key
+      ul.list-group(v-for="(memoGroup,i) in visibleContents" )
+        .ul-title(v-if="memoGroup.length > 0") Hoge
+          //- | {{ currentGenre === 0 ? "" : genres[currentGenre-1].name }}
+          //- | {{ currentHow === 0 ? "" : hows[currentHow-1].name }}
+          //- | {{ currentHow + currentGenre === 0 ? "All": ""}}
+        //- .ul-title(v-if="content.length > 0") Nothing
+        li.list-group-item(v-for="memo in memoGroup" :key="memo.id")
           memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
+      //- 下の投稿ボタン
       nav.navbar.navbar-fixed-bottom.content(v-if="currentHow * currentGenre !== 0")
         ul.list-group
           li.list-group-item
@@ -92,9 +97,13 @@ module.exports = {
     updateContent(id, content) {
       let index = this.findIndexById(id);
       if (index === null) {
-        if (content === null) return;
         // 無ければ末尾に追加
-        if (id === "") content.id = this.getRandomHash();
+        if (content === null) return;
+        if (this.currentGenre === 0) return;
+        if (this.currentHow === 0) return;
+        if ($.trim(id) === "") content.id = this.getRandomHash();
+        content.genre = this.currentGenre;
+        content.how = this.currentHow;
         this.contents.push(content);
       } else if (content === null) {
         // 要素を削除
@@ -103,26 +112,20 @@ module.exports = {
         // 普通に更新
         this.contents.splice(index, 1, content);
       }
-      this.socket.emit("update-contents", {
-        genre: this.currentGenre,
-        how: this.currentHow,
-        contents: this.contents
-      });
+      this.socket.emit("update-contents", this.contents);
     },
     getSocket() {
       const socket = io(location.origin, { autoConnect: false });
       // socket.on("connect", () => console.log("connect"));
       // socket.on("disconnect", () => console.log("disconnect"));
-      // サーバーデータから全てを強制的に上書き
+      // genres/hows/contents更新
       socket.on("init", data => {
         this.genres = data.genres;
         this.hows = data.hows;
-        this.getContents(this.currentGenre, this.currentHow);
+        this.contents = data.contents;
       });
-      // genre・howを指定して更新
-      socket.on("set-contents", data => {
-        let { genre, how, contents } = data;
-        if (genre !== this.currentGenre || how !== this.currentHow) return;
+      // contents更新
+      socket.on("set-contents", contents => {
         this.contents = contents;
       });
       return socket;
@@ -137,6 +140,52 @@ module.exports = {
       currentHow: 0,
       socket: this.getSocket()
     };
+  },
+  computed: {
+    visibleContents() {
+      if (this.currentHow === 0) {
+        if (this.currentGenre === 0) {
+          let resdict = {};
+          for (let content of this.contents) {
+            if (!(content.how in resdict)) resdict[content.how] = [];
+            resdict[content.how].push(content);
+          }
+          let res = [];
+          for (let k in resdict) res.push(resdict[k]);
+          return res;
+        } else {
+          let resdict = {};
+          for (let content of this.contents) {
+            if (content.genre !== this.currentGenre) continue;
+            if (!(content.how in resdict)) resdict[content.how] = [];
+            resdict[content.how].push(content);
+          }
+          let res = [];
+          for (let k in resdict) res.push(resdict[k]);
+          return res;
+        }
+      } else {
+        if (this.currentGenre === 0) {
+          let resdict = {};
+          for (let content of this.contents) {
+            if (content.how !== this.currentHow) continue;
+            if (!(content.genre in resdict)) resdict[content.genre] = [];
+            resdict[content.genre].push(content);
+          }
+          let res = [];
+          for (let k in resdict) res.push(resdict[k]);
+          return res;
+        } else {
+          let res = [];
+          for (let content of this.contents) {
+            if (content.how !== this.currentHow) continue;
+            if (content.genre !== this.currentGenre) continue;
+            res.push(content);
+          }
+          return [res];
+        }
+      }
+    }
   },
   mounted() {
     this.socket.connect();
