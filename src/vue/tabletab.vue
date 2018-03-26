@@ -7,12 +7,10 @@
     .navbar-brand.header.clickable(
         :class="{ active: currentHow === 0}"
         @click="getContents(null,0)") All
-      .num-label.pull-right 20
     .navbar-brand.clickable(
         v-for="(tab,i) in hows"
         :class="{ active: currentHow-1 === i}"
         @click="getContents(null,i+1)") {{ tab.name }}
-      .num-label.pull-right 5
 
   .under-fixed-top
     .row
@@ -23,26 +21,27 @@
               :class="{ active: currentGenre=== 0}"
               @click="getContents(0,null)")
             a.nav-link All
-              .num-label.pull-right 20
           li.nav-item.clickable(
               v-for="(side,i) in genres"
               :class="{ active: currentGenre-1 === i}"
               @click="getContents(i+1,null)")
             a.nav-link {{ side.name }}
-              .num-label.pull-right 20
           li.nav-item.clickable
             a.nav-link
               i.fas.fa-plus
-              .num-label.pull-right 20
     .content.over-fixed-buttom
       //- メインコンテンツ
-      //- WARN: use key
-      ul.list-group(v-for="memoGroup in visibleContents" )
-        .ul-title(v-if="memoGroup.memos.length > 0") {{ memoGroup.name }}
-          //- | {{ currentGenre === 0 ? "" : genres[currentGenre-1].name }}
-          //- | {{ currentHow === 0 ? "" : hows[currentHow-1].name }}
-          //- | {{ currentHow + currentGenre === 0 ? "All": ""}}
-        //- .ul-title(v-if="content.length > 0") Nothing
+      ul.list-group(v-if="visibleMemoCount === 0")
+        .ul-title No memos...
+      ul.list-group(v-for="memoGroup in visibleContents")
+        //- 統合情報
+        .ul-title(v-if="memoGroup.memos.length > 0")
+          .clearfix
+            span.clickable.name {{ memoGroup.name }}
+            .pull-right
+              span.num-label.label {{ memoGroup.memos.length }}
+              span.right-icon.clickable(@click="memoGroup.minimize")
+                i.fas.fa-caret-up
         li.list-group-item(v-for="memo in memoGroup.memos" :key="memo.id")
           memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
       //- 下の投稿ボタン
@@ -188,6 +187,11 @@ module.exports = {
           return [{ name: name, memos: memos }];
         }
       }
+    },
+    visibleMemoCount() {
+      return this.visibleContents
+        .map(x => x.memos.length || 0)
+        .reduce((x, y) => x + y, 0);
     }
   },
   mounted() {
@@ -218,19 +222,10 @@ module.exports = {
   text-align: center;
   // overflow-wrap: break-word;
   // overflow-x: hidden;
-  // overflow-y: auto;
   // z-index: 10;
-  background: @accent-color2 + #333;
-  // border-right: 1px solid @accent-color3;
-  // color: @accent-color2;
-  // &.active {margin-left: -@sidebar-size;}
   // opacity: 0.75;
+  background: @accent-color2 + #333;
   box-shadow: 0.1em 0 0.2em rgba(0, 0, 0, 0.2);
-  .num-label {
-    font-size: 0.8em;
-    color: #ccc;
-    display: none;
-  }
 }
 .top-bar {
   box-shadow: 0.4em 0.4em 0.4em rgba(0, 0, 0, 0.2);
@@ -249,9 +244,30 @@ module.exports = {
   margin-left: @sidebar-size;
   .ul-title {
     font-size: 1.2em;
-    padding: 0.4em 0.4em 0.4em 0.8em;
+    padding: 0.35em 0.4em 0.4em 0.8em;
     background: @accent-color3;
     color: #fff;
+    .num-label {
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+      font-size: 0.8em;
+      margin-top: 1em;
+      padding-top: 0em;
+      padding-bottom: 0em;
+      background-color: @accent-color3 + #111;
+      color: @accent-color3 + #444;
+    }
+    .right-icon {
+      margin: 0em 0.3em 0em 0.3em;
+      color: #ddf;
+      &:hover {
+        color: #eef;
+      }
+    }
+    .name {
+      padding: 0.3em 0.5em 0.4em 0em;
+      // background: #fff;
+    }
   }
   .list-group {
     box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
