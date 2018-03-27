@@ -70,6 +70,7 @@
     .blackout(@click="escapeBlackout")
     ul.list-group.pallet
       li.list-group-item
+        .blackout-comment {{ blackoutPalletType }}
         .input-group.input-group-lg
           span.input-group-addon.pallet-addon
             i.clickable.fas.fa-search.pallet-icon(v-if="blackoutPalletType === 'find'")
@@ -81,12 +82,8 @@
 </div>
 </template>
 <script>
-// add Esc Back (説明ボタンも)
 // 検索: ⌘-f or 検索ボタン
-// 入替: dropzoneで頑張って実装
-// rename
-// 編集で全部消してやっぱり戻るボタン?
-// ごみばこ挙動が怪しい
+// Allの順序が不思議？
 
 import Memo from "./memo.vue";
 import io from "socket.io-client";
@@ -286,6 +283,7 @@ module.exports = {
       currentHow: "all",
       commandPallet: "",
       blackoutPallet: "",
+      findQuery: "",
       blackoutPalletType: "", // addGenre / find / ""
       socket: this.getSocket()
     };
@@ -323,6 +321,7 @@ module.exports = {
         if (this.currentGenre === "all") {
           // Genre指定なし
           memos = this.contents
+            .filter(x => x.genre !== "trash")
             .filter(x => x.how === this.currentHow)
             .groupBy(x => x.genre)
             .map(x => ({
@@ -372,10 +371,13 @@ module.exports = {
   },
   mounted() {
     this.socket.connect();
-    // $(window).bind("keydown.ctrl_f keydown.meta_s", event => {
-    // alert("");
-    // event.preventDefault();
-    // });
+    // esc:27
+    $(document).keydown(e => {
+      // c-f (find) と esc
+      if (e.keyCode === 70 && e.metaKey === true) {
+        // alert("find");
+      } else if (e.keyCode === 27) this.escapeBlackout();
+    });
   },
   components: {
     memo: Memo
@@ -510,7 +512,7 @@ module.exports = {
   }
   ul {
     position: fixed;
-    top: 48%;
+    top: 40%;
     left: 0px;
     width: 100vw;
     height: 100vh;
@@ -524,6 +526,10 @@ module.exports = {
     border-color: #00000000;
     margin-left: @sidebar-size;
     margin-right: 2em;
+  }
+  .blackout-comment {
+    font-size: 3em;
+    color: #eeeeee;
   }
 }
 </style>
