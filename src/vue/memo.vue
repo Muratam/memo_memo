@@ -23,8 +23,8 @@
       input.form-control(type="text" v-model="title" @keydown="submit")
     .input-group.input-group-sm.col-xs-12
       textarea(
+          ref="textarea"
           v-model="body" rows="3"
-          v-on:click="autoGrow($event.target)"
           v-on:keyup="autoGrow($event.target)")
 
 </template>
@@ -36,6 +36,7 @@ module.exports = {
       this.finishEditing();
     },
     autoGrow(element) {
+      console.log(element);
       element.style.height = "1em";
       element.style.height = element.scrollHeight + "px";
     },
@@ -44,6 +45,9 @@ module.exports = {
     },
     startEditing() {
       this.isediting = true;
+      this.$nextTick(() => {
+        if (this.body !== "") this.autoGrow(this.$refs.textarea);
+      });
     },
     finishEditing() {
       if ($.trim(this.title) === "" && $.trim(this.url) === "") return;
