@@ -3,27 +3,27 @@
   //- 上のトップバー
   nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
     .navbar-brand.header.clickable(
-        @click="getContents(0,0)") memo-memo
+        @click="getContents('all','all')") memo-memo
     .navbar-brand.header.clickable(
-        :class="{ active: currentHow === 0}"
-        @click="getContents(null,0)") All
+        :class="{ active: currentHow === 'all'}"
+        @click="getContents(null,'all')") All
     .navbar-brand.clickable(
         v-for="(tab,i) in hows"
-        :class="{ active: currentHow-1 === i}"
-        @click="getContents(null,i+1)") {{ tab.name }}
+        :class="{ active: currentHow === tab.id}"
+        @click="getContents(null,tab.id)") {{ tab.name }}
   .under-fixed-top
     //- 左サイドバー
     .row
       .sidebar.col-sm-3
         ul.nav.nav-pills.nav-stacked
           li.nav-item.clickable(
-              :class="{ active: currentGenre=== 0}"
-              @click="getContents(0,null)")
+              :class="{ active: currentGenre ===  'all'}"
+              @click="getContents('all',null)")
             a.nav-link All
           li.nav-item.clickable(
               v-for="(side,i) in genres"
-              :class="{ active: currentGenre-1 === i}"
-              @click="getContents(i+1,null)"
+              :class="{ active: currentGenre === side.id}"
+              @click="getContents(side.id,null)"
               draggable="true")
             a.nav-link {{ side.name }}
           li.nav-item.clickable(@click="beforeAddGenre")
@@ -131,10 +131,18 @@ module.exports = {
       this.blackoutPalletType = "";
     },
     getGenreName(genreId) {
-      return this.genres[genreId - 1].name;
+      for (let genre of this.genres) {
+        if (genre.id === genreId) return genre.name;
+      }
+      console.log("no genre", genreId);
+      return "all";
     },
     getHowName(howId) {
-      return this.hows[howId - 1].name;
+      for (let how of this.hows) {
+        if (how.id === howId) return how.name;
+      }
+      console.log("no how", howId);
+      return "all";
     },
     getContents(genre = null, how = null) {
       if (genre !== null) this.currentGenre = genre;
@@ -161,9 +169,8 @@ module.exports = {
       };
       if (/^https?:\/\//.test(title)) {
         data.url = data.title = title;
-        if (this.currentHow === 0) data.how = 3;
+        if (this.currentHow === "all") data.how = "url";
       } else data.title = title;
-
       this.updateContent(data.id, data);
       this.commandPallet = "";
     },
@@ -191,9 +198,10 @@ module.exports = {
         if ($.trim(id) === "") content.id = this.getRandomHash();
         // WARN: 強引にAllを変換
         if (!("genre" in content))
-          content.genre = this.currentGenre === 0 ? 1 : this.currentGenre;
+          content.genre =
+            this.currentGenre === "all" ? "temporary" : this.currentGenre;
         if (!("how" in content))
-          content.how = this.currentHow === 0 ? 2 : this.currentHow;
+          content.how = this.currentHow === "all" ? "later" : this.currentHow;
         this.contents.push(content);
       } else if (content === null) {
         // 要素を削除
@@ -228,8 +236,8 @@ module.exports = {
       genres: [],
       hows: [],
       contents: [],
-      currentGenre: 0,
-      currentHow: 0,
+      currentGenre: "all",
+      currentHow: "all",
       commandPallet: "",
       blackoutPallet: "",
       blackoutPalletType: "", // addGenre / find / ""
@@ -239,14 +247,14 @@ module.exports = {
   computed: {
     visibleContents() {
       let memos = [];
-      if (this.currentHow === 0) {
-        if (this.currentGenre === 0) {
+      if (this.currentHow === "all") {
+        if (this.currentGenre === "all") {
           // 指定なし
           memos = this.contents.groupBy(x => x.how).map(x => ({
             name: this.getHowName(x.key),
             memos: x.value,
-            linkGenre: 0,
-            linkHow: Number(x.key)
+            linkGenre: "all",
+            linkHow: x.key
           }));
         } else {
           // How指定無し
@@ -257,11 +265,11 @@ module.exports = {
               name: this.getHowName(x.key),
               memos: x.value,
               linkGenre: this.currentGenre,
-              linkHow: Number(x.key)
+              linkHow: x.key
             }));
         }
       } else {
-        if (this.currentGenre === 0) {
+        if (this.currentGenre === "all") {
           // Genre指定なし
           memos = this.contents
             .filter(x => x.how === this.currentHow)
@@ -269,7 +277,7 @@ module.exports = {
             .map(x => ({
               name: this.getGenreName(x.key),
               memos: x.value,
-              linkGenre: Number(x.key),
+              linkGenre: x.key,
               linkHow: this.currentHow
             }));
         } else {
