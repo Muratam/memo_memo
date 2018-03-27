@@ -2,7 +2,7 @@
 左のジャンルタブと上のHowタブからフィルターを書けて,
 TODOやネット上のURLなどをメモにメモするツール
 
-![](https://pbs.twimg.com/media/DZKOcaaVoAAMOee.jpg:small)
+![](https://pbs.twimg.com/media/DZUqyYtVAAUAhEv.jpg:small)
 
 
 ## Howタブ
@@ -21,6 +21,3 @@ TODOやネット上のURLなどをメモにメモするツール
 
 ## run server
 `$ npm run server`
-
-## watch building client files
-`$ npm run watch`
