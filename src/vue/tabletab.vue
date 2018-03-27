@@ -89,8 +89,6 @@ TODO: 下が出来れば完成してTODO管理をこいつに任せられる！
   (入替: dropzoneで頑張って実装)
   (変更: jsonいじってくれ)
 navbar-top も fixed にすれば50pxでいけるかも？
-変更キャンセルボタン？
-(undo はサーバー側で自動で git add commit するようにする or スタックを実装)
 */
 
 import Memo from "./memo.vue";
@@ -419,6 +417,7 @@ module.exports = {
   margin-top: 1em;
   width: auto;
   margin-left: @sidebar-size;
+  margin-right: 0.8em;
   .ul-title {
     font-size: 1.2em;
     padding: 0.35em 0.4em 0.4em 0.8em;
