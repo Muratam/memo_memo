@@ -1,57 +1,108 @@
-
-// genre,how : nameは表示のため, idで管理
-//           : 0はallのために開けておく(1からスタート)
-// contents  : [genre][how]の下に管理
-
-let data = {
-  genres: [
-    {name: '❓', id: 'temporary'},  // 特殊
-    {name: '🗑', id: 'trash'},   // 特殊
-    {name: 'Deep Learning', id: 'hfuahfauefha'},
+module.exports = {
+  'genres': [
+    {'name': '❓', 'id': 'temporary'}, {'name': '🗑', 'id': 'trash'},
+    {'name': 'JavaScript', 'id': 'topgmtxjfyd4x1tng3lrpwfu85x653sv'},
+    {'name': 'Python', 'id': 'e8291v7pbls952md0287dv4ek5vh13m8'}
   ],
-  hows: [
-    {name: 'Todo', id: 'todo'},    // 特殊
-    {name: 'Later', id: 'later'},  // 特殊
-    {name: 'URL', id: 'url'},      // 特殊
-    {name: 'Study', id: 'study'}   // 特殊
+  'hows': [
+    {'name': 'Todo', 'id': 'todo'}, {'name': 'Later', 'id': 'later'},
+    {'name': 'URL', 'id': 'url'}, {'name': 'Study', 'id': 'study'}
   ],
-  contents: [
+  'contents': [
     {
-      genre: 'hfuahfauefha',
-      how: 'url',
-      id: 'r6h8zabef5f1xmqnxfyikx3930cczsnl',
-      title: 'フレームワーク: deeplearn.js',
-      body: 'WebGL + GPU でブラウザ上で高速に処理'
+      'url': '',
+      'body': '',
+      'id': 'crhus6un30uezzy5yf92iw2p4pvkijjf',
+      'title': 'チャオ！',
+      'genre': 'temporary',
+      'how': 'later'
     },
     {
-      genre: 'hfuahfauefha',
-      how: 'url',
-      id: 'afa44we5r5uqheusi857n6jl82s404wj',
-      title: '理論: CAN',
-      url: 'http://createwith.ai/paper/20170629/839'
+      'url': '',
+      'body': '',
+      'id': 'l0nmbltmes9ewvfd0yeqb3lph0140pag',
+      'title': 'このページは memo-memo の解説ページです！',
+      'genre': 'temporary',
+      'how': 'later'
     },
     {
-      genre: 'hfuahfauefha',
-      how: 'url',
-      id: 'gypy6jtt1bhxi1pgdi18p6ohxhnhgecm',
-      title: '理論: StacksGAN',
-      url: 'http://catindog.hatenablog.com/entry/2017/02/05/160156'
+      'url': '',
+      'body':
+          '上の All Todo Later URL Study のタブが How タブです！\n私はメモしたい事柄は必ず下の4つに分けられると考えています！\n\n- TODO : 近い内に「やらないといけない」予定を保存\n- LATER:「そのうち遊ぶ・実装したいかもしれない」アイデアを保存\n- URL :「必要に応じて参照する」と便利かもしれないURLを保存\n- STUDY:「時間をとって体系的に学習する」かもしれないものを保存\n\nHow,つまり「どう」やるのかがメモの理由として大事なわけです.\n上のHowタブはその分類で分けられます！\n選んだタブをクリックするとそのタブ毎のメモが見れます！',
+      'id': '2ucrhyzm21fr2mxfd4b314lkgxocflen',
+      'title': 'Howタブについて',
+      'genre': 'temporary',
+      'how': 'later'
     },
     {
-      genre: 'hfuahfauefha',
-      how: 'url',
-      id: 'dj3y356vxfsl9mhkvnoz8niw0nnapo3e',
-      title: '学習済みモデル: illustlation2vec',
-      url: 'https://github.com/rezoo/illustration2vec'
+      'url': '',
+      'body':
+          '左の All ❓ 🗑 JavaScript Python タブが Genre タブです！\n私はメモしたい事柄を「ジャンル」で分ける必然性もあると思ってます！\n\n「ジャンル」と「How」には依存はほぼ存在しないので,\nこの二つの観点からメモを分類するということは\n非常に理にかなっているでしょう？\n\n「+」ボタンを押すとジャンルタブを追加できます！\nまた,そのジャンルにあるメモが全て削除されると\n自動でそのジャンルタブも削除されます！\nあなただけのジャンルタブを作ってくださいね！\n',
+      'id': '9q00vtj1jorif94u72s33c3lp77y0u1m',
+      'title': 'Genreタブについて',
+      'genre': 'temporary',
+      'how': 'later'
     },
     {
-      genre: 'hfuahfauefha',
-      how: 'url',
-      id: 'auwjef52izfed0esbntv7stglhbbvhwq',
-      title: '学習済みモデル: word2vec',
-      url: 'http://aial.shiroyagi.co.jp/2017/02/japanese-word2vec-model-builder'
+      'url': 'https://developer.mozilla.org/ja/',
+      'body': '',
+      'id': 'x9b1qmif9irkox8suwaup1563gyo758d',
+      'title': 'MDN Web Doc',
+      'genre': 'trash',
+      'how': 'later'
+    },
+    {
+      'url': '',
+      'body':
+          '一番下のインプットボックスに文字を入れてエンターキーを押すと\nメモを追加できます！\n修正するにはメモの鉛筆アイコンをクリックします！\nTitleに加えてURLを指定するとリンクを生成できます！\n現在見ているジャンル・Howタブに属したメモが追加されます！',
+      'id': 'sxu9qc4r89ze3hfp5p7hwsuoqu2l73si',
+      'title': 'メモの追加の方法',
+      'genre': 'temporary',
+      'how': 'later'
+    },
+    {
+      'url': 'https://developer.mozilla.org/ja/',
+      'body':
+          'このメモは ジャンル:JavaScript,How:URLに属するメモです.\nどんどんメモを追加していきましょう.\nメモが増えてきても大丈夫！\n上のグルーピングバーをクリックするとメモを畳み込めます！',
+      'id': 'c0tnl55su6xf0x7jncpli6hrg6fkkekx',
+      'title': 'MDN Web Docs',
+      'genre': 'topgmtxjfyd4x1tng3lrpwfu85x653sv',
+      'how': 'url'
+    },
+    {
+      'url': 'https://www.python.org/',
+      'body': '',
+      'id': 'riomie1mgd49ahegx7uk79rhkhsp10ig',
+      'title': 'Python.org',
+      'genre': 'e8291v7pbls952md0287dv4ek5vh13m8',
+      'how': 'url'
+    },
+    {
+      'url': '',
+      'body':
+          '今の世の中には様々なメモツール・管理ツールがあるのですが,\nそれではあまり満足できませんでした.\n\nGithub Projects / Trello なども使ってみましたが,\n私のこのメモの目的には不整合でした.\n例えば一つ一つのメモのサイズは一行のものも多く\nメモの数が膨大になり,不整合が起きます.\nさらに言えばネットにつながっていないといけないので\nオフライン環境に行ってしまったが最後メモすら参照出来ず大変です.\n\nツリータブでのアウトラインエディタもいいのかもしれませんが,\n木構造はついついネストしすぎてしまい情報の管理にはよいですが,\n後からパッと参照する時に不都合です.\nそれに,モダンなアウトラインエディタが少ないという\n問題もありますしね…\n\nその点このメモツールはどうでしょう！？\n多くのメモを「ジャンル」「How」の観点から管理することで\n驚くほど簡単にタスクやメモを保存できることが分かります！\n更にOSSなので自分のPCのlocalhostに建てれば\nネット環境を失ってもメモを取ることができます！\n素晴らしいでしょう？\nぜひ使ってくださいね！',
+      'id': 'j5x4qtrdlm49asq44ygoqlv6p676mceg',
+      'title': '他のツールとの比較',
+      'genre': 'temporary',
+      'how': 'later'
+    },
+    {
+      'url': '',
+      'body':
+          'ジャンルタブの ❓ 🗑 は特殊なタブです.\nこの二つのジャンルはメモが存在しなくなっても残り続けます.\n\n❓は「未分類」を表し,\nジャンル指定するほどでもない一時的なものを活用するためのものです\nジャンルタブがAllの時にメモを追加すると\nメモはここに属します.\n\n🗑は「ごみ箱」を表し,\nx ボタンで削除したメモが入ります.\n間違えて削除してしまっても安心ですね.\n完全にメモを削除するには,ごみ箱内のメモを削除してください.',
+      'id': '9evxxx8c5g8hm9fo4v9meypo1ply6k55',
+      'title': 'Plus Tips',
+      'genre': 'temporary',
+      'how': 'later'
+    },
+    {
+      'url': '',
+      'body':
+          '右上の検索ボタンを使うと\n指定した単語を含むメモだけを表示する事ができます.\n数が多くなってきても,\nこれを使えばすぐに目的のメモを探すことが出来ますね！',
+      'id': 'o50jyjc8nvabde4jdskqjm5zxduldjye',
+      'title': 'Plus Tips',
+      'genre': 'temporary',
+      'how': 'later'
     }
   ]
 };
-
-module.exports = data;

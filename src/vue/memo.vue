@@ -95,11 +95,11 @@ module.exports = {
   padding-right: 1.5em;
 }
 .bodytext {
-  padding: 0.2em;
-  padding-bottom: 0em;
+  padding: 0.5em;
+  padding-bottom: 0.5em;
   padding-left: 0.5em;
   white-space: pre !important;
-  background-color: #fdfdff;
+  background-color: #f0faff;
   border-radius: 0.2em / 1em;
   font-size: 0.9em;
   overflow-x: auto;
