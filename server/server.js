@@ -2,7 +2,7 @@ const ServerBase = require('./serverbase');
 const sampleData = require('./sampledata');
 const fs = require('fs');
 const server = new ServerBase(8080, `${__dirname}/../dist`);
-const saveFileName = `${__dirname}/tempdata.json`;
+const saveFileName = `${require('os').homedir()}/.memomemo.json`;
 
 
 // contentsデータを全て書き換える
