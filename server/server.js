@@ -11,6 +11,11 @@ function updateContents(contents) {
   savedData.contents = contents;
   fs.writeFile(saveFileName, JSON.stringify(savedData));
 }
+function updateGenres(genres) {
+  let savedData = loadDataSync();
+  savedData.genres = genres;
+  fs.writeFile(saveFileName, JSON.stringify(savedData));
+}
 /* // WARN: idを指定して一部操作系は後ほど？
   function findIndexById(contents, id) {
     for (let i = 0; i < contents.length; i++) {
@@ -47,6 +52,7 @@ server.io.on('connection', (socket) => {
   console.log('new connection');
   socket.emit('init', loadDataSync());
   socket.on('update-contents', updateContents);
+  socket.on('update-genres', updateGenres);
   socket.on('get-contents', _ => {
     socket.emit('set-contents', loadDataSync().contents);
   });

@@ -5,8 +5,8 @@
 
 let data = {
   genres: [
-    {name: 'Temporary', id: 'temporary'},
-    {name: 'Trash', id: 'trash'},
+    {name: '❓', id: 'temporary'},  // 特殊
+    {name: '🗑', id: 'trash'},   // 特殊
     {name: 'フォント', id: 'fheaufhaeu'},
     {name: 'CTF', id: 'jfeafhuea'},
     {name: 'Deep Learning', id: 'hfuahfauefha'},
@@ -14,8 +14,10 @@ let data = {
     {name: 'Tool', id: 'fjaufhe8hq'},
   ],
   hows: [
-    {name: 'Todo', id: 'todo'}, {name: 'Later', id: 'later'},
-    {name: 'URL', id: 'url'}, {name: 'Study', id: 'study'}
+    {name: 'Todo', id: 'todo'},    // 特殊
+    {name: 'Later', id: 'later'},  // 特殊
+    {name: 'URL', id: 'url'},      // 特殊
+    {name: 'Study', id: 'study'}   // 特殊
   ],
   contents: [
     {

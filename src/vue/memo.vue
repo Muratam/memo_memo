@@ -4,14 +4,14 @@
     .pull-right
       span.right-icon.clickable(@click="startEditing")
         i.fas.fa-edit
+      span.right-icon.clickable(@click="trash")
+        i.fas.fa-times
     a(:href="url" v-if="url" target="_blank") {{ title }}
     div(v-if="!url") {{ title }}
     .bodytext(v-if="body") {{ body }}
   .clearfix( v-if="isediting")
-    span.right-icon.clickable.pull-right(@click="finishEditing")
-      i.fas.fa-chevron-right()
-    span.right-icon.clickable.pull-left(@click="trush")
-      i.fas.fa-times
+    span.right-icon.clickable.pull-right.space-right(@click="finishEditing")
+      i.fas.fa-chevron-right
     .input-group.input-group-sm.col-xs-12
       span.input-group-addon URL
       input.urltext.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url" @keydown="submit")
@@ -36,8 +36,8 @@ module.exports = {
       element.style.height = "1em";
       element.style.height = element.scrollHeight + "px";
     },
-    trush() {
-      this.$emit("trush", this.serialized());
+    trash() {
+      this.$emit("trash", this.serialized());
     },
     startEditing() {
       this.isediting = true;
@@ -85,6 +85,9 @@ module.exports = {
   &:hover {
     color: #888;
   }
+}
+.space-right {
+  padding-right: 1.5em;
 }
 .bodytext {
   padding: 0.2em;

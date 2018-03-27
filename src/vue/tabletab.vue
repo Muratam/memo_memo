@@ -10,6 +10,7 @@
     .navbar-brand.clickable(
         v-for="(tab,i) in hows"
         :class="{ active: currentHow === tab.id}"
+        :key="tab.id"
         @click="getContents(null,tab.id)") {{ tab.name }}
   .under-fixed-top
     //- 左サイドバー
@@ -24,9 +25,10 @@
               v-for="(side,i) in genres"
               :class="{ active: currentGenre === side.id}"
               @click="getContents(side.id,null)"
+              :key="side.id"
               draggable="true")
             a.nav-link {{ side.name }}
-          li.nav-item.clickable(@click="beforeAddGenre")
+          li.nav-item.clickable(@click="startBlackout('addGenre')")
             a.nav-link
               i.fas.fa-plus
     //- メインコンテンツ
@@ -51,7 +53,7 @@
           li.list-group-item(
               v-for="memo in memoGroup.memos"
               :key="memo.id")
-            memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
+            memo(:attrs="memo" @trash="trashMemo" @update="updateMemo")
     //- 下のコマンドパレット
     nav.navbar.navbar-fixed-bottom.content
       ul.list-group.pallet
@@ -60,7 +62,9 @@
             span.input-group-addon.pallet-addon
               i.fas.fa-plus.pallet-icon
             input.form-control.commandpallet(
-                type="text" v-model="commandPallet" @keydown="addMemo")
+                type="text" v-model="commandPallet"
+                @keydown="addMemo" autofocus
+                id="commandPallet")
   //- 暗転コマンドパレット
   .fadelayer(v-if="blackoutPalletType !== ''")
     .blackout(@click="escapeBlackout")
@@ -71,7 +75,8 @@
             i.clickable.fas.fa-search.pallet-icon(v-if="blackoutPalletType === 'find'")
             i.clickable.fas.fa-plus.pallet-icon(v-if="blackoutPalletType === 'addGenre'")
           input.form-control.commandpallet(
-              type="text" v-model="blackoutPallet" @keydown="decidedAtBlackout")
+              type="text" v-model="blackoutPallet"
+              @keydown="decidedAtBlackout" id="blackoutPallet")
 
 </div>
 </template>
@@ -80,16 +85,9 @@
 TODO: 下が出来れば完成してTODO管理をこいつに任せられる！
 暗転 : addGenre / find / "" /
 タブバー:実装を買える必要がある(idベース)
-  追加: 一番下のボタン → 薄暗い中に追加ボタンとその説明 →
-  削除: 要素が全てなくなると自動で消える
   検索: ⌘-f or 検索ボタン
   (入替: dropzoneで頑張って実装)
   (変更: jsonいじってくれ)
-
-リスト削除をやりやすくする:
-  一番上から出来るようにして → 薄暗いなかに確認ボタン(エンターで決定|Escで戻る)
-  .ul-title に追加ボタンを付ける?
-
 navbar-top も fixed にすれば50pxでいけるかも？
 変更キャンセルボタン？
 (undo はサーバー側で自動で git add commit するようにする or スタックを実装)
@@ -110,8 +108,8 @@ Array.prototype.groupBy = function(keyFunc) {
 
 module.exports = {
   methods: {
-    beforeAddGenre() {
-      this.blackoutPalletType = "addGenre";
+    startBlackout(type) {
+      this.blackoutPalletType = type;
     },
     escapeBlackout() {
       this.blackoutPallet = "";
@@ -121,6 +119,7 @@ module.exports = {
       if (!this.isDecided()) return;
       switch (this.blackoutPalletType) {
         case "addGenre":
+          this.addGenre(this.blackoutPallet);
           break;
         case "find":
           break;
@@ -129,6 +128,23 @@ module.exports = {
       }
       this.blackoutPallet = "";
       this.blackoutPalletType = "";
+    },
+    makeEmptyContent(genre, how) {
+      return {
+        url: "",
+        title: "add your new memo !!",
+        id: this.getRandomHash(),
+        body: "",
+        genre: genre,
+        how: how
+      };
+    },
+    addGenre(genreName) {
+      let id = this.getRandomHash();
+      this.genres.push({ name: genreName, id: id });
+      this.socket.emit("update-genres", this.genres);
+      this.contents.push(this.makeEmptyContent(id, "later"));
+      this.currentGenre = id;
     },
     getGenreName(genreId) {
       for (let genre of this.genres) {
@@ -148,7 +164,7 @@ module.exports = {
       if (genre !== null) this.currentGenre = genre;
       if (how !== null) this.currentHow = how;
     },
-    trushMemo(data) {
+    trashMemo(data) {
       this.updateContent(data.id, null);
     },
     updateMemo(data) {
@@ -190,6 +206,22 @@ module.exports = {
       }
       return null;
     },
+    checkDeletedGenres() {
+      let genreIds = this.contents.groupBy(x => x.genre).map(x => x.key);
+      genreIds.push("trash");
+      genreIds.push("temporary");
+      let newGenres = [];
+      let updated = false;
+      for (let genre of this.genres) {
+        let ok = genreIds.some(x => x === genre.id);
+        if (ok) newGenres.push(genre);
+        else updated = true;
+      }
+      if (!updated) return;
+      this.genres = newGenres;
+      this.currentGenre = "all";
+      this.socket.emit("update-genres", this.genres);
+    },
     updateContent(id, content) {
       let index = this.findIndexById(id);
       if (index === null) {
@@ -204,8 +236,16 @@ module.exports = {
           content.how = this.currentHow === "all" ? "later" : this.currentHow;
         this.contents.push(content);
       } else if (content === null) {
-        // 要素を削除
-        this.contents.splice(index, 1);
+        content = this.contents[index];
+        if (content.genre === "trash") {
+          // 要素を削除
+          this.contents.splice(index, 1);
+        } else {
+          // 要素をゴミ箱へ
+          content.genre = "trash";
+          this.contents.splice(index, 1, content);
+        }
+        this.checkDeletedGenres();
       } else {
         // 普通に更新
         content.genre = this.contents[index].genre;
@@ -250,12 +290,15 @@ module.exports = {
       if (this.currentHow === "all") {
         if (this.currentGenre === "all") {
           // 指定なし
-          memos = this.contents.groupBy(x => x.how).map(x => ({
-            name: this.getHowName(x.key),
-            memos: x.value,
-            linkGenre: "all",
-            linkHow: x.key
-          }));
+          memos = this.contents
+            .filter(x => x.genre !== "trash")
+            .groupBy(x => x.how)
+            .map(x => ({
+              name: this.getHowName(x.key),
+              memos: x.value,
+              linkGenre: "all",
+              linkHow: x.key
+            }));
         } else {
           // How指定無し
           memos = this.contents
@@ -282,6 +325,7 @@ module.exports = {
             }));
         } else {
           memos = this.contents
+            .filter(x => x.genre !== "trash")
             .filter(x => x.how === this.currentHow)
             .filter(x => x.genre === this.currentGenre);
           let genreName = this.getGenreName(this.currentGenre);
@@ -304,6 +348,14 @@ module.exports = {
       return this.visibleContents
         .map(x => x.memos.length || 0)
         .reduce((x, y) => x + y, 0);
+    }
+  },
+  watch: {
+    blackoutPalletType() {
+      this.$nextTick(() => {
+        if (this.blackoutPalletType !== "") $("#blackoutPallet").focus();
+        else $("#commandPallet").focus();
+      });
     }
   },
   mounted() {
