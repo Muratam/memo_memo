@@ -36,9 +36,7 @@ module.exports = {
       this.finishEditing();
     },
     autoGrow(element) {
-      console.log(element);
-      element.style.height = "1em";
-      element.style.height = element.scrollHeight + "px";
+      element.setAttribute("rows", this.body.split("\n").length);
     },
     trash() {
       this.$emit("trash", this.serialized());
