@@ -46,7 +46,7 @@ module.exports = {
     startEditing() {
       this.isediting = true;
       this.$nextTick(() => {
-        if (this.body !== "") this.autoGrow(this.$refs.textarea);
+        this.autoGrow(this.$refs.textarea);
       });
     },
     finishEditing() {
