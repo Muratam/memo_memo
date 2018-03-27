@@ -257,7 +257,9 @@ module.exports = {
     getSocket() {
       const socket = io(location.origin, { autoConnect: false });
       // socket.on("connect", () => console.log("connect"));
-      // socket.on("disconnect", () => console.log("disconnect"));
+      socket.on("disconnect", () => {
+        alert("disconnected...");
+      });
       // genres/hows/contents更新
       socket.on("init", data => {
         this.genres = data.genres;
