@@ -414,20 +414,17 @@ module.exports = {
 .sidebar {
   transition: all 0.3s;
   padding: 0em;
+  padding-bottom: 10em;
   width: @sidebar-size;
   height: 100%;
   padding-left: 1em;
   position: fixed;
   text-align: center;
-  // overflow-wrap: break-word;
-  // overflow-x: hidden;
-  overflow-y: auto;
-  // z-index: 10;
-  // opacity: 0.75;
+  overflow-y: scroll;
   background: @accent-color2 + #333;
   box-shadow: 0.1em 0 0.2em rgba(0, 0, 0, 0.2);
   &::-webkit-scrollbar {
-    display: none;
+    opacity: 0.5;
   }
 }
 .top-bar {
