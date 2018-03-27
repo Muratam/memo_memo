@@ -400,7 +400,7 @@ module.exports = {
 @accent-color : hsl(208, 40%, 50%);
 @accent-color2: hsl(208, 15%, 77%);
 @accent-color3: hsl(208, 50%, 70%);
-@sidebar-size: 10em;
+@sidebar-size: 11em;
 .under-fixed-top {
   padding-top: 50px;
 }
@@ -424,7 +424,7 @@ module.exports = {
   background: @accent-color2 + #333;
   box-shadow: 0.1em 0 0.2em rgba(0, 0, 0, 0.2);
   &::-webkit-scrollbar {
-    opacity: 0.5;
+    width: 0;
   }
 }
 .top-bar {

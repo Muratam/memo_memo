@@ -107,7 +107,7 @@ module.exports = {
   color: #447;
   font-family: "Courier New", Consolas, monospace;
   &::-webkit-scrollbar {
-    display: none;
+    height: 0;
   }
 }
 textarea {
@@ -116,7 +116,7 @@ textarea {
   background-color: #fdfdff;
   color: #447;
   &::-webkit-scrollbar {
-    display: none;
+    width: 0;
   }
 }
 .urltext {
