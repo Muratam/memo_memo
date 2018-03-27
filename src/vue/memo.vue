@@ -10,8 +10,11 @@
     div(v-if="!url") {{ title }}
     .bodytext(v-if="body") {{ body }}
   .clearfix( v-if="isediting")
-    span.right-icon.clickable.pull-right.space-right(@click="finishEditing")
-      i.fas.fa-chevron-right
+    .pull-right
+      span.right-icon.clickable(@click="finishEditing")
+        i.fas.fa-chevron-right
+      span.right-icon.clickable(@click="trash")
+        i.fas.fa-times
     .input-group.input-group-sm.col-xs-12
       span.input-group-addon URL
       input.urltext.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url" @keydown="submit")
