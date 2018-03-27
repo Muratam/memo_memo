@@ -139,7 +139,8 @@ module.exports = {
       let genreId = this.getRandomHash();
       this.genres.push({ name: genreName, id: genreId });
       this.socket.emit("update-genres", this.genres);
-      this.contents.push(this.makeEmptyContent(genreId, this.currentHow));
+      let content = this.makeEmptyContent(genreId, this.currentHow);
+      this.updateContent(content.id, content);
       this.currentGenre = genreId;
     },
     getGenreName(genreId) {
@@ -225,12 +226,11 @@ module.exports = {
         // 無ければ末尾に追加
         if (content === null) return;
         if ($.trim(id) === "") content.id = this.getRandomHash();
+        if (!("how" in content)) content.how = this.currentHow;
+        if (!("genre" in content)) content.genre = this.currentGenre;
         // WARN: 強引にAllを変換
-        if (!("genre" in content))
-          content.genre =
-            this.currentGenre === "all" ? "temporary" : this.currentGenre;
-        if (!("how" in content))
-          content.how = this.currentHow === "all" ? "later" : this.currentHow;
+        if (content.how === "all") content.how = "later";
+        if (content.genre === "all") content.genre = "temporary";
         this.contents.push(content);
       } else if (content === null) {
         content = this.contents[index];
