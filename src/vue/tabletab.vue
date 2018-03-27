@@ -12,6 +12,15 @@
         :class="{ active: currentHow === tab.id}"
         :key="tab.id"
         @click="getContents(null,tab.id)") {{ tab.name }}
+    .navbar-brand.col-xs-2.pull-right.findbox
+      .input-group.input-group-sm.has-feedback
+        input.form-control.commandpallet(
+            type="text" v-model="findQuery"
+            @keydown="addMemo"
+            id="commandPallet")
+        span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon
+          i.fas.fa-search.pallet-icon
+
   .under-fixed-top
     //- 左サイドバー
     .row
@@ -58,13 +67,13 @@
     nav.navbar.navbar-fixed-bottom.content
       ul.list-group.pallet
         li.list-group-item
-          .input-group.input-group-sm.col-xs-12
-            span.input-group-addon.pallet-addon
-              i.fas.fa-plus.pallet-icon
+          .input-group.input-group-sm.col-xs-12.has-feedback
             input.form-control.commandpallet(
                 type="text" v-model="commandPallet"
                 @keydown="addMemo" autofocus
                 id="commandPallet")
+            span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon
+              i.fas.fa-plus.pallet-icon
   //- 暗転コマンドパレット
   .fadelayer(v-if="blackoutPalletType !== ''")
     .blackout(@click="escapeBlackout")
@@ -82,9 +91,6 @@
 </div>
 </template>
 <script>
-// 検索: ⌘-f or 検索ボタン
-// Allの順序が不思議？
-
 import Memo from "./memo.vue";
 import io from "socket.io-client";
 Array.prototype.groupBy = function(keyFunc) {
@@ -112,8 +118,6 @@ module.exports = {
       switch (this.blackoutPalletType) {
         case "addGenre":
           this.addGenre(this.blackoutPallet);
-          break;
-        case "find":
           break;
         default:
           break;
@@ -277,17 +281,26 @@ module.exports = {
       commandPallet: "",
       blackoutPallet: "",
       findQuery: "",
-      blackoutPalletType: "", // addGenre / find / ""
+      blackoutPalletType: "", // addGenre / ""
       socket: this.getSocket()
     };
   },
   computed: {
     visibleContents() {
       let memos = [];
+      let contents = this.contents;
+      if (this.findQuery !== "") {
+        let query = this.findQuery.toUpperCase();
+        contents = contents.filter(
+          x =>
+            x.title.toUpperCase().includes(query) ||
+            x.body.toUpperCase().includes(query)
+        );
+      }
       if (this.currentHow === "all") {
         if (this.currentGenre === "all") {
           // 指定なし
-          memos = this.contents
+          memos = contents
             .filter(x => x.genre !== "trash")
             .groupBy(x => x.how)
             .map(x => ({
@@ -300,7 +313,7 @@ module.exports = {
           memos.sort((a, b) => a.index - b.index);
         } else {
           // How指定無し
-          memos = this.contents
+          memos = contents
             .filter(x => x.genre === this.currentGenre)
             .groupBy(x => x.how)
             .map(x => ({
@@ -317,7 +330,7 @@ module.exports = {
       } else {
         if (this.currentGenre === "all") {
           // Genre指定なし
-          memos = this.contents
+          memos = contents
             .filter(x => x.genre !== "trash")
             .filter(x => x.how === this.currentHow)
             .groupBy(x => x.genre)
@@ -332,7 +345,7 @@ module.exports = {
             }));
           memos.sort((a, b) => a.index - b.index);
         } else {
-          memos = this.contents
+          memos = contents
             .filter(
               x => (this.currentGenre === "trash" ? true : x.genre !== "trash")
             )
@@ -372,10 +385,7 @@ module.exports = {
     this.socket.connect();
     // esc:27
     $(document).keydown(e => {
-      // c-f (find) と esc
-      if (e.keyCode === 70 && e.metaKey === true) {
-        // alert("find");
-      } else if (e.keyCode === 27) this.escapeBlackout();
+      if (e.keyCode === 27) this.escapeBlackout();
     });
   },
   components: {
@@ -427,6 +437,24 @@ module.exports = {
     }
   }
   box-shadow: 0.4em 0.4em 0.4em rgba(0, 0, 0, 0.2);
+  .findbox {
+    // margin: 0em;
+    padding-top: 0.6em;
+    padding-bottom: 0.3em;
+    input {
+      background: #111;
+      color: #666;
+      border-color: #00000000;
+    }
+    span {
+      background: #111;
+      color: #666;
+      border-color: #00000000;
+    }
+  }
+}
+.feedbackicon {
+  padding-right: 1.5em;
 }
 .content {
   margin-top: 1em;
