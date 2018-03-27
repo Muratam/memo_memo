@@ -81,15 +81,8 @@
 </div>
 </template>
 <script>
-/*
-TODO: 下が出来れば完成してTODO管理をこいつに任せられる！
-暗転 : addGenre / find / "" /
-タブバー:実装を買える必要がある(idベース)
-  検索: ⌘-f or 検索ボタン
-  (入替: dropzoneで頑張って実装)
-  (変更: jsonいじってくれ)
-navbar-top も fixed にすれば50pxでいけるかも？
-*/
+// 検索: ⌘-f or 検索ボタン
+// 入替: dropzoneで頑張って実装
 
 import Memo from "./memo.vue";
 import io from "socket.io-client";
@@ -222,6 +215,14 @@ module.exports = {
     },
     updateContent(id, content) {
       let index = this.findIndexById(id);
+      // url に http を付与
+      if (
+        content !== null &&
+        content.url !== "" &&
+        !/^https?:\/\//.test(content.url)
+      ) {
+        content.url = "http://" + content.url;
+      }
       if (index === null) {
         // 無ければ末尾に追加
         if (content === null) return;
