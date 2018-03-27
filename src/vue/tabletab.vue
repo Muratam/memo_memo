@@ -403,7 +403,7 @@ module.exports = {
   padding-top: 50px;
 }
 .over-fixed-buttom {
-  margin-bottom: 4em;
+  margin-bottom: 50vh;
 }
 .clickable {
   cursor: pointer;
