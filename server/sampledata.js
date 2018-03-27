@@ -7,11 +7,7 @@ let data = {
   genres: [
     {name: '❓', id: 'temporary'},  // 特殊
     {name: '🗑', id: 'trash'},   // 特殊
-    {name: 'フォント', id: 'fheaufhaeu'},
-    {name: 'CTF', id: 'jfeafhuea'},
     {name: 'Deep Learning', id: 'hfuahfauefha'},
-    {name: 'シェーダー', id: 'f89rhfsna'},
-    {name: 'Tool', id: 'fjaufhe8hq'},
   ],
   hows: [
     {name: 'Todo', id: 'todo'},    // 特殊
