@@ -54,13 +54,6 @@
             memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
     //- 下のコマンドパレット
     nav.navbar.navbar-fixed-bottom.content
-      //- + を意味
-      //- ul.list-group
-        li.list-group-item
-          .clearfix
-            .pull-right.pallet-back
-              i.clickable.fas.fa-search.pallet-icon
-              i.clickable.fas.fa-plus.pallet-icon
       ul.list-group.pallet
         li.list-group-item
           .input-group.input-group-sm.col-xs-12
@@ -121,6 +114,7 @@ module.exports = {
       this.blackoutPalletType = "addGenre";
     },
     escapeBlackout() {
+      this.blackoutPallet = "";
       this.blackoutPalletType = "";
     },
     decidedAtBlackout() {
