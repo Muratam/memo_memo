@@ -81,9 +81,12 @@
 </div>
 </template>
 <script>
+// add Esc Back (説明ボタンも)
 // 検索: ⌘-f or 検索ボタン
 // 入替: dropzoneで頑張って実装
+// rename
 // 編集で全部消してやっぱり戻るボタン?
+// ごみばこ挙動が怪しい
 
 import Memo from "./memo.vue";
 import io from "socket.io-client";
@@ -308,7 +311,9 @@ module.exports = {
             .filter(x => x.genre === this.currentGenre)
             .groupBy(x => x.how)
             .map(x => ({
-              name: this.getHowName(x.key),
+              name: `${this.getGenreName(this.currentGenre)} ${this.getHowName(
+                x.key
+              )}`,
               memos: x.value,
               linkGenre: this.currentGenre,
               linkHow: x.key
@@ -321,14 +326,18 @@ module.exports = {
             .filter(x => x.how === this.currentHow)
             .groupBy(x => x.genre)
             .map(x => ({
-              name: this.getGenreName(x.key),
+              name: `${this.getGenreName(x.key)} ${this.getHowName(
+                this.currentHow
+              )}`,
               memos: x.value,
               linkGenre: x.key,
               linkHow: this.currentHow
             }));
         } else {
           memos = this.contents
-            .filter(x => x.genre !== "trash")
+            .filter(
+              x => (this.currentGenre === "trash" ? true : x.genre !== "trash")
+            )
             .filter(x => x.how === this.currentHow)
             .filter(x => x.genre === this.currentGenre);
           let genreName = this.getGenreName(this.currentGenre);
