@@ -8,7 +8,7 @@
     "start": "npm run build && npm run server",
     "server": "node server/server.js",
     "watch": "mkdir dist; ln -s ../src/lib dist/ ; parcel watch --public-url ./ --no-cache src/index.{pug,html} ",
-    "build": "cross-env NODE_ENV=production parcel build --public-url ./ --no-cache src/index.{pug,html}"
+    "build": "mkdir dist; ln -s ../src/lib dist/ ; cross-env NODE_ENV=production parcel build --public-url ./ --no-cache src/index.{pug,html}"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
