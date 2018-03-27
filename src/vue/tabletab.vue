@@ -83,6 +83,7 @@
 <script>
 // 検索: ⌘-f or 検索ボタン
 // 入替: dropzoneで頑張って実装
+// 編集で全部消してやっぱり戻るボタン?
 
 import Memo from "./memo.vue";
 import io from "socket.io-client";
@@ -123,7 +124,7 @@ module.exports = {
     makeEmptyContent(genre, how) {
       return {
         url: "",
-        title: "add your new memo !!",
+        title: "",
         id: this.getRandomHash(),
         body: "",
         genre: genre,
@@ -131,11 +132,11 @@ module.exports = {
       };
     },
     addGenre(genreName) {
-      let id = this.getRandomHash();
-      this.genres.push({ name: genreName, id: id });
+      let genreId = this.getRandomHash();
+      this.genres.push({ name: genreName, id: genreId });
       this.socket.emit("update-genres", this.genres);
-      this.contents.push(this.makeEmptyContent(id, "later"));
-      this.currentGenre = id;
+      this.contents.push(this.makeEmptyContent(genreId, this.currentHow));
+      this.currentGenre = genreId;
     },
     getGenreName(genreId) {
       for (let genre of this.genres) {
@@ -236,7 +237,10 @@ module.exports = {
         this.contents.push(content);
       } else if (content === null) {
         content = this.contents[index];
-        if (content.genre === "trash") {
+        if (
+          content.genre === "trash" ||
+          (content.url === "" && content.title === "" && content.body === "")
+        ) {
           // 要素を削除
           this.contents.splice(index, 1);
         } else {

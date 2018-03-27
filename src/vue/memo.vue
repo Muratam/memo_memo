@@ -43,16 +43,16 @@ module.exports = {
       this.isediting = true;
     },
     finishEditing() {
-      if ($.trim(this.title) === "") return;
+      if ($.trim(this.title) === "" && $.trim(this.url) === "") return;
       this.isediting = false;
       this.$emit("update", this.serialized());
     },
     serialized() {
       return {
-        url: this.url,
+        url: $.trim(this.url),
         body: this.body,
         id: this.id,
-        title: this.title
+        title: $.trim(this.title)
       };
     }
   },
