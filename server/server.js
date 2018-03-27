@@ -9,12 +9,12 @@ const saveFileName = `${require('os').homedir()}/.memomemo.json`;
 function updateContents(contents) {
   let savedData = loadDataSync();
   savedData.contents = contents;
-  fs.writeFile(saveFileName, JSON.stringify(savedData));
+  fs.writeFile(saveFileName, JSON.stringify(savedData, null, '  '));
 }
 function updateGenres(genres) {
   let savedData = loadDataSync();
   savedData.genres = genres;
-  fs.writeFile(saveFileName, JSON.stringify(savedData));
+  fs.writeFile(saveFileName, JSON.stringify(savedData, null, '  '));
 }
 /* // WARN: idを指定して一部操作系は後ほど？
   function findIndexById(contents, id) {
