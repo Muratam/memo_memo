@@ -87,14 +87,28 @@ module.exports = {
   }
 }
 .bodytext {
+  padding: 0.2em;
+  padding-bottom: 0em;
   padding-left: 0.5em;
   white-space: pre !important;
+  background-color: #fdfdff;
+  border-radius: 0.2em / 1em;
   font-size: 0.9em;
+  overflow-x: auto;
+  color: #447;
   font-family: "Courier New", Consolas, monospace;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 textarea {
   font-family: "Courier New", Consolas, monospace;
   width: 100%;
+  background-color: #fdfdff;
+  color: #447;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 .urltext {
   color: #48f;

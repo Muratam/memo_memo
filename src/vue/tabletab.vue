@@ -1,7 +1,7 @@
 <template lang="pug">
 .root
+  //- 上のトップバー
   nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
-    //- 上のトップバー
     .navbar-brand.header.clickable(
         @click="getContents(0,0)") memo-memo
     .navbar-brand.header.clickable(
@@ -11,10 +11,9 @@
         v-for="(tab,i) in hows"
         :class="{ active: currentHow-1 === i}"
         @click="getContents(null,i+1)") {{ tab.name }}
-
   .under-fixed-top
+    //- 左サイドバー
     .row
-      //- 左サイドバー
       .sidebar.col-sm-3
         ul.nav.nav-pills.nav-stacked
           li.nav-item.clickable(
@@ -27,15 +26,17 @@
               @click="getContents(i+1,null)"
               draggable="true")
             a.nav-link {{ side.name }}
-          li.nav-item.clickable
+          li.nav-item.clickable(@click="beforeAddGenre")
             a.nav-link
               i.fas.fa-plus
+    //- メインコンテンツ
     .content.over-fixed-buttom
-      //- メインコンテンツ
+      //- 何も無い時
       ul.list-group(v-if="visibleMemoCount === 0")
         .ul-title No memos...
+      //- 各リストグループ
       ul.list-group(v-for="memoGroup in visibleContents" :key="memoGroup.id")
-        //- 統合情報
+        //- グループ情報
         .ul-title(v-if="memoGroup.memos.length > 0")
           .clearfix
             span.clickable.name(
@@ -45,33 +46,59 @@
             .pull-right
               span.right-icon.clickable(@click="getContents(memoGroup.linkGenre,memoGroup.linkHow)")
                 i.fas.fa-arrow-alt-circle-right
+        //- 各リスト
         .collapse.in(:id="memoGroup.id")
           li.list-group-item(
               v-for="memo in memoGroup.memos"
               :key="memo.id")
             memo(:attrs="memo" @trush="trushMemo" @update="updateMemo")
-      //- 下の投稿ボタン
+    //- 下のコマンドパレット
     nav.navbar.navbar-fixed-bottom.content
-      ul.list-group
+      //- + を意味
+      //- ul.list-group
+        li.list-group-item
+          .clearfix
+            .pull-right.pallet-back
+              i.clickable.fas.fa-search.pallet-icon
+              i.clickable.fas.fa-plus.pallet-icon
+      ul.list-group.pallet
         li.list-group-item
           .input-group.input-group-sm.col-xs-12
-            input.form-control(type="text" v-model="commandPallet" @keydown="addMemo")
+            span.input-group-addon.pallet-addon
+              i.fas.fa-plus.pallet-icon
+            input.form-control.commandpallet(
+                type="text" v-model="commandPallet" @keydown="addMemo")
+  //- 暗転コマンドパレット
+  .fadelayer(v-if="blackoutPalletType !== ''")
+    .blackout(@click="escapeBlackout")
+    ul.list-group.pallet
+      li.list-group-item
+        .input-group.input-group-lg
+          span.input-group-addon.pallet-addon
+            i.clickable.fas.fa-search.pallet-icon(v-if="blackoutPalletType === 'find'")
+            i.clickable.fas.fa-plus.pallet-icon(v-if="blackoutPalletType === 'addGenre'")
+          input.form-control.commandpallet(
+              type="text" v-model="blackoutPallet" @keydown="decidedAtBlackout")
 
 </div>
 </template>
 <script>
 /*
 TODO: 下が出来れば完成してTODO管理をこいつに任せられる！
+暗転 : addGenre / find / "" /
 タブバー:実装を買える必要がある(idベース)
   追加: 一番下のボタン → 薄暗い中に追加ボタンとその説明 →
   削除: 要素が全てなくなると自動で消える
-  検索: 一番下のaddButtonが 「+」と「🔎」選べるように(「「+」・「🔎」」を押すと切り替え(モードは分かりやすいように！))
-  (入替: 頑張って実装)
+  検索: ⌘-f or 検索ボタン
+  (入替: dropzoneで頑張って実装)
   (変更: jsonいじってくれ)
 
 リスト削除をやりやすくする:
   一番上から出来るようにして → 薄暗いなかに確認ボタン(エンターで決定|Escで戻る)
+  .ul-title に追加ボタンを付ける?
 
+navbar-top も fixed にすれば50pxでいけるかも？
+変更キャンセルボタン？
 (undo はサーバー側で自動で git add commit するようにする or スタックを実装)
 */
 
@@ -90,6 +117,25 @@ Array.prototype.groupBy = function(keyFunc) {
 
 module.exports = {
   methods: {
+    beforeAddGenre() {
+      this.blackoutPalletType = "addGenre";
+    },
+    escapeBlackout() {
+      this.blackoutPalletType = "";
+    },
+    decidedAtBlackout() {
+      if (!this.isDecided()) return;
+      switch (this.blackoutPalletType) {
+        case "addGenre":
+          break;
+        case "find":
+          break;
+        default:
+          break;
+      }
+      this.blackoutPallet = "";
+      this.blackoutPalletType = "";
+    },
     getGenreName(genreId) {
       return this.genres[genreId - 1].name;
     },
@@ -106,8 +152,11 @@ module.exports = {
     updateMemo(data) {
       this.updateContent(data.id, data);
     },
+    isDecided() {
+      return window.event.keyCode === 13;
+    },
     addMemo(data) {
-      if (window.event.keyCode !== 13) return;
+      if (!this.isDecided()) return;
       let title = $.trim(this.commandPallet);
       if (title === "") return;
       data = {
@@ -188,6 +237,8 @@ module.exports = {
       currentGenre: 0,
       currentHow: 0,
       commandPallet: "",
+      blackoutPallet: "",
+      blackoutPalletType: "", // addGenre / find / ""
       socket: this.getSocket()
     };
   },
@@ -255,6 +306,10 @@ module.exports = {
   },
   mounted() {
     this.socket.connect();
+    // $(window).bind("keydown.ctrl_f keydown.meta_s", event => {
+    // alert("");
+    // event.preventDefault();
+    // });
   },
   components: {
     memo: Memo
@@ -262,14 +317,20 @@ module.exports = {
 };
 </script>
 <style scoped lang="less">
-.under-fixed-top {
-  padding-top: 50px;
-}
 @dark-color: #222;
 @accent-color : hsl(208, 40%, 50%);
 @accent-color2: hsl(208, 15%, 77%);
 @accent-color3: hsl(208, 50%, 70%);
 @sidebar-size: 10em;
+.under-fixed-top {
+  padding-top: 50px;
+}
+.over-fixed-buttom {
+  margin-bottom: 4em;
+}
+.clickable {
+  cursor: pointer;
+}
 
 .sidebar {
   transition: all 0.3s;
@@ -286,21 +347,23 @@ module.exports = {
   // opacity: 0.75;
   background: @accent-color2 + #333;
   box-shadow: 0.1em 0 0.2em rgba(0, 0, 0, 0.2);
-}
-.top-bar {
-  box-shadow: 0.4em 0.4em 0.4em rgba(0, 0, 0, 0.2);
-  .num-label {
-    font-size: 0.7em;
-    padding-top: 0em;
-    margin-top: 0em;
-    padding-left: 0.8em;
-    color: #777;
+  &::-webkit-scrollbar {
     display: none;
   }
 }
+.top-bar {
+  .navbar-brand {
+    box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
+    border-left: 1px solid #444;
+    &.active {
+      background-color: #558;
+    }
+  }
+  box-shadow: 0.4em 0.4em 0.4em rgba(0, 0, 0, 0.2);
+}
 .content {
   margin-top: 1em;
-  margin-right: 1em;
+  width: auto;
   margin-left: @sidebar-size;
   .ul-title {
     font-size: 1.2em;
@@ -337,13 +400,6 @@ module.exports = {
     padding: 0.3em;
   }
 }
-.navbar-brand {
-  box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
-  border-left: 1px solid #444;
-  &.active {
-    background-color: #558;
-  }
-}
 .navbar-fixed-bottom {
   margin-bottom: 0em;
   padding-bottom: 0em;
@@ -352,11 +408,55 @@ module.exports = {
     padding-bottom: 0em;
   }
 }
-.clickable {
-  cursor: pointer;
+.pallet {
+  .pallet-back {
+    font-size: 1.5em;
+    margin: 0;
+    margin-right: 0.4em;
+    padding: 0;
+    .pallet-icon {
+      margin-left: 1em;
+    }
+  }
+  .pallet-addon {
+    background-color: #fff;
+  }
+  .commandpallet {
+    overflow: auto;
+  }
+  li {
+    background-color: #00000000;
+    border-color: #00000000;
+  }
 }
-.over-fixed-buttom {
-  margin-bottom: 4em;
-  // padding-bottom: 3em;
+.fadelayer {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 10000;
+  .blackout {
+    background-color: #000;
+    opacity: 0.5;
+    width: 100vw;
+    height: 100vh;
+    // visibility: hidden;
+  }
+  ul {
+    position: fixed;
+    top: 48%;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+  }
+  ul {
+    padding-right: 1em;
+    margin-right: 1em;
+  }
+  li {
+    background-color: #00000000;
+    border-color: #00000000;
+    margin-left: @sidebar-size;
+    margin-right: 2em;
+  }
 }
 </style>
