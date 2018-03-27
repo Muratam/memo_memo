@@ -43,6 +43,7 @@ function loadDataSync() {
     let data = fs.readFileSync(saveFileName, 'utf8');
     return JSON.parse(data);
   } catch (err) {
+    console.log('###ERROR###', err);
     return sampleData;
   }
 }

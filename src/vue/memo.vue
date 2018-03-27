@@ -36,7 +36,8 @@ module.exports = {
       this.finishEditing();
     },
     autoGrow(element) {
-      element.setAttribute("rows", this.body.split("\n").length);
+      let rows = this.body.split("\n").length;
+      element.setAttribute("rows", rows <= 2 ? 2 : rows);
     },
     trash() {
       this.$emit("trash", this.serialized());
