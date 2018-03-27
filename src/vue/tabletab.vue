@@ -46,7 +46,7 @@
                 ) {{ memoGroup.name }}
             span.num-label.label {{ memoGroup.memos.length }}
             .pull-right
-              span.right-icon.clickable(@click="getContents(memoGroup.linkGenre,memoGroup.linkHow)")
+              span.right-icon.clickable(@click="getContents(memoGroup.genre,memoGroup.how)")
                 i.fas.fa-arrow-alt-circle-right
         //- 各リスト
         .collapse.in(:id="memoGroup.id")
@@ -191,13 +191,6 @@ module.exports = {
       }
       return res.slice(-length);
     },
-    findIndexById(id) {
-      for (let i = 0; i < this.contents.length; i++) {
-        const content = this.contents[i];
-        if (content.id === id) return i;
-      }
-      return null;
-    },
     checkDeletedGenres() {
       let genreIds = this.contents.groupBy(x => x.genre).map(x => x.key);
       genreIds.push("trash");
@@ -215,7 +208,7 @@ module.exports = {
       this.socket.emit("update-genres", this.genres);
     },
     updateContent(id, content) {
-      let index = this.findIndexById(id);
+      let index = this.contents.findIndex(x => x.id === id);
       // url に http を付与
       if (
         content !== null &&
@@ -224,7 +217,7 @@ module.exports = {
       ) {
         content.url = "http://" + content.url;
       }
-      if (index === null) {
+      if (index === -1) {
         // 無ければ末尾に追加
         if (content === null) return;
         if ($.trim(id) === "") content.id = this.getRandomHash();
@@ -300,9 +293,11 @@ module.exports = {
             .map(x => ({
               name: this.getHowName(x.key),
               memos: x.value,
-              linkGenre: "all",
-              linkHow: x.key
+              genre: "all",
+              how: x.key,
+              index: this.hows.findIndex(h => h.id === x.key)
             }));
+          memos.sort((a, b) => a.index - b.index);
         } else {
           // How指定無し
           memos = this.contents
@@ -313,9 +308,11 @@ module.exports = {
                 x.key
               )}`,
               memos: x.value,
-              linkGenre: this.currentGenre,
-              linkHow: x.key
+              genre: this.currentGenre,
+              how: x.key,
+              index: this.hows.findIndex(h => h.id === x.key)
             }));
+          memos.sort((a, b) => a.index - b.index);
         }
       } else {
         if (this.currentGenre === "all") {
@@ -329,9 +326,11 @@ module.exports = {
                 this.currentHow
               )}`,
               memos: x.value,
-              linkGenre: x.key,
-              linkHow: this.currentHow
+              genre: x.key,
+              how: this.currentHow,
+              index: this.genres.findIndex(g => g.id === x.key)
             }));
+          memos.sort((a, b) => a.index - b.index);
         } else {
           memos = this.contents
             .filter(
@@ -346,8 +345,8 @@ module.exports = {
             {
               name: name,
               memos: memos,
-              linkGenre: this.currentGenre,
-              linkHow: this.currentHow
+              genre: this.currentGenre,
+              how: this.currentHow
             }
           ];
         }
