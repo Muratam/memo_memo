@@ -92,7 +92,7 @@
 </template>
 <script>
 import Memo from "./memo.vue";
-import io from "socket.io-client";
+import SaveData from "../js/savedata";
 Array.prototype.groupBy = function(keyFunc) {
   let res = {};
   this.forEach(c => {
@@ -138,7 +138,7 @@ module.exports = {
     addGenre(genreName) {
       let genreId = this.getRandomHash();
       this.genres.push({ name: genreName, id: genreId });
-      this.socket.emit("update-genres", this.genres);
+      this.saveData.save("genres", this.genres);
       let content = this.makeEmptyContent(genreId, this.currentHow);
       this.updateContent(content.id, content);
       this.currentGenre = genreId;
@@ -210,7 +210,7 @@ module.exports = {
       if (!updated) return;
       this.genres = newGenres;
       this.currentGenre = "all";
-      this.socket.emit("update-genres", this.genres);
+      this.saveData.save("genres", this.genres);
     },
     updateContent(id, content) {
       let index = this.contents.findIndex(x => x.id === id);
@@ -252,25 +252,7 @@ module.exports = {
         content.how = this.contents[index].how;
         this.contents.splice(index, 1, content);
       }
-      this.socket.emit("update-contents", this.contents);
-    },
-    getSocket() {
-      const socket = io(location.origin, { autoConnect: false });
-      // socket.on("connect", () => console.log("connect"));
-      socket.on("disconnect", () => {
-        alert("disconnected...");
-      });
-      // genres/hows/contents更新
-      socket.on("init", data => {
-        this.genres = data.genres;
-        this.hows = data.hows;
-        this.contents = data.contents;
-      });
-      // contents更新
-      socket.on("set-contents", contents => {
-        this.contents = contents;
-      });
-      return socket;
+      this.saveData.save("contents", this.contents);
     }
   },
   data() {
@@ -284,7 +266,7 @@ module.exports = {
       blackoutPallet: "",
       findQuery: "",
       blackoutPalletType: "", // addGenre / ""
-      socket: this.getSocket()
+      saveData: new SaveData("webSocket")
     };
   },
   computed: {
@@ -384,9 +366,29 @@ module.exports = {
     }
   },
   mounted() {
-    this.socket.connect();
-    // esc:27
+    this.saveData.setDefaultData("genres", [
+      { name: "❓", id: "temporary" },
+      { name: "🗑", id: "trash" }
+    ]);
+    this.saveData.setDefaultData("hows", [
+      { name: "Todo", id: "todo" },
+      { name: "Later", id: "later" },
+      { name: "URL", id: "url" },
+      { name: "Study", id: "study" }
+    ]);
+    this.saveData.setDefaultData("contents", []);
+    this.saveData.setLoadCallback("genres", genres => {
+      this.genres = genres;
+    });
+    this.saveData.setLoadCallback("hows", hows => {
+      this.hows = hows;
+    });
+    this.saveData.setLoadCallback("contents", contents => {
+      this.contents = contents;
+    });
+    this.saveData.ready();
     $(document).keydown(e => {
+      // esc:27
       if (e.keyCode === 27) this.escapeBlackout();
     });
   },

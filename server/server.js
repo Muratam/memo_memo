@@ -16,27 +16,6 @@ function updateGenres(genres) {
   savedData.genres = genres;
   fs.writeFile(saveFileName, JSON.stringify(savedData, null, '  '));
 }
-/* // WARN: idを指定して一部操作系は後ほど？
-  function findIndexById(contents, id) {
-    for (let i = 0; i < contents.length; i++) {
-      if (contents[i].id === id) return i
-    }
-    return null;
-  }
-  function updateContent(content) {
-    let savedData = loadDataSync();
-    let index = findIndexById(savedData.contents, content.id);
-    if (index === null) return;
-    savedData.contents[index] = content;
-    fs.writeFile(saveFileName, JSON.stringify(savedData));
-  }
-  function getContent(id) {
-    let savedData = loadDataSync();
-    let index = findIndexById(savedData.contents, id);
-    if (index === null) return null;
-    return savedData.contents[index];
-  }
-*/
 
 function loadDataSync() {
   try {
@@ -51,20 +30,12 @@ function loadDataSync() {
 
 server.io.on('connection', (socket) => {
   console.log('new connection');
-  socket.emit('init', loadDataSync());
-  socket.on('update-contents', updateContents);
-  socket.on('update-genres', updateGenres);
-  socket.on('get-contents', _ => {
-    socket.emit('set-contents', loadDataSync().contents);
-  });
-  /* // idを指定して一部操作系
-    socket.on('update-content', updateContent);
-    socket.on('get-content', id => {
-      let content = getContent(id);
-      if (content === null) return;
-      socket.emit('set-content', content);
-    });
-  */
+  socket.on('contents', updateContents);
+  socket.on('genres', updateGenres);
+  let emitData = loadDataSync();
+  socket.emit('contents', emitData.contents);
+  socket.emit('genres', emitData.genres);
+  socket.emit('hows', emitData.hows);
   // 接続全員と共有は後で
   // server.io.sockets.emit('hello', 'hello!!');
 });
