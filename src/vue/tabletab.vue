@@ -348,7 +348,7 @@ module.exports = {
           ];
         }
       }
-      for (let memo of memos) memo.id = this.getRandomHash();
+      for (let memo of memos) memo.id = this.getRandomHash(); // memo.genre + "-" + memo.how;
       return memos;
     },
     visibleMemoCount() {

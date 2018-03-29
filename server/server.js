@@ -30,14 +30,20 @@ function loadDataSync() {
 
 server.io.on('connection', (socket) => {
   console.log('new connection');
-  socket.on('contents', updateContents);
-  socket.on('genres', updateGenres);
   let emitData = loadDataSync();
   socket.emit('contents', emitData.contents);
   socket.emit('genres', emitData.genres);
   socket.emit('hows', emitData.hows);
-  // 接続全員と共有は後で
-  // server.io.sockets.emit('hello', 'hello!!');
+  // 雑に接続全員と共有は後で
+  socket.on('contents', x => {
+    updateContents(x);
+    server.io.sockets.emit('contents', x);
+  });
+  socket.on('genres', x => {
+    updateGenres(x);
+    server.io.sockets.emit('genres', x);
+  });
+
 });
 
 
