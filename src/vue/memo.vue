@@ -25,6 +25,7 @@
       textarea(
           ref="textarea"
           v-model="body" rows="3"
+          v-on:keydown="checkDecided($event)"
           v-on:keyup="autoGrow($event.target)")
 
 </template>
@@ -35,9 +36,14 @@ module.exports = {
       if (window.event.keyCode !== 13) return;
       this.finishEditing();
     },
+    checkDecided(event) {
+      if (event.key !== "Enter") return;
+      if (!event.metaKey) return;
+      this.finishEditing();
+    },
     autoGrow(element) {
       let rows = this.body.split("\n").length;
-      element.setAttribute("rows", rows <= 2 ? 2 : rows);
+      element.setAttribute("rows", rows <= 3 ? 3 : rows);
     },
     trash() {
       this.$emit("trash", this.serialized());
