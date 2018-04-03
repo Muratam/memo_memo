@@ -17,8 +17,10 @@
         input.form-control.commandpallet(
             type="text" v-model="findQuery"
             @keydown="addMemo"
+            :class="{ active: findQuery !== '' }"
             id="commandPallet")
-        span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon
+        span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon(
+            :class="{ active: findQuery !== '' }")
           i.fas.fa-search.pallet-icon
 
   .under-fixed-top
@@ -44,7 +46,7 @@
     .content.over-fixed-buttom
       //- 何も無い時
       ul.list-group(v-if="visibleMemoCount === 0")
-        .ul-title No memos...
+        .ul-title {{ findQuery === "" ? "No memos..." : `No matching for "${findQuery}"` }}
       //- 各リストグループ
       ul.list-group(v-for="memoGroup in visibleContents" :key="memoGroup.id")
         //- グループ情報
@@ -446,11 +448,17 @@ module.exports = {
       background: #111;
       color: #666;
       border-color: #00000000;
+      &.active {
+        color: #ddd;
+      }
     }
     span {
       background: #111;
-      color: #666;
       border-color: #00000000;
+      color: #666;
+      &.active {
+        color: #ddd;
+      }
     }
   }
 }
