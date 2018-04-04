@@ -1,14 +1,20 @@
 <template lang="pug">
-.memo
+.memo(ref="elemroot")
   .clearfix(v-if="!isediting")
     .pull-right
       span.right-icon.clickable(@click="startEditing")
         i.fas.fa-edit
       span.right-icon.clickable(@click="trash")
         i.fas.fa-times
-    a(:href="url" v-if="url" target="_blank") {{ title }}
-    div(v-if="!url") {{ title }}
-    .bodytext(v-if="body") {{ body }}
+    div(ref="infoarea")
+      span.left-icon.clickable(
+          draggable="true"
+          @dragstart="dragStart($event)"
+          @dragend="dragEnd($event)")
+        i.fas.fa-arrows-alt
+      a(:href="url" v-if="url" target="_blank") {{ title }}
+      span(v-if="!url") {{ title }}
+      .bodytext(v-if="body") {{ body }}
   .clearfix( v-if="isediting")
     .pull-right
       span.right-icon.clickable(@click="finishEditing")
@@ -35,6 +41,16 @@ module.exports = {
     submit() {
       if (window.event.keyCode !== 13) return;
       this.finishEditing();
+    },
+    dragStart(event) {
+      this.$refs.elemroot.style.opacity = "0.4";
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("memo", JSON.stringify(this.serialized()));
+      event.dataTransfer.setDragImage(this.$refs.infoarea, -10, -10);
+    },
+    dragEnd(event) {
+      if (!this.$refs.elemroot) return;
+      this.$refs.elemroot.style.opacity = "1.0";
     },
     checkDecided(event) {
       if (event.key !== "Enter") return;
@@ -82,9 +98,17 @@ module.exports = {
 };
 </script>
 <style scoped lang="less">
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
 .memo {
   max-height: 100vh;
-  transition: all 1s ease;
+  // transition: all 1s ease;
   overflow: auto;
 }
 .clickable {
@@ -96,6 +120,16 @@ module.exports = {
   color: #ccc;
   &:hover {
     color: #888;
+  }
+}
+.left-icon {
+  margin-left: 0.3em;
+  margin-right: 0.3em;
+  font-size: 0.3em;
+  color: #ddd;
+  &:hover {
+    color: #888;
+    cursor: move;
   }
 }
 .space-right {

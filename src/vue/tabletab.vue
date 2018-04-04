@@ -6,11 +6,16 @@
         @click="getContents('all','all')") memo-memo
     .navbar-brand.header.clickable(
         :class="{ active: currentHow === 'all'}"
+        drop="console.log"
         @click="getContents(null,'all')") All
     .navbar-brand.clickable(
         v-for="(tab,i) in hows"
         :class="{ active: currentHow === tab.id}"
         :key="tab.id"
+        @dragover="$event.preventDefault()"
+        @dragenter="$event.target.classList.add('dropping')"
+        @dragleave="$event.target.classList.remove('dropping')"
+        @drop="dropUpdate($event,tab.id,null)"
         @click="getContents(null,tab.id)") {{ tab.name }}
     .navbar-brand.col-xs-2.pull-right.findbox
       .input-group.input-group-sm.has-feedback
@@ -37,7 +42,10 @@
               :class="{ active: currentGenre === side.id}"
               @click="getContents(side.id,null)"
               :key="side.id"
-              draggable="true")
+              @dragover="$event.preventDefault()"
+              @dragenter="$event.target.classList.add('dropping')"
+              @dragleave="$event.target.classList.remove('dropping')"
+              @drop="dropUpdate($event,null,side.id)")
             a.nav-link {{ side.name }}
           li.nav-item.clickable(@click="startBlackout('addGenre')")
             a.nav-link
@@ -108,6 +116,18 @@ Array.prototype.groupBy = function(keyFunc) {
 
 module.exports = {
   methods: {
+    dropUpdate(event, how, genre) {
+      event.preventDefault();
+      event.target.classList.remove("dropping");
+      let data = event.dataTransfer.getData("memo");
+      if (!data) return;
+      data = JSON.parse(data);
+      let savedData = this.contents.find(x => x.id === data.id);
+      if (!savedData) return;
+      data.genre = genre ? genre : savedData.genre;
+      data.how = how ? how : savedData.how;
+      this.updateContent(data.id, data);
+    },
     startBlackout(type) {
       this.blackoutPalletType = type;
     },
@@ -250,8 +270,8 @@ module.exports = {
         this.checkDeletedGenres();
       } else {
         // 普通に更新
-        content.genre = this.contents[index].genre;
-        content.how = this.contents[index].how;
+        if (!content.genre) content.genre = this.contents[index].genre;
+        if (!content.how) content.how = this.contents[index].how;
         this.contents.splice(index, 1, content);
       }
       this.saveData.save("contents", this.contents);
@@ -430,6 +450,9 @@ module.exports = {
   &::-webkit-scrollbar {
     width: 0;
   }
+  .dropping {
+    background-color: #fff;
+  }
 }
 .top-bar {
   .navbar-brand {
@@ -437,6 +460,9 @@ module.exports = {
     border-left: 1px solid #444;
     &.active {
       background-color: #558;
+    }
+    &.dropping {
+      background-color: #338;
     }
   }
   box-shadow: 0.4em 0.4em 0.4em rgba(0, 0, 0, 0.2);
