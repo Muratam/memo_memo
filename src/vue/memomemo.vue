@@ -5,7 +5,7 @@
     sidebar
     contents
     bottompallet
-  blackoutpallet
+  //- blackoutpallet
 
 </div>
 </template>

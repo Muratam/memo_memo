@@ -19,21 +19,27 @@
           @dragover="$event.preventDefault()"
           @dragenter="$event.target.classList.add('dropping')"
           @dragleave="$event.target.classList.remove('dropping')"
-          @drop="swapContent($event,memo.id)") {{ memo.id }}
-        //- memo(:attrs="memo" @trash="trashMemo" @update="updateMemo")
+          @drop="swapContent($event,memo.id)")
+        memo(:attrs="memo" @trash="trashMemo" @update="updateMemo")
 </template>
 <script>
 import { mapState, mapGetters } from "vuex";
 import { twoWayBind } from "../js/common";
+import Memo from "./memo";
 
 module.exports = {
   methods: {
-    swapContent() {} // TODO:
+    swapContent() {}, // TODO:
+    trashMemo() {}, // TODO:
+    updateMemo() {} // TODO:
   },
   computed: {
     ...twoWayBind(["currentGenre", "currentHow"]),
     ...mapState(["findQuery"]),
     ...mapGetters(["visibleMemoCount", "visibleContents"])
+  },
+  components: {
+    memo: Memo
   }
 };
 </script>
