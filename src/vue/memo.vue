@@ -23,23 +23,34 @@
         i.fas.fa-times
     .input-group.input-group-sm.col-xs-12
       span.input-group-addon URL
-      input.urltext.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url" @keydown="submit")
+      input.urltext.form-control.col-xs-5(
+          type="text" placeholder="https://..."
+          v-model="url" @keydown="finishIfEnter($event)")
     .input-group.input-group-sm.col-xs-12
       span.input-group-addon Title
-      input.form-control(type="text" v-model="title" @keydown="submit")
+      input.form-control(
+          type="text" v-model="title"
+          @keydown="finishIfEnter($event)")
     .input-group.input-group-sm.col-xs-12
       textarea(
           ref="textarea"
           v-model="body" rows="3"
-          v-on:keydown="checkDecided($event)"
+          v-on:keydown="finishIfCmdEnter($event)"
           v-on:keyup="autoGrow($event.target)")
 
 </template>
 <script>
+import { getRandomHash } from "../js/common";
+
 module.exports = {
   methods: {
-    submit() {
-      if (window.event.keyCode !== 13) return;
+    finishIfEnter(event) {
+      if (event.key !== "Enter") return;
+      this.finishEditing();
+    },
+    finishIfCmdEnter(event) {
+      if (event.key !== "Enter") return;
+      if (!event.metaKey) return;
       this.finishEditing();
     },
     dragStart(event) {
@@ -52,17 +63,12 @@ module.exports = {
       if (!this.$refs.elemroot) return;
       this.$refs.elemroot.style.opacity = "1.0";
     },
-    checkDecided(event) {
-      if (event.key !== "Enter") return;
-      if (!event.metaKey) return;
-      this.finishEditing();
-    },
     autoGrow(element) {
       let rows = this.body.split("\n").length;
       element.setAttribute("rows", rows <= 3 ? 3 : rows);
     },
     trash() {
-      this.$emit("trash", this.serialized());
+      // this.$emit("trash", this.serialized()); // TODO: trashMemo
     },
     startEditing() {
       this.isediting = true;
@@ -73,7 +79,7 @@ module.exports = {
     finishEditing() {
       if ($.trim(this.title) === "" && $.trim(this.url) === "") return;
       this.isediting = false;
-      this.$emit("update", this.serialized());
+      // this.$emit("update", this.serialized()); // TODO: updateMemo
     },
     serialized() {
       return {
@@ -82,19 +88,19 @@ module.exports = {
         id: this.id,
         title: $.trim(this.title)
       };
+    },
+    getData(data = {}) {
+      // TODO:
+      let { url = "", title = "", body = "" } = data;
+      let { id = getRandomHash(), genre = "", how = "" } = data;
+      return { url, title, body, id, genre, how, isediting: false };
     }
   },
   data() {
-    return {
-      title: this.attrs.title || "",
-      url: this.attrs.url || "",
-      body: this.attrs.body || "",
-      isediting: this.attrs.isediting || false,
-      id: this.attrs.id || ""
-    };
+    // TODO:
+    return this.getData(this._props.data);
   },
-  props: ["attrs"]
-  //   watch: { abc(val, oldVal) {} }
+  props: ["data"]
 };
 </script>
 <style scoped lang="less">

@@ -20,7 +20,7 @@
           @dragenter="$event.target.classList.add('dropping')"
           @dragleave="$event.target.classList.remove('dropping')"
           @drop="swapContent($event,memo.id)")
-        memo(:attrs="memo" @trash="trashMemo" @update="updateMemo")
+        memo( :data="memo")
 </template>
 <script>
 import { mapState, mapGetters } from "vuex";

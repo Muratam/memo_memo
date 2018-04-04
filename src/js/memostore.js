@@ -1,21 +1,10 @@
 import Vue from 'vue/dist/vue.esm.js';
 import Vuex from 'vuex';
-import {mutation} from '../js/common'
+
+import {getRandomHash, mutation} from '../js/common'
 import SaveData from '../js/savedata';
 
 Vue.use(Vuex);
-Array.prototype.groupBy = function(keyFunc) {
-  let res = {};
-  this.forEach(c => {
-    let key = keyFunc(c);
-    if (key in res)
-      res[key].push(c);
-    else
-      res[key] = [c];
-  });
-  // WARN: 暗黙の型変換が入るので注意！！
-  return Object.keys(res).map(k => ({key: k, value: res[k]}));
-};
 
 export default new Vuex.Store({
   state: {
@@ -41,13 +30,6 @@ export default new Vuex.Store({
       }
       console.log('no genre', genreId);
       return 'all';
-    },
-    randomHash: state => (length = 32) => {
-      let res = '';
-      while (res.length < length) {
-        res += Math.random().toString(36).slice(-8);
-      }
-      return res.slice(-length);
     },
     visibleContents: (state, getters) => {
       let memos = [];
@@ -120,7 +102,7 @@ export default new Vuex.Store({
           }];
         }
       }
-      for (let memo of memos) memo.id = getters.randomHash();
+      for (let memo of memos) memo.id = getRandomHash();
       return memos;
     },
     visibleMemoCount: (state, getters) => {
