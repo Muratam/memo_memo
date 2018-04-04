@@ -42,10 +42,12 @@
               :class="{ active: currentGenre === side.id}"
               @click="getContents(side.id,null)"
               :key="side.id"
+              draggable="true"
+              @dragstart="$event.dataTransfer.setData('sideid', side.id)"
               @dragover="$event.preventDefault()"
               @dragenter="$event.target.classList.add('dropping')"
               @dragleave="$event.target.classList.remove('dropping')"
-              @drop="dropUpdate($event,null,side.id)")
+              @drop="sidebarDrop($event,side.id)")
             a.nav-link {{ side.name }}
           li.nav-item.clickable(@click="startBlackout('addGenre')")
             a.nav-link
@@ -120,11 +122,27 @@ Array.prototype.groupBy = function(keyFunc) {
 
 module.exports = {
   methods: {
+    sidebarDrop(event, sideId) {
+      event.preventDefault();
+      event.target.classList.remove("dropping");
+      let transferSideId = event.dataTransfer.getData("sideid");
+      if (transferSideId === "") return this.dropUpdate(event, null, sideId);
+      let aIndex = this.genres.findIndex(x => x.id == transferSideId);
+      let bIndex = this.genres.findIndex(x => x.id == sideId);
+      if (aIndex === -1 || bIndex === -1) return;
+      if (aIndex === bIndex) return;
+      // 入れ替えは直感的ではないのでAを削除してBの下に追加で
+      let aGenre = this.genres[aIndex];
+      this.genres.splice(aIndex, 1);
+      bIndex = this.genres.findIndex(x => x.id == sideId);
+      this.genres.splice(bIndex, 0, aGenre);
+      this.saveData.save("genres", this.genres);
+    },
     dropUpdate(event, how, genre) {
       event.preventDefault();
       event.target.classList.remove("dropping");
       let data = event.dataTransfer.getData("memo");
-      if (!data) return;
+      if (data === "") return;
       data = JSON.parse(data);
       let savedData = this.contents.find(x => x.id === data.id);
       if (!savedData) return;
@@ -142,6 +160,7 @@ module.exports = {
       if (dataAIndex === -1) return;
       let dataBIndex = this.contents.findIndex(x => x.id === memoid);
       if (dataBIndex === -1) return;
+      if (dataAIndex === dataBIndex) return;
       let dataA = this.contents[dataAIndex];
       let dataB = this.contents[dataBIndex];
       if (dataA.genre === dataB.genre && dataA.how === dataB.how) {
