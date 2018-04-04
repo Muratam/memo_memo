@@ -1,0 +1,81 @@
+<template lang="pug">
+.content.over-fixed-buttom
+  //- 何も無い時
+  ul.list-group(v-if="visibleMemoCount === 0")
+    .ul-title {{ findQuery === "" ? "No memos..." : `No matching for "${findQuery}"` }}
+  //- 各リストグループ
+  ul.list-group(v-for="memoGroup in visibleContents" :key="memoGroup.id")
+    //- グループ情報
+    .ul-title(v-if="memoGroup.memos.length > 0")
+      .clearfix
+        span.clickable.name(
+            data-toggle="collapse" :data-target="'#'+memoGroup.id"
+            ) {{ memoGroup.name }}
+        span.num-label.label {{ memoGroup.memos.length }}
+        .pull-right
+          span.right-icon.clickable(@click="getContents(memoGroup.genre,memoGroup.how)")
+            i.fas.fa-arrow-alt-circle-right
+    //- 各リスト
+    .collapse.in(:id="memoGroup.id")
+      li.list-group-item(
+          v-for="memo in memoGroup.memos"
+          :key="memo.id"
+          @dragover="$event.preventDefault()"
+          @dragenter="$event.target.classList.add('dropping')"
+          @dragleave="$event.target.classList.remove('dropping')"
+          @drop="swapContent($event,memo.id)")
+        memo(:attrs="memo" @trash="trashMemo" @update="updateMemo")
+</template>
+<script>
+module.exports = {
+  methods: {},
+  data() {},
+  props: []
+};
+</script>
+<style scoped lang="less">
+@import "../css/common.less";
+.content {
+  margin-top: 1em;
+  width: auto;
+  margin-left: @sidebar-size;
+  margin-right: 0.8em;
+  .ul-title {
+    font-size: 1.2em;
+    padding: 0.35em 0.4em 0.4em 0.8em;
+    background: @accent-color3;
+    color: #fff;
+    .num-label {
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+      font-size: 0.8em;
+      margin-top: 1em;
+      padding-top: 0em;
+      padding-bottom: 0em;
+      background-color: @accent-color3 + #111;
+      color: @accent-color3 + #444;
+    }
+    .right-icon {
+      margin: 0em 0.3em 0em 0.3em;
+      color: #ddf;
+      &:hover {
+        color: #eef;
+      }
+    }
+    .name {
+      padding: 0.3em 0.5em 0.4em 0em;
+      // background: #fff;
+    }
+  }
+  .list-group {
+    box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.2);
+  }
+  .list-group-item {
+    color: #333;
+    padding: 0.3em;
+    &.dropping {
+      background-color: @accent-color2;
+    }
+  }
+}
+</style>

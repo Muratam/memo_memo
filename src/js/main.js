@@ -1,5 +1,7 @@
 'use strict';
 window.$ = window.jQuery = require('jquery');
 import Vue from 'vue/dist/vue.esm.js';
-import TableTab from '../vue/tabletab.vue';
-new Vue(TableTab).$mount('#app');
+import memoMemo from '../vue/memomemo.vue';
+import MemoStore from '../js/memostore';
+memoMemo.store = MemoStore;
+new Vue(memoMemo).$mount('#app');

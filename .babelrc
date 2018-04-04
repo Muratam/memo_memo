@@ -1,1 +1,4 @@
-{"presets":["env"]}
+{
+    "presets": ["env", "vue"],
+    "plugins": ["transform-object-rest-spread"]
+}
