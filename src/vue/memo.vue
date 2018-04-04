@@ -98,14 +98,8 @@ module.exports = {
 };
 </script>
 <style scoped lang="less">
-[draggable] {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-  -khtml-user-drag: element;
-  -webkit-user-drag: element;
-}
+@import "../css/common.less";
+
 .memo {
   max-height: 100vh;
   // transition: all 1s ease;

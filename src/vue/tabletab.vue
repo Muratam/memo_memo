@@ -30,17 +30,18 @@
 
   .under-fixed-top
     //- 左サイドバー
+    //- sidebar
     .row
       .sidebar.col-sm-3
         ul.nav.nav-pills.nav-stacked
           li.nav-item.clickable(
-              :class="{ active: currentGenre ===  'all'}"
+              :class="{ active: currentGenre ===  'all' }"
               @click="getContents('all',null)")
             a.nav-link All
           li.nav-item.clickable(
               v-for="(side,i) in genres"
-              :class="{ active: currentGenre === side.id}"
-              @click="getContents(side.id,null)"
+              :class="{ active: currentGenre === side.id }"
+              @click="sidebarClick($event,side.id)"
               :key="side.id"
               draggable="true"
               @dragstart="$event.dataTransfer.setData('sideid', side.id)"
@@ -48,7 +49,12 @@
               @dragenter="$event.target.classList.add('dropping')"
               @dragleave="$event.target.classList.remove('dropping')"
               @drop="sidebarDrop($event,side.id)")
-            a.nav-link {{ side.name }}
+            //- a.nav-link {{ side.name }}
+            //- .input-group.rename-genre
+              input.form-control.rename-genre(
+                  type="text" placeholder="Rename Genre"
+                  @keydown="submitRenameGenre($event,side.id)")
+              //-  v-model="url" @keydown="submit"
           li.nav-item.clickable(@click="startBlackout('addGenre')")
             a.nav-link
               i.fas.fa-plus
@@ -108,6 +114,7 @@
 </template>
 <script>
 import Memo from "./memo.vue";
+import SideBar from "./sidebar.vue";
 import SaveData from "../js/savedata";
 Array.prototype.groupBy = function(keyFunc) {
   let res = {};
@@ -122,6 +129,13 @@ Array.prototype.groupBy = function(keyFunc) {
 
 module.exports = {
   methods: {
+    sidebarClick(event, sideId) {
+      if (this.currentGenre !== sideId) return this.getContents(sideId, null);
+      // rename
+    },
+    submitRenameGenre(event, sideId) {
+      console.log(event.target, sideId);
+    },
     sidebarDrop(event, sideId) {
       event.preventDefault();
       event.target.classList.remove("dropping");
@@ -462,25 +476,13 @@ module.exports = {
     });
   },
   components: {
-    memo: Memo
+    memo: Memo,
+    sidebar: SideBar
   }
 };
 </script>
 <style scoped lang="less">
-@dark-color: #222;
-@accent-color : hsl(208, 40%, 50%);
-@accent-color2: hsl(208, 15%, 77%);
-@accent-color3: hsl(208, 50%, 70%);
-@sidebar-size: 11em;
-.under-fixed-top {
-  padding-top: 50px;
-}
-.over-fixed-buttom {
-  margin-bottom: 50vh;
-}
-.clickable {
-  cursor: pointer;
-}
+@import "../css/common.less";
 
 .sidebar {
   transition: all 0.3s;
@@ -500,6 +502,10 @@ module.exports = {
   .dropping {
     background-color: #fff;
   }
+  .rename-genre {
+    background: @accent-color2 + #333;
+    border: 0 solid #fff;
+  }
 }
 .top-bar {
   .navbar-brand {
@@ -510,6 +516,9 @@ module.exports = {
     }
     &.dropping {
       background-color: #338;
+    }
+    .feedbackicon {
+      padding-right: 1.5em;
     }
   }
   box-shadow: 0.4em 0.4em 0.4em rgba(0, 0, 0, 0.2);
@@ -534,9 +543,6 @@ module.exports = {
       }
     }
   }
-}
-.feedbackicon {
-  padding-right: 1.5em;
 }
 .content {
   margin-top: 1em;
