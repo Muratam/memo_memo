@@ -71,7 +71,11 @@
         .collapse.in(:id="memoGroup.id")
           li.list-group-item(
               v-for="memo in memoGroup.memos"
-              :key="memo.id")
+              :key="memo.id"
+              @dragover="$event.preventDefault()"
+              @dragenter="$event.target.classList.add('dropping')"
+              @dragleave="$event.target.classList.remove('dropping')"
+              @drop="swapContent($event,memo.id)")
             memo(:attrs="memo" @trash="trashMemo" @update="updateMemo")
     //- 下のコマンドパレット
     nav.navbar.navbar-fixed-bottom.content
@@ -127,6 +131,30 @@ module.exports = {
       data.genre = genre ? genre : savedData.genre;
       data.how = how ? how : savedData.how;
       this.updateContent(data.id, data);
+    },
+    swapContent(event, memoid) {
+      event.preventDefault();
+      event.target.classList.remove("dropping");
+      let data = event.dataTransfer.getData("memo");
+      if (!data) return;
+      data = JSON.parse(data);
+      let dataAIndex = this.contents.findIndex(x => x.id === data.id);
+      if (dataAIndex === -1) return;
+      let dataBIndex = this.contents.findIndex(x => x.id === memoid);
+      if (dataBIndex === -1) return;
+      let dataA = this.contents[dataAIndex];
+      let dataB = this.contents[dataBIndex];
+      if (dataA.genre === dataB.genre && dataA.how === dataB.how) {
+        // 順番入れ替え
+        this.contents.splice(dataAIndex, 1, dataB);
+        this.contents.splice(dataBIndex, 1, dataA);
+      } else {
+        // dataA をdataBの下に追加
+        dataA.genre = dataB.genre;
+        dataA.how = dataB.how;
+        this.contents.splice(dataAIndex, 1, dataA);
+      }
+      this.saveData.save("contents", this.contents);
     },
     startBlackout(type) {
       this.blackoutPalletType = type;
@@ -529,6 +557,9 @@ module.exports = {
   .list-group-item {
     color: #333;
     padding: 0.3em;
+    &.dropping {
+      background-color: @accent-color2;
+    }
   }
 }
 .navbar-fixed-bottom {
