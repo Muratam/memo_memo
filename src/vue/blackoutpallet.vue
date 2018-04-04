@@ -13,23 +13,19 @@
             @keydown="decidedAtBlackout" id="blackoutPallet")
 </template>
 <script>
+import { mapState, mapGetters } from "vuex";
+import { twoWayBind } from "../js/common";
+
 module.exports = {
-  methods: {},
-  data() {
-    return {
-      blackoutPallet: "",
-      blackoutPalletType: "" // addGenre / ""
-    };
+  methods: {
+    escapeBlackout() {}, // TODO:
+    decidedAtBlackout() {} // TODO:
+    // TODO: こんな分かりにくい方法じゃなくて const とかでいい感じにやりたい
   },
-  watch: {
-    blackoutPalletType() {
-      this.$nextTick(() => {
-        if (this.blackoutPalletType !== "") $("#blackoutPallet").focus();
-        else $("#commandPallet").focus();
-      });
-    }
-  },
-  props: []
+  computed: {
+    ...twoWayBind(["blackoutPallet"]),
+    ...mapState(["blackoutPalletType"])
+  }
 };
 </script>
 <style scoped lang="less">

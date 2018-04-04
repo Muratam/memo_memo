@@ -2,34 +2,36 @@
 .root
   topbar
   .under-fixed-top
-    //- sidebar
-    //- contents
-    //- bottompallet
-  //- blackoutpallet
+    sidebar
+    contents
+    bottompallet
+  blackoutpallet
 
 </div>
 </template>
 <script>
 import TopBar from "./topbar";
+import SideBar from "./sidebar";
+import Contents from "./contents";
+import BottomPallet from "./bottompallet";
+import BlackoutPallet from "./blackoutpallet";
+
 module.exports = {
   mounted() {
     this.$store.commit("setupSaveData");
   },
   components: {
-    topbar: TopBar
+    topbar: TopBar,
+    sidebar: SideBar,
+    contents: Contents,
+    bottompallet: BottomPallet,
+    blackoutpallet: BlackoutPallet
   }
 };
 /*
 import Memo from "./memo.vue";
 module.exports = {
   methods: {
-    sidebarClick(event, sideId) {
-      if (this.currentGenre !== sideId) return this.getContents(sideId, null);
-      // rename
-    },
-    submitRenameGenre(event, sideId) {
-      console.log(event.target, sideId);
-    },
     sidebarDrop(event, sideId) {
       event.preventDefault();
       event.target.classList.remove("dropping");

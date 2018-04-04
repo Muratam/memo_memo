@@ -11,14 +11,16 @@ nav.navbar.navbar-fixed-bottom.content
           i.fas.fa-plus.pallet-icon
 </template>
 <script>
+import { mapState, mapGetters } from "vuex";
+import { twoWayBind } from "../js/common";
 module.exports = {
-  methods: {},
-  data() {
-    return {
-      commandPallet: ""
-    };
+  methods: {
+    addMemo() {} // TODO:
+    // TODO: css おかしい
   },
-  props: []
+  computed: {
+    ...twoWayBind(["commandPallet"])
+  }
 };
 </script>
 <style scoped lang="less">

@@ -1,10 +1,10 @@
 <template lang="pug">
 nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
   .navbar-brand.header.clickable(
-      @click="$store.commit('$currentHow','all'),$store.commit('$currentGenre','all')") memo-memo
+      @click="currentHow = 'all',currentGenre = 'all'") memo-memo
   .navbar-brand.header.clickable(
       :class="{ active: currentHow === 'all'}"
-      @click="$store.commit('$currentHow','all')") All
+      @click="currentHow = 'all'") All
   .navbar-brand.clickable(
       v-for="(tab,i) in hows"
       :class="{ active: currentHow === tab.id}"
@@ -13,7 +13,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
       @dragenter="$event.target.classList.add('dropping')"
       @dragleave="$event.target.classList.remove('dropping')"
       @drop="dropUpdate($event,tab.id,null)"
-      @click="$store.commit('$currentHow',tab.id)") {{ tab.name }}
+      @click="currentHow = tab.id") {{ tab.name }}
   .navbar-brand.col-xs-2.pull-right.findbox
     .input-group.input-group-sm.has-feedback
       input.form-control.commandpallet(
@@ -35,8 +35,8 @@ module.exports = {
     addMemo() {} // TODO:
   },
   computed: {
-    ...twoWayBind("findQuery"),
-    ...mapState(["currentHow", "hows"])
+    ...twoWayBind(["findQuery", "currentHow", "currentGenre"]),
+    ...mapState(["hows"])
   }
 };
 </script>

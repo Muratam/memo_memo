@@ -1,11 +1,8 @@
 <template lang="pug">
 .content.over-fixed-buttom
-  //- 何も無い時
   ul.list-group(v-if="visibleMemoCount === 0")
     .ul-title {{ findQuery === "" ? "No memos..." : `No matching for "${findQuery}"` }}
-  //- 各リストグループ
   ul.list-group(v-for="memoGroup in visibleContents" :key="memoGroup.id")
-    //- グループ情報
     .ul-title(v-if="memoGroup.memos.length > 0")
       .clearfix
         span.clickable.name(
@@ -13,9 +10,8 @@
             ) {{ memoGroup.name }}
         span.num-label.label {{ memoGroup.memos.length }}
         .pull-right
-          span.right-icon.clickable(@click="getContents(memoGroup.genre,memoGroup.how)")
+          span.right-icon.clickable(@click="currentGenre = memoGroup.genre,currentHow = memoGroup.how")
             i.fas.fa-arrow-alt-circle-right
-    //- 各リスト
     .collapse.in(:id="memoGroup.id")
       li.list-group-item(
           v-for="memo in memoGroup.memos"
@@ -23,14 +19,22 @@
           @dragover="$event.preventDefault()"
           @dragenter="$event.target.classList.add('dropping')"
           @dragleave="$event.target.classList.remove('dropping')"
-          @drop="swapContent($event,memo.id)")
-        memo(:attrs="memo" @trash="trashMemo" @update="updateMemo")
+          @drop="swapContent($event,memo.id)") {{ memo.id }}
+        //- memo(:attrs="memo" @trash="trashMemo" @update="updateMemo")
 </template>
 <script>
+import { mapState, mapGetters } from "vuex";
+import { twoWayBind } from "../js/common";
+
 module.exports = {
-  methods: {},
-  data() {},
-  props: []
+  methods: {
+    swapContent() {} // TODO:
+  },
+  computed: {
+    ...twoWayBind(["currentGenre", "currentHow"]),
+    ...mapState(["findQuery"]),
+    ...mapGetters(["visibleMemoCount", "visibleContents"])
+  }
 };
 </script>
 <style scoped lang="less">

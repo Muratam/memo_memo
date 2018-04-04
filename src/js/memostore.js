@@ -143,8 +143,6 @@ export default new Vuex.Store({
       state.saveData.autoLoad('contents', state);
       state.saveData.ready();
     },
-    ...mutation('currentGenre'),
-    ...mutation('currentHow'),
-    ...mutation('findQuery'),
+    ...mutation(['currentGenre', 'currentHow', 'findQuery']),
   }
 });
