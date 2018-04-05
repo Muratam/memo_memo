@@ -10,6 +10,7 @@ class MemoStore {
     this.currentHow = 'all';
     this.findQuery = '';
     this.saveData = new SaveData('webSocket');
+    this.blackoutPalletType = '';
   }
   static appendHttp(url) {
     if (url !== '' && !/^https?:\/\//.test(url)) return 'http://' + url;
@@ -188,5 +189,7 @@ class MemoStore {
   set $$currentGenre(_) {}
   set $$currentHow(_) {}
   set $$findQuery(_) {}
+  set $$genres(_) {}
+  set $$blackoutPalletType(_) {}
 }
 export default toVuex(MemoStore);

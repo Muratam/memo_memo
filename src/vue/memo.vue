@@ -40,80 +40,79 @@
 
 </template>
 <script>
-import { getRandomHash, mutations } from "../js/common";
-module.exports = {
-  methods: {
-    finishIfEnter(event) {
-      if (event.key !== "Enter") return;
-      this.finishEditing();
-    },
-    finishIfCmdEnter(event) {
-      if (event.key !== "Enter") return;
-      if (!event.metaKey) return;
-      this.finishEditing();
-    },
-    dragStart(event) {
-      this.$refs.elemroot.style.opacity = "0.4";
-      event.dataTransfer.effectAllowed = "move";
-      event.dataTransfer.setData("memo", JSON.stringify(this.serialized()));
-      event.dataTransfer.setDragImage(this.$refs.infoarea, -10, -10);
-    },
-    dragEnd(event) {
-      if (!this.$refs.elemroot) return;
-      this.$refs.elemroot.style.opacity = "1.0";
-    },
-    autoGrow(element) {
-      let rows = this.body.split("\n").length;
-      element.setAttribute("rows", rows <= 3 ? 3 : rows);
-    },
-    trash() {
-      mutations(this).deleteContent(this.id);
-    },
-    startEditing() {
-      this.isediting = true;
-      this.$nextTick(() => {
-        this.autoGrow(this.$refs.textarea);
-      });
-    },
-    finishEditing() {
-      if ($.trim(this.title) === "" && $.trim(this.url) === "") return;
-      this.isediting = false;
-      // TODO: メモの更新
-      // this.updateContent(data.id, data);
-      // this.$emit("update", this.serialized()); // TODO: updateMemo
-    },
-    serialized() {
-      return {
-        url: $.trim(this.url),
-        body: this.body,
-        id: this.id,
-        title: $.trim(this.title)
-      };
-    },
-    makeEmptyContent(genre, how) {
-      // TODO:
-      return {
-        url: "",
-        title: "",
-        id: this.getRandomHash(),
-        body: "",
-        genre: genre,
-        how: how
-      };
-    },
-    getData(data = {}) {
-      // TODO:
-      let { url = "", title = "", body = "" } = data;
-      let { id = getRandomHash(), genre = "", how = "" } = data;
-      return { url, title, body, id, genre, how, isediting: false };
-    }
-  },
-  data() {
-    // TODO:
-    return this.getData(this._props.data);
-  },
-  props: ["data"]
-};
+import { toVue } from "../js/tovue";
+import { getRandomHash } from "../js/common";
+class Memo {
+  constructor(data) {
+    this.url = data.url;
+    this.title = data.title;
+    this.body = data.body;
+    this.id = data.id || getRandomHash();
+    this.genre = data.genre;
+    this.how = data.how;
+    this.isediting = false;
+  }
+  finishIfEnter(event) {
+    if (event.key !== "Enter") return;
+    this.finishEditing();
+  }
+  finishIfCmdEnter(event) {
+    if (event.key !== "Enter") return;
+    if (!event.metaKey) return;
+    this.finishEditing();
+  }
+  get formatted() {
+    return {
+      url: $.trim(this.url),
+      body: this.body,
+      id: this.id,
+      title: $.trim(this.title)
+    };
+  }
+  dragStart(event) {
+    this.$refs.elemroot.style.opacity = "0.4";
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("memo", JSON.stringify(this.formatted));
+    event.dataTransfer.setDragImage(this.$refs.infoarea, -10, -10);
+  }
+  dragEnd(event) {
+    if (!this.$refs.elemroot) return;
+    this.$refs.elemroot.style.opacity = "1.0";
+  }
+  autoGrow(element) {
+    let rows = this.body.split("\n").length;
+    element.setAttribute("rows", rows <= 3 ? 3 : rows);
+  }
+  trash() {
+    this.$$deleteContent(this.id);
+  }
+  startEditing() {
+    this.isediting = true;
+    this.$nextTick(() => {
+      this.autoGrow(this.$refs.textarea);
+    });
+  }
+  finishEditing() {
+    if ($.trim(this.title) === "" && $.trim(this.url) === "") return;
+    this.isediting = false;
+    // TODO: メモの更新
+    // this.updateContent(data.id, data);
+    // this.$emit("update", this.serialized()); // TODO: updateMemo
+  }
+  // makeEmptyContent(genre, how) {
+  //   // TODO:
+  //   return {
+  //     url: "",
+  //     title: "",
+  //     id: this.getRandomHash(),
+  //     body: "",
+  //     genre: genre,
+  //     how: how
+  //   };
+  // }
+  get $$deleteContent() {}
+}
+export default toVue(Memo);
 </script>
 <style scoped lang="less">
 @import "../css/common.less";

@@ -11,12 +11,13 @@ nav.navbar.navbar-fixed-bottom.content
           i.fas.fa-plus.pallet-icon
 </template>
 <script>
-import { mapState, mapGetters } from "vuex";
-import { autoUpdateByAssign } from "../js/common";
-module.exports = {
-  methods: {
-    addMemo(data) {
-      /* TODO: メモの追加
+import { toVue } from "../js/tovue";
+class BottomPallet {
+  constructor() {
+    this.commandPallet = "";
+  }
+  addMemo(data) {
+    /* TODO: メモの追加
       if (!this.isDecided()) return;
       let title = $.trim(this.commandPallet);
       if (title === "") return;
@@ -33,12 +34,9 @@ module.exports = {
       this.updateContent(data.id, data);
       this.commandPallet = "";
       */
-    }
-  },
-  computed: {
-    ...autoUpdateByAssign(["commandPallet"])
   }
-};
+}
+export default toVue(BottomPallet);
 </script>
 <style scoped lang="less">
 // TODO: css おかしい

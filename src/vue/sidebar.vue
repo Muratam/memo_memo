@@ -3,12 +3,12 @@
   .sidebar.col-sm-3
     ul.nav.nav-pills.nav-stacked
       li.nav-item.clickable(
-          :class="{ active: currentGenre ===  'all' }"
-          @click="currentGenre = 'all'")
+          :class="{ active: $$currentGenre ===  'all' }"
+          @click="$$currentGenre = 'all'")
         a.nav-link All
       li.nav-item.clickable(
-          v-for="(side,i) in genres"
-          :class="{ active: currentGenre === side.id }"
+          v-for="(side,i) in $$genres"
+          :class="{ active: $$currentGenre === side.id }"
           @click="sidebarClick($event,side.id)"
           :key="side.id"
           draggable="true"
@@ -24,36 +24,39 @@
               @keydown="submitRenameGenre($event,side.id)")
           //-  v-model="url" @keydown="submit"
       li.nav-item.clickable(
-          @click="$store.commit('startBlackout','addGenre')")
+          @click="$$startBlackout('addGenre')")
         a.nav-link
           i.fas.fa-plus
 
 </template>
 <script>
-import { mapState, mapGetters } from "vuex";
-import { autoUpdateByAssign, mutations } from "../js/common";
-
-module.exports = {
-  methods: {
-    sidebarClick(event, sideId) {
-      if (this.currentGenre !== sideId) {
-        this.currentGenre = sideId;
-        return;
-      }
-      // TODO:rename
-    },
-    addGenre(genreName) {
-      let genreId = this.getRandomHash();
-      /* TODO: ジャンル追加ボタン
+import { toVue } from "../js/tovue";
+import { getRandomHash } from "../js/common";
+class SideBar {
+  get $$currentGenre() {}
+  set $$currentGenre(_) {}
+  get $$genres() {}
+  set $$genres(_) {}
+  get $$startBlackout() {}
+  sidebarClick(event, sideId) {
+    if (this.$$currentGenre !== sideId) {
+      this.$$currentGenre = sideId;
+      return;
+    }
+    // TODO:rename
+  }
+  addGenre(genreName) {
+    let genreId = getRandomHash();
+    /* TODO: ジャンル追加ボタン
       this.genres.push({ name: genreName, id: genreId });
       this.saveData.save("genres", this.genres);
       let content = this.makeEmptyContent(genreId, this.currentHow);
       this.updateContent(content.id, content);
       this.currentGenre = genreId;
-      */
-    },
-    sidebarDrop(event, sideId) {
-      /* TODO: サイドバーにメモDropで変更
+    */
+  }
+  sidebarDrop(event, sideId) {
+    /* TODO: サイドバーにメモDropで変更
       event.preventDefault();
       event.target.classList.remove("dropping");
       let transferSideId = event.dataTransfer.getData("sideid");
@@ -69,12 +72,10 @@ module.exports = {
       this.genres.splice(bIndex, 0, aGenre);
       this.$store.commit("save", "genres");
       */
-    }
-  },
-  computed: {
-    ...autoUpdateByAssign(["currentGenre", "genres"])
   }
-};
+}
+
+export default toVue(SideBar);
 </script>
 <style scoped lang="less">
 @import "../css/common.less";

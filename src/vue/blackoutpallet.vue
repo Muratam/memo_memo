@@ -1,52 +1,49 @@
 <template lang="pug">
-.fadelayer(v-if="blackoutPalletType !== '' && false")
+.fadelayer(v-if="$$blackoutPalletType !== '' && false")
   .blackout(@click="escapeBlackout")
   ul.list-group.pallet
     li.list-group-item
-      .blackout-comment {{ blackoutPalletType }}
+      .blackout-comment {{ $$blackoutPalletType }}
       .input-group.input-group-lg
         span.input-group-addon.pallet-addon
-          i.clickable.fas.fa-search.pallet-icon(v-if="blackoutPalletType === 'find'")
-          i.clickable.fas.fa-plus.pallet-icon(v-if="blackoutPalletType === 'addGenre'")
+          i.clickable.fas.fa-search.pallet-icon(v-if="$$blackoutPalletType === 'find'")
+          i.clickable.fas.fa-plus.pallet-icon(v-if="$$blackoutPalletType === 'addGenre'")
         input.form-control.commandpallet(
             type="text" v-model="blackoutPallet"
             @keydown="decidedAtBlackout($event)"
             id="blackoutPallet")
 </template>
 <script>
-import { mapState, mapGetters } from "vuex";
-import { autoUpdateByAssign } from "../js/common";
-
-module.exports = {
-  methods: {
-    escapeBlackout() {
-      this.blackoutPallet = "";
-      this.blackoutPalletType = "";
-    },
-    decidedAtBlackout(event) {
-      if (event.key !== "Enter") return;
-      switch (this.blackoutPalletType) {
-        case "addGenre":
-          this.addGenre(this.blackoutPallet);
-          break;
-        default:
-          break;
-      }
-      this.blackoutPallet = "";
-      this.blackoutPalletType = "";
+import { toVue } from "../js/tovue";
+class BlackoutPallet {
+  constructor() {
+    this.blackoutPallet = "";
+    this.$$blackoutPalletType = "";
+  }
+  escapeBlackout() {
+    this.blackoutPallet = "";
+    this.$$blackoutPalletType = "";
+  }
+  decidedAtBlackout(event) {
+    if (event.key !== "Enter") return;
+    switch (this.$$blackoutPalletType) {
+      case "addGenre":
+        this.addGenre(this.blackoutPallet);
+        break;
+      default:
+        break;
     }
-    // TODO: こんな分かりにくい方法じゃなくて const とかでいい感じにやりたい
-  },
+    this.blackoutPallet = "";
+    this.$$blackoutPalletType = "";
+  }
   mounted() {
     // esc:27 を押したら消す
     $(document).keydown(e => {
       if (e.keyCode === 27) this.escapeBlackout();
     });
-  },
-  computed: {
-    ...autoUpdateByAssign(["blackoutPallet", "blackoutPalletType"])
   }
-};
+}
+export default toVue(BlackoutPallet);
 </script>
 <style scoped lang="less">
 @import "../css/common.less";

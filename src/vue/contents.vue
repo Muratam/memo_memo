@@ -1,8 +1,8 @@
 <template lang="pug">
 .content.over-fixed-buttom
-  ul.list-group(v-if="visibleMemoCount === 0")
-    .ul-title {{ findQuery === "" ? "No memos..." : `No matching for "${findQuery}"` }}
-  ul.list-group(v-for="memoGroup in visibleContents" :key="memoGroup.id")
+  ul.list-group(v-if="$$visibleMemoCount === 0")
+    .ul-title {{ $$findQuery === "" ? "No memos..." : `No matching for "${$$findQuery}"` }}
+  ul.list-group(v-for="memoGroup in $$visibleContents" :key="memoGroup.id")
     .ul-title(v-if="memoGroup.memos.length > 0")
       .clearfix
         span.clickable.name(
@@ -10,7 +10,7 @@
             ) {{ memoGroup.name }}
         span.num-label.label {{ memoGroup.memos.length }}
         .pull-right
-          span.right-icon.clickable(@click="currentGenre = memoGroup.genre,currentHow = memoGroup.how")
+          span.right-icon.clickable(@click="$$currentGenre = memoGroup.genre,$$currentHow = memoGroup.how")
             i.fas.fa-arrow-alt-circle-right
     .collapse.in(:id="memoGroup.id")
       li.list-group-item(
@@ -23,14 +23,12 @@
         memo( :data="memo")
 </template>
 <script>
-import { mapState, mapGetters } from "vuex";
-import { autoUpdateByAssign } from "../js/common";
+import { toVue } from "../js/tovue";
 import Memo from "./memo";
 
-module.exports = {
-  methods: {
-    swapContent(event, memoid) {
-      /* TODO: メモの入れ替え
+class Contents {
+  swapContent(event, memoid) {
+    /* TODO: メモの入れ替え
       event.preventDefault();
       event.target.classList.remove("dropping");
       let data = event.dataTransfer.getData("memo");
@@ -55,17 +53,19 @@ module.exports = {
       }
       this.saveData.save("contents", this.contents);
       */
-    }
-  },
-  computed: {
-    ...autoUpdateByAssign(["currentGenre", "currentHow"]),
-    ...mapState(["findQuery"]),
-    ...mapGetters(["visibleMemoCount", "visibleContents"])
-  },
-  components: {
-    memo: Memo
   }
-};
+  static components() {
+    return { memo: Memo };
+  }
+  get $$visibleMemoCount() {}
+  get $$visibleContents() {}
+  get $$findQuery() {}
+  get $$currentGenre() {}
+  set $$currentGenre(_) {}
+  get $$currentHow() {}
+  set $$currentHow(_) {}
+}
+export default toVue(Contents);
 </script>
 <style scoped lang="less">
 @import "../css/common.less";

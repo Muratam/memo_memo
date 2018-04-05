@@ -30,12 +30,12 @@ import { toVue } from "../js/tovue";
 
 class TopBar {
   get $$findQuery() {}
-  get $$currentHow() {}
-  get $$currentGenre() {}
-  get $$hows() {}
   set $$findQuery(_) {}
+  get $$currentHow() {}
   set $$currentHow(_) {}
+  get $$currentGenre() {}
   set $$currentGenre(_) {}
+  get $$hows() {}
   dropUpdate(event, how, genre) {
     event.preventDefault();
     event.target.classList.remove("dropping");
