@@ -12,18 +12,36 @@ nav.navbar.navbar-fixed-bottom.content
 </template>
 <script>
 import { mapState, mapGetters } from "vuex";
-import { twoWayBind } from "../js/common";
+import { autoUpdateByAssign } from "../js/common";
 module.exports = {
   methods: {
-    addMemo() {} // TODO:
-    // TODO: css おかしい
+    addMemo(data) {
+      /* TODO: メモの追加
+      if (!this.isDecided()) return;
+      let title = $.trim(this.commandPallet);
+      if (title === "") return;
+      data = {
+        url: "",
+        body: "",
+        id: this.getRandomHash(),
+        title: ""
+      };
+      if (/^https?:\/\//.test(title)) {
+        data.url = data.title = title;
+        if (this.currentHow === "all") data.how = "url";
+      } else data.title = title;
+      this.updateContent(data.id, data);
+      this.commandPallet = "";
+      */
+    }
   },
   computed: {
-    ...twoWayBind(["commandPallet"])
+    ...autoUpdateByAssign(["commandPallet"])
   }
 };
 </script>
 <style scoped lang="less">
+// TODO: css おかしい
 @import "../css/common.less";
 .navbar-fixed-bottom {
   margin-bottom: 0em;

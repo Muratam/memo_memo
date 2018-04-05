@@ -1,5 +1,5 @@
 <template lang="pug">
-.fadelayer(v-if="blackoutPalletType !== ''")
+.fadelayer(v-if="blackoutPalletType !== '' && false")
   .blackout(@click="escapeBlackout")
   ul.list-group.pallet
     li.list-group-item
@@ -10,21 +10,41 @@
           i.clickable.fas.fa-plus.pallet-icon(v-if="blackoutPalletType === 'addGenre'")
         input.form-control.commandpallet(
             type="text" v-model="blackoutPallet"
-            @keydown="decidedAtBlackout" id="blackoutPallet")
+            @keydown="decidedAtBlackout($event)"
+            id="blackoutPallet")
 </template>
 <script>
 import { mapState, mapGetters } from "vuex";
-import { twoWayBind } from "../js/common";
+import { autoUpdateByAssign } from "../js/common";
 
 module.exports = {
   methods: {
-    escapeBlackout() {}, // TODO:
-    decidedAtBlackout() {} // TODO:
+    escapeBlackout() {
+      this.blackoutPallet = "";
+      this.blackoutPalletType = "";
+    },
+    decidedAtBlackout(event) {
+      if (event.key !== "Enter") return;
+      switch (this.blackoutPalletType) {
+        case "addGenre":
+          this.addGenre(this.blackoutPallet);
+          break;
+        default:
+          break;
+      }
+      this.blackoutPallet = "";
+      this.blackoutPalletType = "";
+    }
     // TODO: こんな分かりにくい方法じゃなくて const とかでいい感じにやりたい
   },
+  mounted() {
+    // esc:27 を押したら消す
+    $(document).keydown(e => {
+      if (e.keyCode === 27) this.escapeBlackout();
+    });
+  },
   computed: {
-    ...twoWayBind(["blackoutPallet"]),
-    ...mapState(["blackoutPalletType"])
+    ...autoUpdateByAssign(["blackoutPallet", "blackoutPalletType"])
   }
 };
 </script>

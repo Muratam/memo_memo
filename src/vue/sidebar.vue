@@ -23,14 +23,15 @@
               type="text" placeholder="Rename Genre"
               @keydown="submitRenameGenre($event,side.id)")
           //-  v-model="url" @keydown="submit"
-      li.nav-item.clickable(@click="startBlackout('addGenre')")
+      li.nav-item.clickable(
+          @click="$store.commit('startBlackout','addGenre')")
         a.nav-link
           i.fas.fa-plus
 
 </template>
 <script>
 import { mapState, mapGetters } from "vuex";
-import { twoWayBind } from "../js/common";
+import { autoUpdateByAssign } from "../js/common";
 
 module.exports = {
   methods: {
@@ -41,12 +42,37 @@ module.exports = {
       }
       // TODO:rename
     },
-    startBlackout() {}, // TODO:
-    sidebarDrop() {} //TODO:
+    addGenre(genreName) {
+      let genreId = this.getRandomHash();
+      /* TODO: ジャンル追加ボタン
+      this.genres.push({ name: genreName, id: genreId });
+      this.saveData.save("genres", this.genres);
+      let content = this.makeEmptyContent(genreId, this.currentHow);
+      this.updateContent(content.id, content);
+      this.currentGenre = genreId;
+      */
+    },
+    sidebarDrop(event, sideId) {
+      /* TODO: サイドバーにメモDropで変更
+      event.preventDefault();
+      event.target.classList.remove("dropping");
+      let transferSideId = event.dataTransfer.getData("sideid");
+      if (transferSideId === "") return this.dropUpdate(event, null, sideId);
+      let aIndex = this.genres.findIndex(x => x.id == transferSideId);
+      let bIndex = this.genres.findIndex(x => x.id == sideId);
+      if (aIndex === -1 || bIndex === -1) return;
+      if (aIndex === bIndex) return;
+      // 入れ替えは直感的ではないのでAを削除してBの下に追加で
+      let aGenre = this.genres[aIndex];
+      this.genres.splice(aIndex, 1);
+      bIndex = this.genres.findIndex(x => x.id == sideId);
+      this.genres.splice(bIndex, 0, aGenre);
+      this.$store.commit("save", "genres");
+      */
+    }
   },
   computed: {
-    ...twoWayBind(["currentGenre"]),
-    ...mapState(["genres"])
+    ...autoUpdateByAssign(["currentGenre", "genres"])
   }
 };
 </script>

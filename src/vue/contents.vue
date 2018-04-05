@@ -24,17 +24,41 @@
 </template>
 <script>
 import { mapState, mapGetters } from "vuex";
-import { twoWayBind } from "../js/common";
+import { autoUpdateByAssign } from "../js/common";
 import Memo from "./memo";
 
 module.exports = {
   methods: {
-    swapContent() {}, // TODO:
-    trashMemo() {}, // TODO:
-    updateMemo() {} // TODO:
+    swapContent(event, memoid) {
+      /* TODO: メモの入れ替え
+      event.preventDefault();
+      event.target.classList.remove("dropping");
+      let data = event.dataTransfer.getData("memo");
+      if (!data) return;
+      data = JSON.parse(data);
+      let dataAIndex = this.contents.findIndex(x => x.id === data.id);
+      if (dataAIndex === -1) return;
+      let dataBIndex = this.contents.findIndex(x => x.id === memoid);
+      if (dataBIndex === -1) return;
+      if (dataAIndex === dataBIndex) return;
+      let dataA = this.contents[dataAIndex];
+      let dataB = this.contents[dataBIndex];
+      if (dataA.genre === dataB.genre && dataA.how === dataB.how) {
+        // 順番入れ替え
+        this.contents.splice(dataAIndex, 1, dataB);
+        this.contents.splice(dataBIndex, 1, dataA);
+      } else {
+        // dataA をdataBの下に追加
+        dataA.genre = dataB.genre;
+        dataA.how = dataB.how;
+        this.contents.splice(dataAIndex, 1, dataA);
+      }
+      this.saveData.save("contents", this.contents);
+      */
+    }
   },
   computed: {
-    ...twoWayBind(["currentGenre", "currentHow"]),
+    ...autoUpdateByAssign(["currentGenre", "currentHow"]),
     ...mapState(["findQuery"]),
     ...mapGetters(["visibleMemoCount", "visibleContents"])
   },

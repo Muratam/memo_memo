@@ -18,7 +18,6 @@ nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
     .input-group.input-group-sm.has-feedback
       input.form-control.commandpallet(
           type="text" v-model="findQuery"
-          @keydown="addMemo"
           :class="{ active: findQuery !== '' }"
           id="commandPallet")
       span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon(
@@ -28,14 +27,26 @@ nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
 </template>
 <script>
 import { mapState, mapGetters } from "vuex";
-import { twoWayBind } from "../js/common";
+import { autoUpdateByAssign } from "../js/common";
 module.exports = {
   methods: {
-    dropUpdate() {}, // TODO:
-    addMemo() {} // TODO:
+    dropUpdate(event, how, genre) {
+      event.preventDefault();
+      event.target.classList.remove("dropping");
+      let data = event.dataTransfer.getData("memo");
+      if (data === "") return;
+      data = JSON.parse(data);
+      /* TODO: メモを落とされたらメモのgenre/howを変更する
+      let savedData = this.contents.find(x => x.id === data.id);
+      if (!savedData) return;
+      data.genre = genre ? genre : savedData.genre;
+      data.how = how ? how : savedData.how;
+      this.updateContent(data.id, data);
+      */
+    }
   },
   computed: {
-    ...twoWayBind(["findQuery", "currentHow", "currentGenre"]),
+    ...autoUpdateByAssign(["findQuery", "currentHow", "currentGenre"]),
     ...mapState(["hows"])
   }
 };

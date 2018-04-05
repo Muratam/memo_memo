@@ -40,8 +40,7 @@
 
 </template>
 <script>
-import { getRandomHash } from "../js/common";
-
+import { getRandomHash, mutations } from "../js/common";
 module.exports = {
   methods: {
     finishIfEnter(event) {
@@ -68,7 +67,8 @@ module.exports = {
       element.setAttribute("rows", rows <= 3 ? 3 : rows);
     },
     trash() {
-      // this.$emit("trash", this.serialized()); // TODO: trashMemo
+      mutations(this).deleteContent(this.id);
+      // this.$store.commit("_deleteContent", this.id);
     },
     startEditing() {
       this.isediting = true;
@@ -79,6 +79,8 @@ module.exports = {
     finishEditing() {
       if ($.trim(this.title) === "" && $.trim(this.url) === "") return;
       this.isediting = false;
+      // TODO: メモの更新
+      // this.updateContent(data.id, data);
       // this.$emit("update", this.serialized()); // TODO: updateMemo
     },
     serialized() {
@@ -87,6 +89,17 @@ module.exports = {
         body: this.body,
         id: this.id,
         title: $.trim(this.title)
+      };
+    },
+    makeEmptyContent(genre, how) {
+      // TODO:
+      return {
+        url: "",
+        title: "",
+        id: this.getRandomHash(),
+        body: "",
+        genre: genre,
+        how: how
       };
     },
     getData(data = {}) {

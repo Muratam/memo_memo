@@ -1,7 +1,7 @@
 import Vue from 'vue/dist/vue.esm.js';
 import Vuex from 'vuex';
 
-import {getRandomHash, mutation} from '../js/common'
+import {getRandomHash, mutationByAssign, mutations} from '../js/common'
 import SaveData from '../js/savedata';
 
 Vue.use(Vuex);
@@ -112,7 +112,7 @@ export default new Vuex.Store({
 
   },
   mutations: {
-    setupSaveData(state) {
+    setupSaveData: state => {
       state.saveData.setDefaultData(
           'genres', [{name: '❓', id: 'temporary'}, {ame: '🗑', id: 'trash'}]);
       state.saveData.setDefaultData('hows', [
@@ -125,6 +125,92 @@ export default new Vuex.Store({
       state.saveData.autoLoad('contents', state);
       state.saveData.ready();
     },
-    ...mutation(['currentGenre', 'currentHow', 'findQuery']),
-  }
+    save: (state, key) => {
+      state.saveData.save(key, state[key]);
+    },
+    startBlackout: (state, type) => {
+      state.blackoutPalletType = type;
+    },
+    deleteContent(state, id) {
+      let index = state.contents.findIndex(x => x.id === id);
+      if (index === -1) return;
+      let content = state.contents[index];
+      if (content.genre === 'trash' ||
+          (content.url === '' && content.title === '' && content.body === '')) {
+        // 要素を削除
+        state.contents.splice(index, 1);
+      } else {
+        // 要素をゴミ箱へ
+        content.genre = 'trash';
+        state.contents.splice(index, 1, content);
+      }
+      mutations(this).checkDeletedGenres();
+    },
+    updateContent(id, content) {
+      /* TODO:
+      let index = this.contents.findIndex(x => x.id === id);
+      // url に http を付与
+      if (
+        content !== null &&
+        content.url !== "" &&
+        !/^https?:\/\//.test(content.url)
+      ) {
+        content.url = "http://" + content.url;
+      }
+      if (index === -1) {
+        // 無ければ末尾に追加
+        if (content === null) return;
+        if ($.trim(id) === "") content.id = this.getRandomHash();
+        if (!("how" in content)) content.how = this.currentHow;
+        if (!("genre" in content)) content.genre = this.currentGenre;
+        // WARN: 強引にAllを変換
+        if (content.how === "all") content.how = "later";
+        if (content.genre === "all") content.genre = "temporary";
+        this.contents.push(content);
+      } else if (content === null) {
+        content = this.contents[index];
+        if (
+          content.genre === "trash" ||
+          (content.url === "" && content.title === "" && content.body === "")
+        ) {
+          // 要素を削除
+          this.contents.splice(index, 1);
+        } else {
+          // 要素をゴミ箱へ
+          content.genre = "trash";
+          this.contents.splice(index, 1, content);
+        }
+        this.checkDeletedGenres();
+      } else {
+        // 普通に更新
+        if (!content.genre) content.genre = this.contents[index].genre;
+        if (!content.how) content.how = this.contents[index].how;
+        this.contents.splice(index, 1, content);
+      }
+      this.saveData.save("contents", this.contents);
+      */
+    },
+    checkDeletedGenres: state => {
+      console.log('checkDelete');
+      let genreIds = state.contents.groupBy(x => x.genre).map(x => x.key);
+      genreIds.push('trash');
+      genreIds.push('temporary');
+      let newGenres = [];
+      let updated = false;
+      for (let genre of state.genres) {
+        let ok = genreIds.some(x => x === genre.id);
+        if (ok)
+          newGenres.push(genre);
+        else
+          updated = true;
+      }
+      if (!updated) return;
+      state.genres = newGenres;
+      state.currentGenre = 'all';
+      state.saveData.save('genres', state.genres);
+    },
+
+    // 更新が自動で反映される
+    ...mutationByAssign(['currentGenre', 'currentHow', 'findQuery']),
+  },
 });

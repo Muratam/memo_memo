@@ -1,4 +1,5 @@
-export function mutation(key) {
+// vuexのstoreのmutationsに配置 :: `\$${key}`=> state[key] = v を追加
+export function mutationByAssign(key) {
   let getMutationFunc = key => (state, value) => {
     state[key] = value;
   };
@@ -10,8 +11,8 @@ export function mutation(key) {
   }
   return res;
 }
-
-export function twoWayBind(key) {
+// vueのcomponentに配置 :: 代入で自動更新commitを送る
+export function autoUpdateByAssign(key) {
   let getGetterSetter = key => {
     return {
       get() {
@@ -30,6 +31,21 @@ export function twoWayBind(key) {
   }
   return res;
 };
+
+// mutations(this).hoge("h") => this.commit('hoge',"h"); みたいにかける
+export function mutations(self) {
+  if ('__mutations' in self) return self.__mutations;
+  self.__mutations = new Proxy(self, {
+    get: (_, name) => args => {
+      if ('commit' in self) {  // @store
+        self.commit(name, args);
+      } else {  // @component
+        self.$store.commit(name, args);
+      }
+    }
+  });
+  return self.__mutations;
+}
 export function getRandomHash(length = 32) {
   let res = '';
   while (res.length < length) {
