@@ -36,19 +36,20 @@ class TopBar {
   get $$currentGenre() {}
   set $$currentGenre(_) {}
   get $$hows() {}
+  get $$contents() {}
+  get $$updateContent() {}
   dropUpdate(event, how, genre) {
+    // メモを落とされたらメモのgenre/howを変更する
     event.preventDefault();
     event.target.classList.remove("dropping");
     let data = event.dataTransfer.getData("memo");
     if (data === "") return;
     data = JSON.parse(data);
-    /* TODO: メモを落とされたらメモのgenre/howを変更する
-      let savedData = this.contents.find(x => x.id === data.id);
-      if (!savedData) return;
-      data.genre = genre ? genre : savedData.genre;
-      data.how = how ? how : savedData.how;
-      this.updateContent(data.id, data);
-    */
+    let savedData = this.$$contents.find(x => x.id === data.id);
+    if (!savedData) return;
+    data.genre = genre ? genre : savedData.genre;
+    data.how = how ? how : savedData.how;
+    this.$$updateContent(data);
   }
 }
 export default toVue(TopBar);

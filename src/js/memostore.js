@@ -144,7 +144,9 @@ class MemoStore {
       content.genre = 'trash';
       this.contents.splice(index, 1, content);
     }
+    // WARN:
     this.save('contents');
+    // WARN:
     this.checkDeletedGenres();
   }
   checkDeletedGenres() {
@@ -163,6 +165,7 @@ class MemoStore {
     if (!updated) return;
     this.genres = newGenres;
     this.currentGenre = 'all';
+    // WARN:
     this.save('genres');
   }
   addContent(content) {
@@ -174,15 +177,17 @@ class MemoStore {
     if (content.how === 'all') content.how = 'later';
     if (content.genre === 'all') content.genre = 'temporary';
     this.contents.push(content);
+    // WARN:
     this.save('contents');
   }
-  updateContent(id, content) {
-    let index = this.contents.findIndex(x => x.id === id);
+  updateContent(content) {
+    let index = this.contents.findIndex(x => x.id === content.id);
     if (index === -1) return;
     content.url = MemoStore.appendHttp(content.url);
     if (!content.genre) content.genre = this.contents[index].genre;
     if (!content.how) content.how = this.contents[index].how;
     this.contents.splice(index, 1, content);
+    // WARN:
     this.save('contents');
   }
   // 外から代入可能に

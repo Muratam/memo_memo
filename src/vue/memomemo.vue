@@ -16,7 +16,6 @@ import SideBar from "./sidebar";
 import Contents from "./contents";
 import BottomPallet from "./bottompallet";
 import BlackoutPallet from "./blackoutpallet";
-// TODO: tovueのアップデート
 
 class MemoMemo {
   mounted() {

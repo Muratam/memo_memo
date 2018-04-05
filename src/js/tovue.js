@@ -124,7 +124,6 @@ export function toVuex(Class) {
   let {methods, getters, setters} = getMethods(Class);
   for (let [name, func] of methods) {
     res.mutations[name] = function(state, args) {
-      // this に state をバインドして展開して実行
       if (typeof (args) !== 'object')
         func.bind(state)(args);
       else
@@ -134,6 +133,8 @@ export function toVuex(Class) {
 
   for (let [name, func] of getters) {
     res.getters[name] = function(state, getters) {
+      // getters と state で区別するのめんどうなので統合
+      // getter では state を更新しないのでOK
       for (let key of Reflect.ownKeys(state)) {
         getters[key] = state[key];
       }

@@ -64,9 +64,11 @@ class Memo {
   get formatted() {
     return {
       url: $.trim(this.url),
+      title: $.trim(this.title),
       body: this.body,
       id: this.id,
-      title: $.trim(this.title)
+      genre: this.genre,
+      how: this.how
     };
   }
   dragStart(event) {
@@ -95,21 +97,9 @@ class Memo {
   finishEditing() {
     if ($.trim(this.title) === "" && $.trim(this.url) === "") return;
     this.isediting = false;
-    // TODO: メモの更新
-    // this.updateContent(data.id, data);
-    // this.$emit("update", this.serialized()); // TODO: updateMemo
+    this.$$updateContent(this.formatted);
   }
-  // makeEmptyContent(genre, how) {
-  //   // TODO:
-  //   return {
-  //     url: "",
-  //     title: "",
-  //     id: this.getRandomHash(),
-  //     body: "",
-  //     genre: genre,
-  //     how: how
-  //   };
-  // }
+  get $$updateContent() {}
   get $$deleteContent() {}
 }
 export default toVue(Memo);
