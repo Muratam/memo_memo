@@ -1,3 +1,14 @@
+// mutations(this).hoge("h") => this.$store.commit('hoge',"h"); みたいにかける
+export function mutations(self) {
+  if ('__mutations' in self) return self.__mutations;
+  self.__mutations = new Proxy(self, {
+    get: (_, name) => (...args) => {
+      self.$store.commit(name, args);
+    }
+  });
+  return self.__mutations;
+}
+
 // vuexのstoreのmutationsに配置 :: `\$${key}`=> state[key] = v を追加
 export function mutationByAssign(key) {
   let getMutationFunc = key => (state, value) => {
@@ -32,20 +43,22 @@ export function autoUpdateByAssign(key) {
   return res;
 };
 
-// mutations(this).hoge("h") => this.commit('hoge',"h"); みたいにかける
-export function mutations(self) {
-  if ('__mutations' in self) return self.__mutations;
-  self.__mutations = new Proxy(self, {
-    get: (_, name) => args => {
-      if ('commit' in self) {  // @store
-        self.commit(name, args);
-      } else {  // @component
-        self.$store.commit(name, args);
-      }
-    }
-  });
-  return self.__mutations;
+// vuexのmutationを簡単に書けるようにstateをthisにバインドする
+export function bindStateToThisAtMutation(objs) {
+  let res = {};
+  for (let key of Object.keys(objs)) {
+    res[key] = function(state, args) {
+      state.$store = this;
+      if (typeof (args) !== 'object')
+        objs[key].bind(state)(args);
+      else
+        objs[key].bind(state)(...args);
+    };
+  }
+  return res;
 }
+
+
 export function getRandomHash(length = 32) {
   let res = '';
   while (res.length < length) {

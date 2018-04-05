@@ -15,10 +15,11 @@ import SideBar from "./sidebar";
 import Contents from "./contents";
 import BottomPallet from "./bottompallet";
 import BlackoutPallet from "./blackoutpallet";
+import { mutations } from "../js/common";
 
 module.exports = {
   mounted() {
-    this.$store.commit("setupSaveData");
+    mutations(this).setupSaveData();
   },
   components: {
     topbar: TopBar,

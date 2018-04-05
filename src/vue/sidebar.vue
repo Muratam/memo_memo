@@ -31,7 +31,7 @@
 </template>
 <script>
 import { mapState, mapGetters } from "vuex";
-import { autoUpdateByAssign } from "../js/common";
+import { autoUpdateByAssign, mutations } from "../js/common";
 
 module.exports = {
   methods: {

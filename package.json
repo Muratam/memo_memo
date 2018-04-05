@@ -3,7 +3,7 @@
   "description": "memos memos",
   "version": "1.0.0",
   "author": "murata",
-  "private": true,
+  "private": false,
   "scripts": {
     "start": "npm run build && npm run server",
     "server": "node server/server.js",

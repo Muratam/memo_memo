@@ -68,7 +68,6 @@ module.exports = {
     },
     trash() {
       mutations(this).deleteContent(this.id);
-      // this.$store.commit("_deleteContent", this.id);
     },
     startEditing() {
       this.isediting = true;
