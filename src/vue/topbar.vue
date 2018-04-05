@@ -12,7 +12,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
       @dragover="$event.preventDefault()"
       @dragenter="$event.target.classList.add('dropping')"
       @dragleave="$event.target.classList.remove('dropping')"
-      @drop="dropUpdate($event,tab.id,null)"
+      @drop="topbarDrop($event,tab.id)"
       @click="$$currentHow = tab.id") {{ tab.name }}
   .navbar-brand.col-xs-2.pull-right.findbox
     .input-group.input-group-sm.has-feedback
@@ -38,18 +38,16 @@ class TopBar {
   get $$hows() {}
   get $$contents() {}
   get $$updateContent() {}
-  dropUpdate(event, how, genre) {
+  get $$changeGenreHowOfContent() {}
+
+  topbarDrop(event, tabId) {
     // メモを落とされたらメモのgenre/howを変更する
     event.preventDefault();
     event.target.classList.remove("dropping");
     let data = event.dataTransfer.getData("memo");
     if (data === "") return;
-    data = JSON.parse(data);
-    let savedData = this.$$contents.find(x => x.id === data.id);
-    if (!savedData) return;
-    data.genre = genre ? genre : savedData.genre;
-    data.how = how ? how : savedData.how;
-    this.$$updateContent(data);
+    let id = JSON.parse(data).id;
+    this.$$changeGenreHowOfContent(id, tabId, null);
   }
 }
 export default toVue(TopBar);

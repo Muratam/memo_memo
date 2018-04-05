@@ -41,7 +41,6 @@ class BottomPallet {
 export default toVue(BottomPallet);
 </script>
 <style scoped lang="less">
-// TODO: css おかしい
 @import "../css/common.less";
 .navbar-fixed-bottom {
   margin-bottom: 0em;

@@ -28,35 +28,17 @@ import Memo from "./memo";
 
 class Contents {
   swapContent(event, memoid) {
-    /* TODO: メモの入れ替え
-      event.preventDefault();
-      event.target.classList.remove("dropping");
-      let data = event.dataTransfer.getData("memo");
-      if (!data) return;
-      data = JSON.parse(data);
-      let dataAIndex = this.contents.findIndex(x => x.id === data.id);
-      if (dataAIndex === -1) return;
-      let dataBIndex = this.contents.findIndex(x => x.id === memoid);
-      if (dataBIndex === -1) return;
-      if (dataAIndex === dataBIndex) return;
-      let dataA = this.contents[dataAIndex];
-      let dataB = this.contents[dataBIndex];
-      if (dataA.genre === dataB.genre && dataA.how === dataB.how) {
-        // 順番入れ替え
-        this.contents.splice(dataAIndex, 1, dataB);
-        this.contents.splice(dataBIndex, 1, dataA);
-      } else {
-        // dataA をdataBの下に追加
-        dataA.genre = dataB.genre;
-        dataA.how = dataB.how;
-        this.contents.splice(dataAIndex, 1, dataA);
-      }
-      this.saveData.save("contents", this.contents);
-      */
+    event.preventDefault();
+    event.target.classList.remove("dropping");
+    let data = event.dataTransfer.getData("memo");
+    if (!data) return;
+    let id = JSON.parse(data).id;
+    this.$$swapContent(id, memoid);
   }
   static components() {
     return { memo: Memo };
   }
+  get $$swapContent() {}
   get $$visibleMemoCount() {}
   get $$visibleContents() {}
   get $$findQuery() {}

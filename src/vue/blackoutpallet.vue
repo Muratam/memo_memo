@@ -1,5 +1,5 @@
 <template lang="pug">
-.fadelayer(v-if="$$blackoutPalletType !== '' && false")
+.fadelayer(v-if="$$blackoutPalletType !== '' ")
   .blackout(@click="escapeBlackout")
   ul.list-group.pallet
     li.list-group-item
@@ -28,7 +28,7 @@ class BlackoutPallet {
     if (event.key !== "Enter") return;
     switch (this.$$blackoutPalletType) {
       case "addGenre":
-        this.addGenre(this.blackoutPallet);
+        this.$$addGenre(this.blackoutPallet);
         break;
       default:
         break;
@@ -42,6 +42,9 @@ class BlackoutPallet {
       if (e.keyCode === 27) this.escapeBlackout();
     });
   }
+  get $$blackoutPalletType() {}
+  set $$blackoutPalletType(_) {}
+  get $$addGenre() {}
 }
 export default toVue(BlackoutPallet);
 </script>

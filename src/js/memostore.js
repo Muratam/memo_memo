@@ -168,6 +168,15 @@ class MemoStore {
     // WARN:
     this.save('genres');
   }
+  addGenre(genreName) {
+    let genreId = getRandomHash();
+    this.genres.push({name: genreName, id: genreId});
+    this.saveData.save('genres', this.genres);
+    this.currentGenre = genreId;
+    // WARN: TODO: 更新後に一つだけ追加する
+    // let content = this.makeEmptyContent(genreId, this.currentHow);
+    // this.updateContent(content.id, content);
+  }
   addContent(content) {
     if (content === null) return;
     content.url = MemoStore.appendHttp(content.url);
@@ -189,6 +198,50 @@ class MemoStore {
     this.contents.splice(index, 1, content);
     // WARN:
     this.save('contents');
+  }
+  swapContent(id1, id2) {
+    let dataAIndex = this.contents.findIndex(x => x.id === id1);
+    if (dataAIndex === -1) return;
+    let dataBIndex = this.contents.findIndex(x => x.id === id2);
+    if (dataBIndex === -1) return;
+    if (dataAIndex === dataBIndex) return;
+    let dataA = this.contents[dataAIndex];
+    let dataB = this.contents[dataBIndex];
+    if (dataA.genre === dataB.genre && dataA.how === dataB.how) {
+      // 順番入れ替え
+      this.contents.splice(dataAIndex, 1, dataB);
+      this.contents.splice(dataBIndex, 1, dataA);
+    } else {
+      // dataA をdataBの下に追加
+      dataA.genre = dataB.genre;
+      dataA.how = dataB.how;
+      this.contents.splice(dataAIndex, 1, dataA);
+    }
+    // WARN:
+    this.save('contents');
+  }
+  changeGenreHowOfContent(id, how, genre) {
+    let index = this.contents.findIndex(x => x.id === id);
+    if (index === -1) return;
+    let savedData = this.contents[index];
+    savedData.genre = genre ? genre : savedData.genre;
+    savedData.how = how ? how : savedData.how;
+    this.contents.splice(index, 1, savedData);
+    // WARN:
+    this.save('contents');
+  }
+  swapGenre(id1, id2) {
+    let aIndex = this.genres.findIndex(x => x.id == id1);
+    let bIndex = this.genres.findIndex(x => x.id == id2);
+    if (aIndex === -1 || bIndex === -1) return;
+    if (aIndex === bIndex) return;
+    // 入れ替えは直感的ではないのでAを削除してBの下に追加で
+    let aGenre = this.genres[aIndex];
+    this.genres.splice(aIndex, 1);
+    bIndex = this.genres.findIndex(x => x.id == id2);
+    this.genres.splice(bIndex, 0, aGenre);
+    // WARN:
+    this.save('genres');
   }
   // 外から代入可能に
   set $$currentGenre(_) {}
