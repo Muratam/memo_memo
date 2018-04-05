@@ -1,55 +1,57 @@
 <template lang="pug">
 nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
   .navbar-brand.header.clickable(
-      @click="currentHow = 'all',currentGenre = 'all'") memo-memo
+      @click="$$currentHow = 'all',$$currentGenre = 'all'") memo-memo
   .navbar-brand.header.clickable(
-      :class="{ active: currentHow === 'all'}"
-      @click="currentHow = 'all'") All
+      :class="{ active: $$currentHow === 'all'}"
+      @click="$$currentHow = 'all'") All
   .navbar-brand.clickable(
-      v-for="(tab,i) in hows"
-      :class="{ active: currentHow === tab.id}"
+      v-for="(tab,i) in $$hows"
+      :class="{ active: $$currentHow === tab.id}"
       :key="tab.id"
       @dragover="$event.preventDefault()"
       @dragenter="$event.target.classList.add('dropping')"
       @dragleave="$event.target.classList.remove('dropping')"
       @drop="dropUpdate($event,tab.id,null)"
-      @click="currentHow = tab.id") {{ tab.name }}
+      @click="$$currentHow = tab.id") {{ tab.name }}
   .navbar-brand.col-xs-2.pull-right.findbox
     .input-group.input-group-sm.has-feedback
       input.form-control.commandpallet(
-          type="text" v-model="findQuery"
-          :class="{ active: findQuery !== '' }"
+          type="text" v-model="$$findQuery"
+          :class="{ active: $$findQuery !== '' }"
           id="commandPallet")
       span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon(
-          :class="{ active: findQuery !== '' }")
+          :class="{ active: $$findQuery !== '' }")
         i.fas.fa-search.pallet-icon
 
 </template>
 <script>
-import { mapState, mapGetters } from "vuex";
-import { autoUpdateByAssign } from "../js/common";
-module.exports = {
-  methods: {
-    dropUpdate(event, how, genre) {
-      event.preventDefault();
-      event.target.classList.remove("dropping");
-      let data = event.dataTransfer.getData("memo");
-      if (data === "") return;
-      data = JSON.parse(data);
-      /* TODO: メモを落とされたらメモのgenre/howを変更する
+import { toVue } from "../js/tovue";
+
+class TopBar {
+  get $$findQuery() {}
+  get $$currentHow() {}
+  get $$currentGenre() {}
+  get $$hows() {}
+  set $$findQuery(_) {}
+  set $$currentHow(_) {}
+  set $$currentGenre(_) {}
+  dropUpdate(event, how, genre) {
+    event.preventDefault();
+    event.target.classList.remove("dropping");
+    let data = event.dataTransfer.getData("memo");
+    if (data === "") return;
+    data = JSON.parse(data);
+    /* TODO: メモを落とされたらメモのgenre/howを変更する
       let savedData = this.contents.find(x => x.id === data.id);
       if (!savedData) return;
       data.genre = genre ? genre : savedData.genre;
       data.how = how ? how : savedData.how;
       this.updateContent(data.id, data);
-      */
-    }
-  },
-  computed: {
-    ...autoUpdateByAssign(["findQuery", "currentHow", "currentGenre"]),
-    ...mapState(["hows"])
+    */
   }
-};
+}
+export default toVue(TopBar);
 </script>
 <style scoped lang="less">
 @import "../css/common.less";
