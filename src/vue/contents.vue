@@ -35,7 +35,7 @@ class Contents {
     let id = JSON.parse(data).id;
     this.$$swapContent(id, memoid);
   }
-  static components() {
+  static get components() {
     return { memo: Memo };
   }
   get $$swapContent() {}

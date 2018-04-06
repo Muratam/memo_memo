@@ -202,6 +202,7 @@ class MemoStore {
     if (!content.how) content.how = this.contents[index].how;
     this.contents.splice(index, 1, content);
     this.save('contents');
+    this.checkDeletedGenres();
   }
   swapContent(id1, id2) {
     let dataAIndex = this.contents.findIndex(x => x.id === id1);
@@ -222,6 +223,7 @@ class MemoStore {
       this.contents.splice(dataAIndex, 1, dataA);
     }
     this.save('contents');
+    this.checkDeletedGenres();
   }
   changeGenreHowOfContent(id, how, genre) {
     let index = this.contents.findIndex(x => x.id === id);
@@ -231,6 +233,7 @@ class MemoStore {
     savedData.how = how ? how : savedData.how;
     this.contents.splice(index, 1, savedData);
     this.save('contents');
+    this.checkDeletedGenres();
   }
   swapGenre(id1, id2) {
     let aIndex = this.genres.findIndex(x => x.id == id1);

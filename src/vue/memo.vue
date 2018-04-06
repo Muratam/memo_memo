@@ -52,6 +52,9 @@ class Memo {
     this.how = data.how;
     this.isediting = false;
   }
+  static get props() {
+    return ["data"];
+  }
   finishIfEnter(event) {
     if (event.key !== "Enter") return;
     this.finishEditing();

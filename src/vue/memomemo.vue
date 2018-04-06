@@ -22,7 +22,7 @@ class MemoMemo {
     this.$$setupSaveData();
   }
   get $$setupSaveData() {}
-  static components() {
+  static get components() {
     return {
       topbar: TopBar,
       sidebar: SideBar,

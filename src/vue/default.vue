@@ -5,7 +5,9 @@ div
 import { toVue } from "../js/tovue";
 export default toVue(
   class {
-    constructor(a) {}
+    static get props(){ return ["a","b"]; }
+    static get components(){ return {};}
+    constructor(a,b) {}
     get $$b(){}
     set $$b(){}
   }
