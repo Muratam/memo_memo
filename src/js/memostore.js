@@ -144,9 +144,7 @@ class MemoStore {
       content.genre = 'trash';
       this.contents.splice(index, 1, content);
     }
-    // WARN:
     this.save('contents');
-    // WARN:
     this.checkDeletedGenres();
   }
   checkDeletedGenres() {
@@ -165,17 +163,25 @@ class MemoStore {
     if (!updated) return;
     this.genres = newGenres;
     this.currentGenre = 'all';
-    // WARN:
     this.save('genres');
+  }
+  static makeEmptyContent(genre, how) {
+    return {
+      url: '',
+      title: '',
+      body: '',
+      id: getRandomHash(),
+      genre: genre,
+      how: how
+    };
   }
   addGenre(genreName) {
     let genreId = getRandomHash();
     this.genres.push({name: genreName, id: genreId});
-    this.saveData.save('genres', this.genres);
+    this.save('genres');
     this.currentGenre = genreId;
-    // WARN: TODO: 更新後に一つだけ追加する
-    // let content = this.makeEmptyContent(genreId, this.currentHow);
-    // this.updateContent(content.id, content);
+    let content = MemoStore.makeEmptyContent(genreId, this.currentHow);
+    this.addContent(content);
   }
   addContent(content) {
     if (content === null) return;
@@ -186,7 +192,6 @@ class MemoStore {
     if (content.how === 'all') content.how = 'later';
     if (content.genre === 'all') content.genre = 'temporary';
     this.contents.push(content);
-    // WARN:
     this.save('contents');
   }
   updateContent(content) {
@@ -196,7 +201,6 @@ class MemoStore {
     if (!content.genre) content.genre = this.contents[index].genre;
     if (!content.how) content.how = this.contents[index].how;
     this.contents.splice(index, 1, content);
-    // WARN:
     this.save('contents');
   }
   swapContent(id1, id2) {
@@ -217,7 +221,6 @@ class MemoStore {
       dataA.how = dataB.how;
       this.contents.splice(dataAIndex, 1, dataA);
     }
-    // WARN:
     this.save('contents');
   }
   changeGenreHowOfContent(id, how, genre) {
@@ -227,7 +230,6 @@ class MemoStore {
     savedData.genre = genre ? genre : savedData.genre;
     savedData.how = how ? how : savedData.how;
     this.contents.splice(index, 1, savedData);
-    // WARN:
     this.save('contents');
   }
   swapGenre(id1, id2) {
@@ -240,7 +242,6 @@ class MemoStore {
     this.genres.splice(aIndex, 1);
     bIndex = this.genres.findIndex(x => x.id == id2);
     this.genres.splice(bIndex, 0, aGenre);
-    // WARN:
     this.save('genres');
   }
   // 外から代入可能に
