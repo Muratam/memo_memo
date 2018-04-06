@@ -12,6 +12,16 @@ class MemoStore {
     this.saveData = new SaveData('webSocket');
     this.blackoutPalletType = '';
   }
+  static get defaultData() {
+    return {
+      genres: [{name: '❓', id: 'temporary'}, {ame: '🗑', id: 'trash'}],
+      hows: [
+        {name: 'Todo', id: 'todo'}, {name: 'Later', id: 'later'},
+        {name: 'URL', id: 'url'}, {name: 'Study', id: 'study'}
+      ],
+      contents: []
+    };
+  }
   static appendHttp(url) {
     if (url !== '' && !/^https?:\/\//.test(url)) return 'http://' + url;
     return url;
@@ -119,13 +129,10 @@ class MemoStore {
     this.saveData.save(key, this[key]);
   }
   setupSaveData() {
-    this.saveData.setDefaultData(
-        'genres', [{name: '❓', id: 'temporary'}, {ame: '🗑', id: 'trash'}]);
-    this.saveData.setDefaultData('hows', [
-      {name: 'Todo', id: 'todo'}, {name: 'Later', id: 'later'},
-      {name: 'URL', id: 'url'}, {name: 'Study', id: 'study'}
-    ]);
-    this.saveData.setDefaultData('contents', []);
+    let defaultData = MemoStore.defaultData;
+    this.saveData.setDefaultData('genres', defaultData.genres);
+    this.saveData.setDefaultData('hows', defaultData.hows);
+    this.saveData.setDefaultData('contents', defaultData.contents);
     this.saveData.autoLoad('genres', this);
     this.saveData.autoLoad('hows', this);
     this.saveData.autoLoad('contents', this);

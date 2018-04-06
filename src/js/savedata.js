@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 const typeWebSocket = 'webSocket';
 const typeLocalStrage = 'localStorage';
 
-module.exports = class SaveData {
+export default class SaveData {
   constructor(type) {
     this.type = type;
     switch (this.type) {
