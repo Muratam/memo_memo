@@ -1,14 +1,23 @@
 <template lang="pug">
-nav.navbar.navbar-fixed-bottom.content
-  ul.list-group.pallet
-    li.list-group-item
-      .input-group.input-group-sm.col-xs-12.has-feedback
-        input.form-control.commandpallet(
-            type="text" v-model="commandPallet"
-            @keydown="addMemo($event)" autofocus
-            id="commandPallet")
-        span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon
-          i.fas.fa-plus.pallet-icon
+div
+  nav.navbar.navbar-fixed-bottom.content
+    .clearfix
+      .pull-right
+        .right-button.btn-default.btn-circle.clickable(
+            @click="showSuperNote = !showSuperNote")
+          i.fas.fa-sticky-note
+      ul.list-group.leftpallet
+        li.list-group-item
+          .input-group.input-group-sm.col-xs-12.has-feedback
+            input.form-control.commandpallet(
+                type="text" v-model="commandPallet"
+                @keydown="addMemo($event)" autofocus
+                id="commandPallet")
+            span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon
+              i.fas.fa-plus.pallet-icon
+  textarea.supernote.navbar-fixed-top(
+      v-if="showSuperNote" v-model="temporaryNote"
+      spellcheck="false")
 </template>
 <script>
 import { toVue } from "../js/tovue";
@@ -17,6 +26,15 @@ import { getRandomHash } from "../js/common";
 class BottomPallet {
   constructor() {
     this.commandPallet = "";
+    this.showSuperNote = false;
+    this.temporaryNote = localStorage.getItem("temporaryNote") || "";
+  }
+  watch() {
+    return {
+      temporaryNote(newVal, oldVal) {
+        localStorage.setItem("temporaryNote", newVal);
+      }
+    };
   }
   addMemo(event) {
     if (event.key !== "Enter") return;
@@ -66,6 +84,41 @@ export default toVue(BottomPallet);
   .pallet-addon {
     background-color: #fff;
     padding-right: 1.6em;
+  }
+  .leftpallet {
+    margin-right: 4em;
+  }
+  .right-button {
+    background-color: @accent-color3 + #333;
+    color: @accent-color - #444;
+    border-color: #333;
+    margin-top: -0.1em;
+    padding-top: 0.3em;
+  }
+  .btn-circle {
+    width: 2em;
+    height: 2em;
+    text-align: center;
+    font-size: 1.5em;
+    border-radius: 2em;
+  }
+}
+.supernote {
+  position: fixed;
+  background-color: #000000cc;
+  top: 1vh;
+  left: 2vw;
+  border-radius: 0.3em;
+  margin-right: 1em;
+  margin-bottom: 5em;
+  height: 90vh;
+  padding: 1em;
+  width: 94vw;
+  color: #eee;
+  overflow-y: scroll;
+  font-family: "Menlo", "Courier New", Consolas, monospace;
+  &::-webkit-scrollbar {
+    width: 0;
   }
 }
 </style>

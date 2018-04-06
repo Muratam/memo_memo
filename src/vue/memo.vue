@@ -33,7 +33,7 @@
           @keydown="finishIfEnter($event)")
     .input-group.input-group-sm.col-xs-12
       textarea(
-          ref="textarea"
+          ref="textarea" spellcheck="false"
           v-model="body" rows="3"
           v-on:keydown="finishIfCmdEnter($event)"
           v-on:keyup="autoGrow($event.target)")
@@ -149,13 +149,13 @@ export default toVue(Memo);
   font-size: 0.9em;
   overflow-x: auto;
   color: #447;
-  font-family: "Courier New", Consolas, monospace;
+  font-family: "Menlo", "Courier New", Consolas, monospace;
   &::-webkit-scrollbar {
     height: 0;
   }
 }
 textarea {
-  font-family: "Courier New", Consolas, monospace;
+  font-family: "Menlo", "Courier New", Consolas, monospace;
   width: 100%;
   background-color: #fdfdff;
   color: #447;

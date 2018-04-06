@@ -43,6 +43,7 @@ class SideBarTab {
       this.$$currentGenre = sideId;
       return;
     }
+    if (this.id === "trash" || this.id === "temporary") return;
     this.isRenaming = true;
     this.$nextTick(() => {
       this.$refs.renameinput.focus();
