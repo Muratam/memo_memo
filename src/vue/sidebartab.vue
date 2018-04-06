@@ -35,6 +35,7 @@ class SideBarTab {
   }
   submitRename(event, id) {
     if (event.code !== "Enter") return;
+    if (!event.metaKey) return;
     this.isRenaming = false;
     this.$$renameGenre(id, this.renaming);
   }

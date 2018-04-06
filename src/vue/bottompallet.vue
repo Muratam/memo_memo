@@ -40,6 +40,7 @@ class BottomPallet {
   }
   addMemo(event) {
     if (event.key !== "Enter") return;
+    if (!event.metaKey) return;
     let title = $.trim(this.commandPallet);
     if (title === "") return;
     let data = {

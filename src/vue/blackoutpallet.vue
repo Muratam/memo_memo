@@ -26,6 +26,7 @@ class BlackoutPallet {
   }
   decidedAtBlackout(event) {
     if (event.key !== "Enter") return;
+    if (!event.metaKey) return;
     switch (this.$$blackoutPalletType) {
       case "addGenre":
         this.$$addGenre(this.blackoutPallet);

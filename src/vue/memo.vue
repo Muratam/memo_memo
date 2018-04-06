@@ -25,12 +25,12 @@
       span.input-group-addon URL
       input.urltext.form-control.col-xs-5(
           type="text" placeholder="https://..."
-          v-model="url" @keydown="finishIfEnter($event)")
+          v-model="url" @keydown="finishIfCmdEnter($event)")
     .input-group.input-group-sm.col-xs-12
       span.input-group-addon Title
       input.form-control(
           type="text" v-model="title"
-          @keydown="finishIfEnter($event)")
+          @keydown="finishIfCmdEnter($event)")
     .input-group.input-group-sm.col-xs-12
       textarea(
           ref="textarea" spellcheck="false"
@@ -54,10 +54,6 @@ class Memo {
   }
   static get props() {
     return ["data"];
-  }
-  finishIfEnter(event) {
-    if (event.key !== "Enter") return;
-    this.finishEditing();
   }
   finishIfCmdEnter(event) {
     if (event.key !== "Enter") return;
