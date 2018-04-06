@@ -6,23 +6,8 @@
           :class="{ active: $$currentGenre ===  'all' }"
           @click="$$currentGenre = 'all'")
         a.nav-link All
-      li.nav-item.clickable(
-          v-for="(side,i) in $$genres"
-          :class="{ active: $$currentGenre === side.id }"
-          @click="sidebarClick($event,side.id)"
-          :key="side.id"
-          draggable="true"
-          @dragstart="$event.dataTransfer.setData('sideid', side.id)"
-          @dragover="$event.preventDefault()"
-          @dragenter="$event.target.classList.add('dropping')"
-          @dragleave="$event.target.classList.remove('dropping')"
-          @drop="sidebarDrop($event,side.id)")
-        a.nav-link {{ side.name }}
-        //- .input-group.rename-genre
-          input.form-control.rename-genre(
-              type="text" placeholder="Rename Genre"
-              @keydown="submitRenameGenre($event,side.id)")
-          //-  v-model="url" @keydown="submit"
+      sidebartab(:name="side.name" :id="side.id"
+                 :key="side.id" v-for="side in $$genres")
       li.nav-item.clickable(
           @click="$$startBlackout('addGenre')")
         a.nav-link
@@ -32,34 +17,14 @@
 <script>
 import { toVue } from "../js/tovue";
 import { getRandomHash } from "../js/common";
+import SideBarTab from "./sidebartab";
 class SideBar {
   get $$currentGenre() {}
   set $$currentGenre(_) {}
   get $$genres() {}
-  set $$genres(_) {}
   get $$startBlackout() {}
-  get $$updateContent() {}
-  get $$swapGenre() {}
-  get $$changeGenreHowOfContent() {}
-  sidebarClick(event, sideId) {
-    if (this.$$currentGenre !== sideId) {
-      this.$$currentGenre = sideId;
-      return;
-    }
-    // TODO:rename
-  }
-  sidebarDrop(event, sideId) {
-    event.preventDefault();
-    event.target.classList.remove("dropping");
-    let transferSideId = event.dataTransfer.getData("sideid");
-    if (transferSideId === "") {
-      let data = event.dataTransfer.getData("memo");
-      if (data === "") return;
-      let id = JSON.parse(data).id;
-      this.$$changeGenreHowOfContent(id, null, sideId);
-    } else {
-      this.$$swapGenre(transferSideId, sideId);
-    }
+  static get components() {
+    return { sidebartab: SideBarTab };
   }
 }
 
@@ -82,13 +47,6 @@ export default toVue(SideBar);
   box-shadow: 0.1em 0 0.2em rgba(0, 0, 0, 0.2);
   &::-webkit-scrollbar {
     width: 0;
-  }
-  .dropping {
-    background-color: #fff;
-  }
-  .rename-genre {
-    background: @accent-color2 + #333;
-    border: 0 solid #fff;
   }
 }
 </style>

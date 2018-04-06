@@ -247,6 +247,14 @@ class MemoStore {
     this.genres.splice(bIndex, 0, aGenre);
     this.save('genres');
   }
+  renameGenre(id, name) {
+    let index = this.genres.findIndex(x => x.id === id);
+    if (index === -1) return;
+    let genre = this.genres[index];
+    genre.name = name;
+    this.contents.splice(index, 1, genre);
+    this.save('genres');
+  }
   // 外から代入可能に
   set $$currentGenre(_) {}
   set $$currentHow(_) {}
