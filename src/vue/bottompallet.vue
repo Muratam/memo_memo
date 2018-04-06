@@ -4,7 +4,8 @@ div
     .clearfix
       .pull-right
         .right-button.btn-default.btn-circle.clickable(
-            @click="showSuperNote = !showSuperNote")
+            @click="showSuperNote = !showSuperNote"
+            data-toggle="collapse" data-target="#tempnote")
           i.fas.fa-sticky-note
       ul.list-group.leftpallet
         li.list-group-item
@@ -15,8 +16,9 @@ div
                 id="commandPallet")
             span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon
               i.fas.fa-plus.pallet-icon
-  textarea.supernote.navbar-fixed-top(
-      v-if="showSuperNote" v-model="temporaryNote"
+  textarea.supernote.navbar-fixed-top.collapse(
+      id="tempnote"
+      v-model="temporaryNote"
       spellcheck="false")
 </template>
 <script>
