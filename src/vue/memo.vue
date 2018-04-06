@@ -144,11 +144,12 @@ export default toVue(Memo);
   padding-bottom: 0.5em;
   padding-left: 0.5em;
   white-space: pre !important;
-  background-color: #f0faff;
+  background-color: #ffffff;
+  border-left: 0.2em solid #eee;
   border-radius: 0.2em / 1em;
-  font-size: 0.9em;
+  font-size: 0.88em;
   overflow-x: auto;
-  color: #447;
+  color: #808090;
   font-family: "Menlo", "Courier New", Consolas, monospace;
   &::-webkit-scrollbar {
     height: 0;
