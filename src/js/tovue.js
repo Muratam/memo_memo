@@ -139,7 +139,7 @@ export function toVuex(Class) {
               this[name];
         }
       });
-      if (args !== undefined && args !== undefined &&
+      if (args !== undefined && args !== null &&
           Object.is(Object.getPrototypeOf(args), Array.prototype))
         func.bind(bound)(...args);
       else
@@ -160,6 +160,7 @@ export function toVuex(Class) {
 
   for (let [name, func] of setters) {
     console.assert(name.startsWith('$$'), 'setters without $$ are not allowed');
+
     res.mutations[name] = function(state, value) {
       state[name.slice(2)] = value;
     };

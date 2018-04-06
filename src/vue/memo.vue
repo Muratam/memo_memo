@@ -25,18 +25,18 @@
       span.input-group-addon URL
       input.urltext.form-control.col-xs-5(
           type="text" placeholder="https://..."
-          v-model="url" @keydown="finishIfCmdEnter($event)")
+          v-model="url" @keypress="finishIfEnter($event)")
     .input-group.input-group-sm.col-xs-12
       span.input-group-addon Title
       input.form-control(
           type="text" v-model="title"
-          @keydown="finishIfCmdEnter($event)")
+          @keypress="finishIfEnter($event)")
     .input-group.input-group-sm.col-xs-12
       textarea(
           ref="textarea" spellcheck="false"
           v-model="body" rows="3"
-          v-on:keydown="finishIfCmdEnter($event)"
-          v-on:keyup="autoGrow($event.target)")
+          @keydown="finishIfCmdEnter($event)"
+          @keyup="autoGrow($event.target)")
 
 </template>
 <script>
@@ -54,6 +54,10 @@ class Memo {
   }
   static get props() {
     return ["data"];
+  }
+  finishIfEnter(event) {
+    if (event.key !== "Enter") return;
+    this.finishEditing();
   }
   finishIfCmdEnter(event) {
     if (event.key !== "Enter") return;

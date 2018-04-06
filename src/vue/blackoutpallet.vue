@@ -10,7 +10,7 @@
           i.clickable.fas.fa-plus.pallet-icon(v-if="$$blackoutPalletType === 'addGenre'")
         input.form-control.commandpallet(
             type="text" v-model="blackoutPallet"
-            @keydown="decidedAtBlackout($event)"
+            @keypress="decidedAtBlackout($event)"
             id="blackoutPallet")
 </template>
 <script>
@@ -26,7 +26,6 @@ class BlackoutPallet {
   }
   decidedAtBlackout(event) {
     if (event.key !== "Enter") return;
-    if (!event.metaKey) return;
     switch (this.$$blackoutPalletType) {
       case "addGenre":
         this.$$addGenre(this.blackoutPallet);
@@ -38,9 +37,8 @@ class BlackoutPallet {
     this.$$blackoutPalletType = "";
   }
   mounted() {
-    // esc:27 を押したら消す
     $(document).keydown(e => {
-      if (e.keyCode === 27) this.escapeBlackout();
+      if (e.key === "Escape") this.escapeBlackout();
     });
   }
   get $$blackoutPalletType() {}

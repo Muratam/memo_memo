@@ -1,6 +1,8 @@
+import sampleData from '../../server/sampledata/howto.json';
 import {getRandomHash} from '../js/common';
 import SaveData from '../js/savedata';
 import {toVuex} from '../js/tovue';
+
 class MemoStore {
   constructor() {
     this.genres = [];
@@ -9,18 +11,12 @@ class MemoStore {
     this.currentGenre = 'all';
     this.currentHow = 'all';
     this.findQuery = '';
+    // this.saveData = new SaveData('localStorage');
     this.saveData = new SaveData('webSocket');
     this.blackoutPalletType = '';
   }
   static get defaultData() {
-    return {
-      genres: [{name: '❓', id: 'temporary'}, {ame: '🗑', id: 'trash'}],
-      hows: [
-        {name: 'Todo', id: 'todo'}, {name: 'Later', id: 'later'},
-        {name: 'URL', id: 'url'}, {name: 'Study', id: 'study'}
-      ],
-      contents: []
-    };
+    return sampleData;
   }
   static appendHttp(url) {
     if (url !== '' && !/^https?:\/\//.test(url)) return 'http://' + url;
@@ -50,8 +46,9 @@ class MemoStore {
     if (this.findQuery !== '') {
       let query = this.findQuery.toUpperCase();
       contents = contents.filter(
-          x => x.title.toUpperCase().includes(query) ||
-              x.body.toUpperCase().includes(query));
+          x => (x.title || '').toUpperCase().includes(query) ||
+              (x.body || '').toUpperCase().includes(query) ||
+              (x.url || '').toUpperCase().includes(query));
     }
     if (this.currentHow === 'all') {
       if (this.currentGenre === 'all') {
@@ -122,12 +119,6 @@ class MemoStore {
     return this.visibleContents.map(x => x.memos.length || 0)
         .reduce((x, y) => x + y, 0);
   }
-  startBlackout(type) {
-    this.blackoutPalletType = type;
-  }
-  save(key) {
-    this.saveData.save(key, this[key]);
-  }
   setupSaveData() {
     let defaultData = MemoStore.defaultData;
     this.saveData.setDefaultData('genres', defaultData.genres);
@@ -137,6 +128,12 @@ class MemoStore {
     this.saveData.autoLoad('hows', this);
     this.saveData.autoLoad('contents', this);
     this.saveData.ready();
+  }
+  startBlackout(type) {
+    this.blackoutPalletType = type;
+  }
+  save(key) {
+    this.saveData.save(key, this[key]);
   }
   deleteContent(id) {
     let index = this.contents.findIndex(x => x.id === id);

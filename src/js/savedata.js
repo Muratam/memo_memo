@@ -1,13 +1,24 @@
 import io from 'socket.io-client';
 
 const typeWebSocket = 'webSocket';
-const typeLocalStrage = 'localStorage';
+const typeLocalStorage = 'localStorage';
+
+class LocalStorage {
+  static getItem(key) {
+    let val = localStorage.getItem(location.pathname + ':' + key);
+    return JSON.parse(val);
+  }
+  static setItem(key, value) {
+    value = JSON.stringify(value);
+    return localStorage.setItem(location.pathname + ':' + key, value);
+  }
+}
 
 export default class SaveData {
   constructor(type) {
     this.type = type;
     switch (this.type) {
-      case typeLocalStrage:
+      case typeLocalStorage:
         this.callbacks = {};
         return;
       case typeWebSocket:
@@ -21,12 +32,11 @@ export default class SaveData {
   }
   ready() {
     switch (this.type) {
-      case typeLocalStrage:
+      case typeLocalStorage:
         // 雑に全イベント発火
         for (let key in this.callbacks) {
           for (let callback of this.callbacks[key]) {
-            let value = localStorage.getItem(key);
-            callback(JSON.parse(value));
+            callback(LocalStorage.getItem(key));
           }
         }
         return;
@@ -40,8 +50,8 @@ export default class SaveData {
   }
   save(key, value) {
     switch (this.type) {
-      case typeLocalStrage:
-        localStorage.setItem(key, JSON.stringify(value));
+      case typeLocalStorage:
+        LocalStorage.setItem(key, value);
         return;
       case typeWebSocket:
         this.socket.emit(key, value);
@@ -50,7 +60,7 @@ export default class SaveData {
   }
   setLoadCallback(key, callback, onlyBidirectional = false) {
     switch (this.type) {
-      case typeLocalStrage:
+      case typeLocalStorage:
         if (onlyBidirectional) return;
         if (!(key in this.callbacks))
           this.callbacks[key] = [callback];
@@ -70,9 +80,9 @@ export default class SaveData {
   }
   setDefaultData(key, value) {
     switch (this.type) {
-      case typeLocalStrage:
+      case typeLocalStorage:
         if (localStorage.getItem(key) === null)
-          localStorage.setItem(key, JSON.stringify(value));
+          LocalStorage.setItem(key, value);
         return;
     }
   }

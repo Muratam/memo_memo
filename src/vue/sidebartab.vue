@@ -14,7 +14,7 @@ li.nav-item.clickable(
         type="text" placeholder="Rename Genre"
         v-model="renaming"
         ref="renameinput"
-        @keydown="submitRename($event,id)")
+        @keypress="submitRename($event,id)")
 
 </template>
 <script>
@@ -35,7 +35,6 @@ class SideBarTab {
   }
   submitRename(event, id) {
     if (event.code !== "Enter") return;
-    if (!event.metaKey) return;
     this.isRenaming = false;
     this.$$renameGenre(id, this.renaming);
   }

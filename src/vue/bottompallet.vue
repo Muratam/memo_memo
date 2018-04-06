@@ -3,23 +3,19 @@ div
   nav.navbar.navbar-fixed-bottom.content
     .clearfix
       .pull-right
-        .right-button.btn-default.btn-circle.clickable(
-            @click="showSuperNote = !showSuperNote"
-            data-toggle="collapse" data-target="#tempnote")
+        .right-button.btn-default.btn-circle.clickable(@click="toggleSuperNote")
           i.fas.fa-sticky-note
       ul.list-group.leftpallet
         li.list-group-item
           .input-group.input-group-sm.col-xs-12.has-feedback
             input.form-control.commandpallet(
                 type="text" v-model="commandPallet"
-                @keydown="addMemo($event)" autofocus
+                @keypress="addMemo($event)" autofocus
                 id="commandPallet")
             span.input-group-addon.pallet-addon.form-control-feedback.feedbackicon
               i.fas.fa-plus.pallet-icon
-  textarea.supernote.navbar-fixed-top.collapse(
-      id="tempnote"
-      v-model="temporaryNote"
-      spellcheck="false")
+  textarea.supernote.navbar-fixed-top.hiddennote(
+      ref="superNote" v-model="temporaryNote" spellcheck="false")
 </template>
 <script>
 import { toVue } from "../js/tovue";
@@ -28,8 +24,19 @@ import { getRandomHash } from "../js/common";
 class BottomPallet {
   constructor() {
     this.commandPallet = "";
-    this.showSuperNote = false;
-    this.temporaryNote = localStorage.getItem("temporaryNote") || "";
+    this.temporaryNote = localStorage.getItem("temporaryNote") || "temporary note !! \nhere [cmd + K]";
+  }
+  toggleSuperNote(){
+    $(this.$refs.superNote).toggleClass('hiddennote')
+  }
+  mounted(){
+    $(document).keydown(e => {
+      if(e.key !== "k" || !e.metaKey)return;
+      e.preventDefault();
+      this.toggleSuperNote();
+      if(!$(this.$refs.superNote).hasClass("hiddennote"))
+        this.$refs.superNote.focus();
+    });
   }
   watch() {
     return {
@@ -40,7 +47,6 @@ class BottomPallet {
   }
   addMemo(event) {
     if (event.key !== "Enter") return;
-    if (!event.metaKey) return;
     let title = $.trim(this.commandPallet);
     if (title === "") return;
     let data = {
@@ -110,6 +116,7 @@ export default toVue(BottomPallet);
   position: fixed;
   background-color: #000000cc;
   top: 1vh;
+  transition: all 0.3s ease;
   left: 2vw;
   border-radius: 0.3em;
   margin-right: 1em;
@@ -120,8 +127,15 @@ export default toVue(BottomPallet);
   color: #eee;
   overflow-y: scroll;
   font-family: "Menlo", "Courier New", Consolas, monospace;
+  max-height: 100vh;
+  border-width: 0;
   &::-webkit-scrollbar {
     width: 0;
+  }
+  &.hiddennote {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 0vh;
   }
 }
 </style>

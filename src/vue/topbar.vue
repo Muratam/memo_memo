@@ -17,6 +17,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top.top-bar
   .navbar-brand.col-xs-2.pull-right.findbox
     .input-group.input-group-sm.has-feedback
       input.form-control.commandpallet(
+          ref="findBox"
           type="text" v-model="$$findQuery"
           :class="{ active: $$findQuery !== '' }"
           id="commandPallet")
@@ -39,7 +40,13 @@ class TopBar {
   get $$contents() {}
   get $$updateContent() {}
   get $$changeGenreHowOfContent() {}
-
+  mounted(){
+    $(document).keydown(e => {
+      if(e.key !== "f" || !e.metaKey)return;
+      e.preventDefault();
+      this.$refs.findBox.focus();
+    });
+  }
   topbarDrop(event, tabId) {
     // メモを落とされたらメモのgenre/howを変更する
     event.preventDefault();
