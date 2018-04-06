@@ -23,89 +23,90 @@
         i.fas.fa-times
     .input-group.input-group-sm.col-xs-12
       span.input-group-addon URL
-      input.urltext.form-control.col-xs-5(type="text" placeholder="https://..." v-model="url" @keydown="submit")
+      input.urltext.form-control.col-xs-5(
+          type="text" placeholder="https://..."
+          v-model="url" @keydown="finishIfEnter($event)")
     .input-group.input-group-sm.col-xs-12
       span.input-group-addon Title
-      input.form-control(type="text" v-model="title" @keydown="submit")
+      input.form-control(
+          type="text" v-model="title"
+          @keydown="finishIfEnter($event)")
     .input-group.input-group-sm.col-xs-12
       textarea(
           ref="textarea"
           v-model="body" rows="3"
-          v-on:keydown="checkDecided($event)"
+          v-on:keydown="finishIfCmdEnter($event)"
           v-on:keyup="autoGrow($event.target)")
 
 </template>
 <script>
-module.exports = {
-  methods: {
-    submit() {
-      if (window.event.keyCode !== 13) return;
-      this.finishEditing();
-    },
-    dragStart(event) {
-      this.$refs.elemroot.style.opacity = "0.4";
-      event.dataTransfer.effectAllowed = "move";
-      event.dataTransfer.setData("memo", JSON.stringify(this.serialized()));
-      event.dataTransfer.setDragImage(this.$refs.infoarea, -10, -10);
-    },
-    dragEnd(event) {
-      if (!this.$refs.elemroot) return;
-      this.$refs.elemroot.style.opacity = "1.0";
-    },
-    checkDecided(event) {
-      if (event.key !== "Enter") return;
-      if (!event.metaKey) return;
-      this.finishEditing();
-    },
-    autoGrow(element) {
-      let rows = this.body.split("\n").length;
-      element.setAttribute("rows", rows <= 3 ? 3 : rows);
-    },
-    trash() {
-      this.$emit("trash", this.serialized());
-    },
-    startEditing() {
-      this.isediting = true;
-      this.$nextTick(() => {
-        this.autoGrow(this.$refs.textarea);
-      });
-    },
-    finishEditing() {
-      if ($.trim(this.title) === "" && $.trim(this.url) === "") return;
-      this.isediting = false;
-      this.$emit("update", this.serialized());
-    },
-    serialized() {
-      return {
-        url: $.trim(this.url),
-        body: this.body,
-        id: this.id,
-        title: $.trim(this.title)
-      };
-    }
-  },
-  data() {
+import { toVue } from "../js/tovue";
+import { getRandomHash } from "../js/common";
+class Memo {
+  constructor(data) {
+    this.url = data.url;
+    this.title = data.title;
+    this.body = data.body;
+    this.id = data.id || getRandomHash();
+    this.genre = data.genre;
+    this.how = data.how;
+    this.isediting = false;
+  }
+  finishIfEnter(event) {
+    if (event.key !== "Enter") return;
+    this.finishEditing();
+  }
+  finishIfCmdEnter(event) {
+    if (event.key !== "Enter") return;
+    if (!event.metaKey) return;
+    this.finishEditing();
+  }
+  get formatted() {
     return {
-      title: this.attrs.title || "",
-      url: this.attrs.url || "",
-      body: this.attrs.body || "",
-      isediting: this.attrs.isediting || false,
-      id: this.attrs.id || ""
+      url: $.trim(this.url),
+      title: $.trim(this.title),
+      body: this.body,
+      id: this.id,
+      genre: this.genre,
+      how: this.how
     };
-  },
-  props: ["attrs"]
-  //   watch: { abc(val, oldVal) {} }
-};
+  }
+  dragStart(event) {
+    this.$refs.elemroot.style.opacity = "0.4";
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("memo", JSON.stringify(this.formatted));
+    event.dataTransfer.setDragImage(this.$refs.infoarea, -10, -10);
+  }
+  dragEnd(event) {
+    if (!this.$refs.elemroot) return;
+    this.$refs.elemroot.style.opacity = "1.0";
+  }
+  autoGrow(element) {
+    let rows = this.body.split("\n").length;
+    element.setAttribute("rows", rows <= 3 ? 3 : rows);
+  }
+  trash() {
+    this.$$deleteContent(this.id);
+  }
+  startEditing() {
+    this.isediting = true;
+    this.$nextTick(() => {
+      this.autoGrow(this.$refs.textarea);
+    });
+  }
+  finishEditing() {
+    if ($.trim(this.title) === "" && $.trim(this.url) === "") return;
+    this.isediting = false;
+    this.$$updateContent(this.formatted);
+  }
+  get $$updateContent() {}
+  get $$deleteContent() {}
+}
+export default toVue(Memo);
 </script>
 <style scoped lang="less">
-[draggable] {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-  -khtml-user-drag: element;
-  -webkit-user-drag: element;
-}
+@import "../css/common.less";
+
 .memo {
   max-height: 100vh;
   // transition: all 1s ease;

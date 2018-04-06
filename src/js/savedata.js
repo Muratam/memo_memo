@@ -62,6 +62,12 @@ module.exports = class SaveData {
         return;
     }
   }
+  autoLoad(key, self) {
+    // 更新があったら自動で更新するように設定
+    this.setLoadCallback(key, data => {
+      self[key] = data;
+    })
+  }
   setDefaultData(key, value) {
     switch (this.type) {
       case typeLocalStrage:
