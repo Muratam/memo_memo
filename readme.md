@@ -2,7 +2,7 @@
 左のジャンルタブと上のHowタブからフィルターを書けて,
 TODOやネット上のURLなどをメモにメモするツール
 
-![](https://pbs.twimg.com/media/DZUqyYtVAAUAhEv.jpg:small)
+![](./docs/sample.png)
 
 
 ## Howタブ

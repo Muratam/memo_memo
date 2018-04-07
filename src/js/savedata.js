@@ -22,6 +22,7 @@ export default class SaveData {
         this.callbacks = {};
         return;
       case typeWebSocket:
+        // this.socket = io(window.location.origin, {path: '/hogesocket'});
         this.socket = io(location.origin, {autoConnect: false});
         // this.socket.on("connect", () => console.log("connect"));
         this.socket.on('disconnect', () => {

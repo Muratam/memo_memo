@@ -1,9 +1,10 @@
-module.exports = class ServerBase {
+export default class ServerBase {
   constructor(port = 8080, staticPath = null) {
     const express = require('express');
     const bodyParser = require('body-parser');
     const app = express();
     const http = require('http').Server(app);
+    // let io = require('socket.io')(http, {path: '/hogesocket'});
     const io = require('socket.io')(http);
     this.app = app;
     this.io = io;
