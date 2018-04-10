@@ -14,7 +14,7 @@
         i.fas.fa-arrows-alt
       a(:href="url" v-if="url" target="_blank") {{ title }}
       span(v-if="!url") {{ title }}
-      .bodytext(v-if="body") {{ body }}
+      .bodytext(v-if="body" @dblclick="startEditing") {{ body }}
   .clearfix( v-if="isediting")
     .pull-right
       span.right-icon.clickable(@click="finishEditing")
@@ -35,7 +35,7 @@
       textarea(
           ref="textarea" spellcheck="false"
           v-model="body" rows="3"
-          @keydown="finishIfCmdEnter($event)"
+          @keydown="finishTextArea($event)"
           @keyup="autoGrow($event.target)")
 
 </template>
@@ -54,6 +54,11 @@ class Memo {
   }
   static get props() {
     return ["data"];
+  }
+  finishTextArea(event) {
+    if ((event.key === "Enter" && event.metaKey) || event.key == "Escape") {
+      this.finishEditing();
+    }
   }
   finishIfEnter(event) {
     if (event.key !== "Enter") return;
