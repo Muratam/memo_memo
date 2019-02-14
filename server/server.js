@@ -1,4 +1,4 @@
-const ServerBase = require('./serverbase');
+const ServerBase = require("./serverbase");
 const sampleData = require('./sampledata');
 const fs = require('fs');
 const server = new ServerBase(8080, `${__dirname}/../dist`);
@@ -9,12 +9,12 @@ const saveFileName = `${require('os').homedir()}/.memomemo.json`;
 function updateContents(contents) {
   let savedData = loadDataSync();
   savedData.contents = contents;
-  fs.writeFile(saveFileName, JSON.stringify(savedData, null, '  '));
+  fs.writeFile(saveFileName, JSON.stringify(savedData, null, '  '), () => { });
 }
 function updateGenres(genres) {
   let savedData = loadDataSync();
   savedData.genres = genres;
-  fs.writeFile(saveFileName, JSON.stringify(savedData, null, '  '));
+  fs.writeFile(saveFileName, JSON.stringify(savedData, null, '  '), () => { });
 }
 
 function loadDataSync() {
@@ -47,4 +47,4 @@ server.io.on('connection', (socket) => {
 });
 
 
-server.listen(() => {});
+server.listen(() => { });
